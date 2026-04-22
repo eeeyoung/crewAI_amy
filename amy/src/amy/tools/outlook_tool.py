@@ -1,12 +1,41 @@
 import subprocess
+import platform
 from crewai.tools import BaseTool
 from pydantic import Field
 
 class OutlookReadTool(BaseTool):
     name: str = "outlook_read_tool"
-    description: str = "Reads the first email from the default Microsoft Outlook account using AppleScript."
+    description: str = "Reads the first email from the default Microsoft Outlook account."
 
     def _run(self) -> str:
+        current_os = platform.system()
+        
+        if current_os == "Windows":
+            return self._run_windows()
+        elif current_os == "Darwin":
+            return self._run_macos()
+        else:
+            return f"Unsupported operating system: {current_os}"
+
+    def _run_windows(self) -> str:
+        try:
+            import win32com.client
+            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+            inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
+            messages = inbox.Items
+            messages.Sort("[ReceivedTime]", True)  # Sort by newest first
+            
+            if messages.Count > 0:
+                message = messages.GetFirst()
+                return f"ID: {message.EntryID}\nSender: {message.SenderEmailAddress}\nSubject: {message.Subject}\n\nContent: {message.Body}"
+            else:
+                return "No messages found in Inbox."
+        except ImportError:
+            return "Error: pywin32 not installed. Please install it to use this tool on Windows."
+        except Exception as e:
+            return f"Error accessing Outlook on Windows: {str(e)}"
+
+    def _run_macos(self) -> str:
         applescript = """
         tell application "Microsoft Outlook"
             try

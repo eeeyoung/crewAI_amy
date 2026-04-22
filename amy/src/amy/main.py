@@ -8,33 +8,50 @@ from amy.crew import Amy
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
+import platform
+
 def get_latest_email_id():
-    applescript = """
-    tell application "Microsoft Outlook"
-        try
-            set theInboxes to every mail folder whose name is "Inbox"
-            repeat with theInbox in theInboxes
-                if (count messages of theInbox) > 0 then
-                    set theMessage to first message of theInbox
-                    return id of theMessage as string
-                end if
-            end repeat
+    current_os = platform.system()
+    if current_os == "Windows":
+        try:
+            import win32com.client
+            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+            inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
+            messages = inbox.Items
+            messages.Sort("[ReceivedTime]", True)
+            if messages.Count > 0:
+                return messages.GetFirst().EntryID
             return ""
-        on error
+        except Exception:
             return ""
-        end try
-    end tell
-    """
-    try:
-        result = subprocess.run(
-            ["osascript", "-e", applescript],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        return result.stdout.strip()
-    except Exception:
-        return ""
+    elif current_os == "Darwin":
+        applescript = """
+        tell application "Microsoft Outlook"
+            try
+                set theInboxes to every mail folder whose name is "Inbox"
+                repeat with theInbox in theInboxes
+                    if (count messages of theInbox) > 0 then
+                        set theMessage to first message of theInbox
+                        return id of theMessage as string
+                    end if
+                end repeat
+                return ""
+            on error
+                return ""
+            end try
+        end tell
+        """
+        try:
+            result = subprocess.run(
+                ["osascript", "-e", applescript],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            return result.stdout.strip()
+        except Exception:
+            return ""
+    return ""
 
 def run():
     """

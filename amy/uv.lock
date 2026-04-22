@@ -143,12 +143,14 @@ source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "crewai", extra = ["google-genai", "tools"] },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.5" },
     { name = "crewai", extras = ["google-genai", "tools"], specifier = "==1.14.2" },
+    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = ">=308" },
 ]
 
 [[package]]

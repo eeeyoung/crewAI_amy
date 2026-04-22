@@ -1,4 +1,5 @@
 import subprocess
+import platform
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 from typing import Type
@@ -13,6 +14,36 @@ class OutlookReplyTool(BaseTool):
     args_schema: Type[BaseModel] = OutlookReplyToolInput
 
     def _run(self, message_id: str, reply_body: str) -> str:
+        current_os = platform.system()
+        
+        if current_os == "Windows":
+            return self._run_windows(message_id, reply_body)
+        elif current_os == "Darwin":
+            return self._run_macos(message_id, reply_body)
+        else:
+            return f"Unsupported operating system: {current_os}"
+
+    def _run_windows(self, message_id: str, reply_body: str) -> str:
+        try:
+            import win32com.client
+            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+            
+            # Try to get the message by ID
+            try:
+                message = outlook.GetItemFromID(message_id)
+            except Exception:
+                return f"Error: Could not find message with ID {message_id} on Windows."
+            
+            reply = message.Reply()
+            reply.Body = reply_body + "\n\n" + reply.Body
+            reply.Send()
+            return f"Successfully replied to message ID {message_id} on Windows."
+        except ImportError:
+            return "Error: pywin32 not installed. Please install it to use this tool on Windows."
+        except Exception as e:
+            return f"Error replying to email on Windows: {str(e)}"
+
+    def _run_macos(self, message_id: str, reply_body: str) -> str:
         safe_reply_body = reply_body.replace('"', '\\\\"')
         applescript = f"""
         tell application "Microsoft Outlook"
