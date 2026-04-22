@@ -1,0 +1,25 @@
+[project]
+name = "amy"
+version = "0.1.0"
+description = "amy using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "beautifulsoup4>=4.13.5",
+    "crewai[google-genai,tools]==1.14.2",
+]
+
+[project.scripts]
+amy = "amy.main:run"
+run_crew = "amy.main:run"
+train = "amy.main:train"
+replay = "amy.main:replay"
+test = "amy.main:test"
+run_with_trigger = "amy.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

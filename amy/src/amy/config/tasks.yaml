@@ -1,0 +1,11 @@
+process_email_task:
+  description: >
+    1. Read the newest email from Outlook.
+    2. Print its ID, Subject, Sender, and plain text Content to the console exactly as received.
+    3. Analyze the content. Assume the email is an RFI (Request For Information) from a subcontractor. 
+       Use the outlook_reply_tool to automatically reply with a professional response acknowledging 
+       receipt and stating that the RFI clarification has been forwarded to the consultant, and that 
+       we will get back to them once the consultant replies.
+  expected_output: >
+    A summary of the action taken (e.g., "RFI email from [Sender] processed. Acknowledgment sent.").
+  agent: email_assistant
