@@ -17,6 +17,7 @@ train = "amy.main:train"
 replay = "amy.main:replay"
 test = "amy.main:test"
 run_with_trigger = "amy.main:run_with_trigger"
+run_triage = "amy.main:run_triage"
 
 [build-system]
 requires = ["hatchling"]

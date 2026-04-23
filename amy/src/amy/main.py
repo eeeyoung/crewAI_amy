@@ -49,33 +49,47 @@ def get_latest_email_id():
                 check=True
             )
             return result.stdout.strip()
-        except Exception:
+        except Exception as e:
             return ""
     return ""
 
 def run():
-    """
-    Run the crew in a loop, checking every 5 seconds for new emails.
-    """
-    print("Starting Outlook email monitor (checking every 5 seconds)...")
-    last_seen_id = get_latest_email_id()
-    print(f"Initial latest email ID: {last_seen_id}")
+    print("Starting one-off triage analysis of Outlook Sent Items...")
+    result = Amy().crew().kickoff(inputs={})
+    print("\n--- TRIAGE REPORT ---")
+    print(result)
 
-    while True:
-        try:
-            current_id = get_latest_email_id()
-            if current_id and current_id != last_seen_id:
-                print(f"\\n[!] New email detected (ID: {current_id}). Starting Crew...")
-                Amy().crew().kickoff(inputs={})
-                last_seen_id = current_id
-                print("\\nWaiting for new emails...")
-            time.sleep(5)
-        except KeyboardInterrupt:
-            print("\\nStopping email monitor.")
-            break
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            time.sleep(5)
+    # """
+    # Run the crew in a loop, checking every 5 seconds for new emails.
+    # """
+    # print("Starting Outlook email monitor (checking every 5 seconds)...")
+    # last_seen_id = get_latest_email_id()
+    # print(f"Initial latest email ID: {last_seen_id}")
+
+    # while True:
+    #     try:
+    #         current_id = get_latest_email_id()
+    #         if current_id and current_id != last_seen_id:
+    #             print(f"\n[!] New email detected (ID: {current_id}). Starting Crew...")
+    #             Amy().crew().kickoff(inputs={})
+    #             last_seen_id = current_id
+    #             print("\nWaiting for new emails...")
+    #         time.sleep(5)
+    #     except KeyboardInterrupt:
+    #         print("\nStopping email monitor.")
+    #         break
+    #     except Exception as e:
+    #         print(f"An error occurred: {e}")
+    #         time.sleep(5)
+
+def run_triage():
+    """
+    Run a one-off execution of the triage task over the Sent items.
+    """
+    print("Starting one-off triage analysis of Outlook Sent Items...")
+    result = Amy().crew().kickoff(inputs={})
+    print("\n--- TRIAGE REPORT ---")
+    print(result)
 
 if __name__ == "__main__":
     run()

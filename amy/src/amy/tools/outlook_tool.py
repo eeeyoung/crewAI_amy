@@ -75,3 +75,71 @@ class OutlookReadTool(BaseTool):
             return f"Failed to execute AppleScript: {e.stderr}"
         except Exception as e:
             return f"An unexpected error occurred: {str(e)}"
+
+class OutlookSentMailTool(BaseTool):
+    name: str = "outlook_sent_mail_tool"
+    description: str = "Reads the latest 300 emails from the Microsoft Outlook Sent Items folder."
+
+    def _run(self) -> str:
+        current_os = platform.system()
+        
+        if current_os == "Windows":
+            return self._run_windows()
+        else:
+            return f"This tool is currently only supported on Windows. Current OS: {current_os}"
+
+    def _run_windows(self) -> str:
+        try:
+            import win32com.client
+            import json
+            
+            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+            # Try to find the [Gmail] -> Sent Mail folder first
+            sent_folder = None
+            for store in outlook.Folders:
+                try:
+                    gmail_folder = store.Folders.Item("[Gmail]")
+                    sent_folder = gmail_folder.Folders.Item("Sent Mail")
+                    if sent_folder:
+                        break
+                except Exception:
+                    continue
+            
+            # Fallback to default if not found
+            if not sent_folder:
+                sent_folder = outlook.GetDefaultFolder(5)
+            messages = sent_folder.Items
+            messages.Sort("[SentOn]", True)  # Sort by newest first
+            
+            extracted_emails = []
+            count = 0
+            
+            for message in messages:
+                if count >= 300:
+                    break
+                
+                try:
+                    # Skip items that are not standard MailItems (e.g., Meeting requests)
+                    if message.Class != 43:  # 43 = olMail
+                        continue
+                    
+                    extracted_emails.append({
+                        "Subject": getattr(message, "Subject", "No Subject"),
+                        "To": getattr(message, "To", "Unknown"),
+                        "SentOn": str(getattr(message, "SentOn", "Unknown Date")),
+                        "BodySnippet": getattr(message, "Body", "")[:500]  # Limit body to 500 chars to save context window
+                    })
+                    count += 1
+                except Exception as msg_e:
+                    # Skip problematic messages
+                    continue
+                    
+            if not extracted_emails:
+                return json.dumps({"error": "No messages found in Sent Items."})
+                
+            return json.dumps(extracted_emails)
+            
+        except ImportError:
+            return json.dumps({"error": "pywin32 not installed."})
+        except Exception as e:
+            return json.dumps({"error": f"Error accessing Outlook Sent Items: {str(e)}"})

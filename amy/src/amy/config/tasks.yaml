@@ -1,11 +1,15 @@
-process_email_task:
+triage_sent_emails_task:
   description: >
-    1. Read the newest email from Outlook.
-    2. Print its ID, Subject, Sender, and plain text Content to the console exactly as received.
-    3. Analyze the content. Assume the email is an RFI (Request For Information) from a subcontractor. 
-       Use the outlook_reply_tool to automatically reply with a professional response acknowledging 
-       receipt and stating that the RFI clarification has been forwarded to the consultant, and that 
-       we will get back to them once the consultant replies.
+    1. Use the outlook_sent_mail_tool to fetch the latest 300 sent emails from Outlook.
+    2. Read and deeply analyze the context of these emails.
+    3. Categorize each email based on:
+       a. Urgency (Does it need a response ASAP?)
+       b. Actionability (Is it an assignment requiring extra work beyond just replying?)
+       c. Pure Text (Can it be replied to directly without other concerns?)
+       d. Business vs. Personal
+       e. Construction Domain (e.g., RFIs, Submittals/Approvals, Financial/Invoicing, Scheduling/Logistics, Safety & Compliance)
+    4. Explore and define any other necessary categories beyond the ones listed above based on the actual email content.
+    5. Based on these categories, propose the specific downstream agents we might need to create to complete a full workflow for each assignment type.
   expected_output: >
-    A summary of the action taken (e.g., "RFI email from [Sender] processed. Acknowledgment sent.").
-  agent: email_assistant
+    A structured JSON report matching the TriageReport Pydantic model containing the classified email categories and proposed downstream agents.
+  agent: triage_analyst
