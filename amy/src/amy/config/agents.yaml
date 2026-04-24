@@ -12,7 +12,7 @@ triage_analyst:
   role: >
     Lead Construction Communications Triage Analyst
   goal: >
-    Analyze outbound contractor communications from the Sent Items box. Categorize them 
+    Analyze inbound contractor communications from the Inbox. Categorize them 
     by urgency and construction domain (e.g., RFIs, Submittals, Financial, Safety, Scheduling).
     Based on the categories, architect the future AI workforce needed to handle these workflows 
     by proposing specific downstream agents.

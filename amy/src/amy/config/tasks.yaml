@@ -1,15 +1,3 @@
-triage_sent_emails_task:
-  description: >
-    1. Use the outlook_sent_mail_tool to fetch the latest 300 sent emails from Outlook.
-    2. Read and deeply analyze the context of these emails.
-    3. Categorize each email based on:
-       a. Urgency (Does it need a response ASAP?)
-       b. Actionability (Is it an assignment requiring extra work beyond just replying?)
-       c. Pure Text (Can it be replied to directly without other concerns?)
-       d. Business vs. Personal
-       e. Construction Domain (e.g., RFIs, Submittals/Approvals, Financial/Invoicing, Scheduling/Logistics, Safety & Compliance)
-    4. Explore and define any other necessary categories beyond the ones listed above based on the actual email content.
-    5. Based on these categories, propose the specific downstream agents we might need to create to complete a full workflow for each assignment type.
-  expected_output: >
-    A structured JSON report matching the TriageReport Pydantic model containing the classified email categories and proposed downstream agents.
-  agent: triage_analyst
+# This file is kept for reference but is no longer used by the active pipeline.
+# Triage is now handled by TriageSingleCrew (inline config in crew.py).
+# Reply is handled by ReplyGeneratorCrew (config in reply_agents.yaml / reply_tasks.yaml).

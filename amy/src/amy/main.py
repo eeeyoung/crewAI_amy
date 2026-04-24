@@ -1,95 +1,33 @@
 #!/usr/bin/env python
 import sys
 import warnings
-import time
-import subprocess
-
-from amy.crew import Amy
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-import platform
-
-def get_latest_email_id():
-    current_os = platform.system()
-    if current_os == "Windows":
-        try:
-            import win32com.client
-            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-            inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
-            messages = inbox.Items
-            messages.Sort("[ReceivedTime]", True)
-            if messages.Count > 0:
-                return messages.GetFirst().EntryID
-            return ""
-        except Exception:
-            return ""
-    elif current_os == "Darwin":
-        applescript = """
-        tell application "Microsoft Outlook"
-            try
-                set theInboxes to every mail folder whose name is "Inbox"
-                repeat with theInbox in theInboxes
-                    if (count messages of theInbox) > 0 then
-                        set theMessage to first message of theInbox
-                        return id of theMessage as string
-                    end if
-                end repeat
-                return ""
-            on error
-                return ""
-            end try
-        end tell
-        """
-        try:
-            result = subprocess.run(
-                ["osascript", "-e", applescript],
-                capture_output=True,
-                text=True,
-                check=True
-            )
-            return result.stdout.strip()
-        except Exception as e:
-            return ""
-    return ""
-
-def run():
-    print("Starting one-off triage analysis of Outlook Sent Items...")
-    result = Amy().crew().kickoff(inputs={})
-    print("\n--- TRIAGE REPORT ---")
-    print(result)
-
-    # """
-    # Run the crew in a loop, checking every 5 seconds for new emails.
-    # """
-    # print("Starting Outlook email monitor (checking every 5 seconds)...")
-    # last_seen_id = get_latest_email_id()
-    # print(f"Initial latest email ID: {last_seen_id}")
-
-    # while True:
-    #     try:
-    #         current_id = get_latest_email_id()
-    #         if current_id and current_id != last_seen_id:
-    #             print(f"\n[!] New email detected (ID: {current_id}). Starting Crew...")
-    #             Amy().crew().kickoff(inputs={})
-    #             last_seen_id = current_id
-    #             print("\nWaiting for new emails...")
-    #         time.sleep(5)
-    #     except KeyboardInterrupt:
-    #         print("\nStopping email monitor.")
-    #         break
-    #     except Exception as e:
-    #         print(f"An error occurred: {e}")
-    #         time.sleep(5)
 
 def run_triage():
     """
-    Run a one-off execution of the triage task over the Sent items.
+    Fetch emails directly, then launch the interactive GUI.
+    Triage and reply generation happen in background threads inside the GUI.
     """
-    print("Starting one-off triage analysis of Outlook Sent Items...")
-    result = Amy().crew().kickoff(inputs={})
-    print("\n--- TRIAGE REPORT ---")
-    print(result)
+    from amy.tools.outlook_tool import fetch_inbox_emails
+
+    print("Fetching latest 10 emails from Outlook Inbox...")
+    raw_emails = fetch_inbox_emails(count=10, max_body=4000)
+
+    if not raw_emails:
+        print("No emails found in Inbox. Exiting.")
+        return
+
+    print(f"Fetched {len(raw_emails)} emails. Launching workstation...")
+
+    from amy.gui_viewer import show_triage_report
+    show_triage_report(raw_emails)
+
+
+def run():
+    run_triage()
+
 
 if __name__ == "__main__":
     run()

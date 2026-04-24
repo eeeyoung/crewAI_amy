@@ -1,0 +1,16 @@
+generate_reply_task:
+  description: >
+    Review the following original email and its assigned category/context:
+    Original Email Subject: {email_subject}
+    Original Email Content: {email_content}
+    Assigned Category: {email_category}
+    Extra Context: {email_context}
+
+    Generate a professional email response addressing the sender. 
+    The tone should be that of a competent construction project administrator.
+    If the category involves an RFI, acknowledge receipt and note it will be forwarded.
+    If it requires other actions, state clearly what the next steps are.
+  expected_output: >
+    A plain text string containing ONLY the body of the generated email reply. 
+    Do not include the subject line or any preamble like "Here is the response:".
+  agent: reply_assistant

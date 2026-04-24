@@ -3,6 +3,42 @@ import platform
 from crewai.tools import BaseTool
 from pydantic import Field
 
+
+def fetch_inbox_emails(count=10, max_body=4000):
+    """Fetch the latest emails from Outlook Inbox directly via win32com.
+    Returns a list of dicts with Subject, Sender, ReceivedTime, Body.
+    This is a plain Python function, NOT a CrewAI tool.
+    """
+    if platform.system() != "Windows":
+        raise RuntimeError("This function is only supported on Windows.")
+
+    import win32com.client
+
+    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
+    messages = inbox.Items
+    messages.Sort("[ReceivedTime]", True)
+
+    emails = []
+    fetched = 0
+
+    for message in messages:
+        if fetched >= count:
+            break
+        try:
+            if message.Class != 43:  # 43 = olMail
+                continue
+            emails.append({
+                "subject": getattr(message, "Subject", "No Subject"),
+                "sender": getattr(message, "SenderEmailAddress", "Unknown"),
+                "received_time": str(getattr(message, "ReceivedTime", "Unknown Date")),
+                "body": getattr(message, "Body", "")[:max_body],
+            })
+            fetched += 1
+        except Exception:
+            continue
+
+    return emails
 class OutlookReadTool(BaseTool):
     name: str = "outlook_read_tool"
     description: str = "Reads the first email from the default Microsoft Outlook account."
@@ -76,9 +112,9 @@ class OutlookReadTool(BaseTool):
         except Exception as e:
             return f"An unexpected error occurred: {str(e)}"
 
-class OutlookSentMailTool(BaseTool):
-    name: str = "outlook_sent_mail_tool"
-    description: str = "Reads the latest 300 emails from the Microsoft Outlook Sent Items folder."
+class OutlookInboxBatchTool(BaseTool):
+    name: str = "outlook_inbox_batch_tool"
+    description: str = "Reads the latest 10 emails from the Microsoft Outlook Inbox folder."
 
     def _run(self) -> str:
         current_os = platform.system()
@@ -94,52 +130,60 @@ class OutlookSentMailTool(BaseTool):
             import json
             
             outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-            # Try to find the [Gmail] -> Sent Mail folder first
-            sent_folder = None
-            for store in outlook.Folders:
-                try:
-                    gmail_folder = store.Folders.Item("[Gmail]")
-                    sent_folder = gmail_folder.Folders.Item("Sent Mail")
-                    if sent_folder:
-                        break
-                except Exception:
-                    continue
-            
-            # Fallback to default if not found
-            if not sent_folder:
-                sent_folder = outlook.GetDefaultFolder(5)
-            messages = sent_folder.Items
-            messages.Sort("[SentOn]", True)  # Sort by newest first
+            inbox_folder = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
+            messages = inbox_folder.Items
+            messages.Sort("[ReceivedTime]", True)  # Sort by newest first
             
             extracted_emails = []
             count = 0
             
             for message in messages:
-                if count >= 300:
+                if count >= 10:
                     break
                 
                 try:
-                    # Skip items that are not standard MailItems (e.g., Meeting requests)
+                    # Skip items that are not standard MailItems
                     if message.Class != 43:  # 43 = olMail
                         continue
                     
                     extracted_emails.append({
                         "Subject": getattr(message, "Subject", "No Subject"),
-                        "To": getattr(message, "To", "Unknown"),
-                        "SentOn": str(getattr(message, "SentOn", "Unknown Date")),
-                        "BodySnippet": getattr(message, "Body", "")[:500]  # Limit body to 500 chars to save context window
+                        "Sender": getattr(message, "SenderEmailAddress", "Unknown"),
+                        "ReceivedTime": str(getattr(message, "ReceivedTime", "Unknown Date")),
+                        "BodySnippet": getattr(message, "Body", "")[:500]  # Limit body to save context window
                     })
                     count += 1
                 except Exception as msg_e:
-                    # Skip problematic messages
                     continue
                     
             if not extracted_emails:
-                return json.dumps({"error": "No messages found in Sent Items."})
+                return json.dumps({"error": "No messages found in Inbox."})
                 
             return json.dumps(extracted_emails)
             
         except ImportError:
             return json.dumps({"error": "pywin32 not installed."})
         except Exception as e:
-            return json.dumps({"error": f"Error accessing Outlook Sent Items: {str(e)}"})
+            return json.dumps({"error": f"Error accessing Outlook Inbox: {str(e)}"})
+
+class OutlookSendTool(BaseTool):
+    name: str = "outlook_send_tool"
+    description: str = "Sends an email using the Microsoft Outlook application."
+
+    def _run(self, recipient: str, subject: str, body: str) -> str:
+        current_os = platform.system()
+        
+        if current_os == "Windows":
+            try:
+                import win32com.client
+                outlook = win32com.client.Dispatch("Outlook.Application")
+                mail = outlook.CreateItem(0)  # 0 = olMailItem
+                mail.To = recipient
+                mail.Subject = subject
+                mail.Body = body
+                mail.Send()
+                return "Email successfully sent."
+            except Exception as e:
+                return f"Error sending email: {str(e)}"
+        else:
+            return f"This tool is currently only supported on Windows. Current OS: {current_os}"
