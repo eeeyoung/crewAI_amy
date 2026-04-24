@@ -3,26 +3,31 @@ import json
 import queue
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QTextEdit, QPushButton, QSplitter, QMessageBox, QFrame
+    QLabel, QLineEdit, QTextEdit, QPushButton, QSplitter, QMessageBox, QFrame,
+    QStackedLayout
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont
 
-from amy.crew import TriageSingleCrew, ReplyGeneratorCrew
+from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew
 from amy.tools.outlook_tool import OutlookSendTool
 
 
-class TriageWorker(QThread):
-    """Processes emails one-by-one through the triage agent.
-    Emits (index, category, extra_info) when each email is classified.
-    Pushes classified emails into the reply_queue for the ReplyWorker.
-    """
-    category_ready = pyqtSignal(int, str, str)
+# =============================================================================
+# Background Workers
+# =============================================================================
 
-    def __init__(self, emails, reply_queue, parent=None):
+class FilterWorker(QThread):
+    """Filters emails one-by-one, stripping signatures and boilerplate.
+    Emits (index, cleaned_body) when each email is filtered.
+    Pushes filtered emails into the triage_queue.
+    """
+    filter_done = pyqtSignal(int, str)
+
+    def __init__(self, emails, triage_queue, parent=None):
         super().__init__(parent)
         self.emails = emails
-        self.reply_queue = reply_queue
+        self.triage_queue = triage_queue
         self.running = True
 
     def run(self):
@@ -30,23 +35,56 @@ class TriageWorker(QThread):
             if not self.running:
                 break
 
+            try:
+                result = MessageFilterCrew().crew().kickoff(
+                    inputs={"email_body": email["body"]}
+                )
+                cleaned = result.raw if hasattr(result, 'raw') else str(result)
+            except Exception as e:
+                cleaned = f"Error filtering: {str(e)}"
+
+            self.filter_done.emit(idx, cleaned)
+            self.triage_queue.put((idx, email, cleaned))
+
+    def stop(self):
+        self.running = False
+
+
+class TriageWorker(QThread):
+    """Processes filtered emails one-by-one through the triage agent."""
+    category_ready = pyqtSignal(int, str, str)
+
+    def __init__(self, triage_queue, reply_queue, parent=None):
+        super().__init__(parent)
+        self.triage_queue = triage_queue
+        self.reply_queue = reply_queue
+        self.running = True
+
+    def run(self):
+        while self.running:
+            try:
+                item = self.triage_queue.get(timeout=1)
+            except queue.Empty:
+                continue
+            if item is None:
+                break
+
+            idx, email, filtered_body = item
+
             inputs = {
                 "email_subject": email["subject"],
                 "email_sender": email["sender"],
-                "email_content": email["body"],
+                "email_content": filtered_body,
             }
 
             category = "Uncategorized"
             extra_info = ""
 
             try:
-                crew_instance = TriageSingleCrew().crew()
-                result = crew_instance.kickoff(inputs=inputs)
+                result = TriageSingleCrew().crew().kickoff(inputs=inputs)
                 raw = result.raw if hasattr(result, 'raw') else str(result)
 
-                # Try to parse JSON from the result
                 try:
-                    # Strip markdown code fences if present
                     cleaned = raw.strip()
                     if cleaned.startswith("```"):
                         cleaned = cleaned.split("\n", 1)[-1]
@@ -57,17 +95,16 @@ class TriageWorker(QThread):
                 except (json.JSONDecodeError, AttributeError):
                     category = raw[:100]
                     extra_info = "Could not parse structured output"
-
             except Exception as e:
                 category = "Error"
                 extra_info = str(e)
 
             self.category_ready.emit(idx, category, extra_info)
-            # Queue this email for the reply worker
-            self.reply_queue.put((idx, email, category, extra_info))
+            self.reply_queue.put((idx, email, filtered_body, category, extra_info))
 
     def stop(self):
         self.running = False
+        self.triage_queue.put(None)
 
 
 class ReplyWorker(QThread):
@@ -85,22 +122,20 @@ class ReplyWorker(QThread):
                 item = self.reply_queue.get(timeout=1)
             except queue.Empty:
                 continue
-
-            if item is None:  # Poison pill to stop
+            if item is None:
                 break
 
-            idx, email, category, extra_info = item
+            idx, email, filtered_body, category, extra_info = item
 
             inputs = {
                 "email_subject": email["subject"],
-                "email_content": email["body"],
+                "email_content": filtered_body,
                 "email_category": category,
                 "email_context": extra_info,
             }
 
             try:
-                crew_instance = ReplyGeneratorCrew().crew()
-                result = crew_instance.kickoff(inputs=inputs)
+                result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
                 draft_text = result.raw if hasattr(result, 'raw') else str(result)
             except Exception as e:
                 draft_text = f"Error generating reply: {str(e)}"
@@ -109,63 +144,74 @@ class ReplyWorker(QThread):
 
     def stop(self):
         self.running = False
-        self.reply_queue.put(None)  # Poison pill
+        self.reply_queue.put(None)
 
 
 class RegenerateWorker(QThread):
-    """Re-runs triage or reply for a single email depending on which stage failed."""
+    """Re-runs filter, triage, or reply for a single email depending on which stage failed."""
+    filter_done = pyqtSignal(int, str)
     triage_done = pyqtSignal(int, str, str)
     reply_done = pyqtSignal(int, str)
 
-    def __init__(self, idx, email, mode, category="", extra_info="", parent=None):
+    def __init__(self, idx, email, mode, filtered_body="", category="", extra_info="", parent=None):
         super().__init__(parent)
         self.idx = idx
         self.email = email
-        self.mode = mode  # "triage" or "reply"
+        self.mode = mode  # "filter", "triage", or "reply"
+        self.filtered_body = filtered_body
         self.category = category
         self.extra_info = extra_info
 
     def run(self):
-        if self.mode == "triage":
-            inputs = {
-                "email_subject": self.email["subject"],
-                "email_sender": self.email["sender"],
-                "email_content": self.email["body"],
-            }
-            category = "Uncategorized"
-            extra_info = ""
-            try:
-                result = TriageSingleCrew().crew().kickoff(inputs=inputs)
-                raw = result.raw if hasattr(result, 'raw') else str(result)
-                try:
-                    cleaned = raw.strip()
-                    if cleaned.startswith("```"):
-                        cleaned = cleaned.split("\n", 1)[-1]
-                        cleaned = cleaned.rsplit("```", 1)[0]
-                    parsed = json.loads(cleaned.strip())
-                    category = parsed.get("category", "Uncategorized")
-                    extra_info = parsed.get("extra_info", "")
-                except (json.JSONDecodeError, AttributeError):
-                    category = raw[:100]
-                    extra_info = "Could not parse structured output"
-            except Exception as e:
-                category = "Error"
-                extra_info = str(e)
-
-            self.triage_done.emit(self.idx, category, extra_info)
-
-            # Now also generate the reply
-            self.category = category
-            self.extra_info = extra_info
+        if self.mode == "filter":
+            self._run_filter()
+            self._run_triage()
             self._run_reply()
-
+        elif self.mode == "triage":
+            self._run_triage()
+            self._run_reply()
         elif self.mode == "reply":
             self._run_reply()
+
+    def _run_filter(self):
+        try:
+            result = MessageFilterCrew().crew().kickoff(
+                inputs={"email_body": self.email["body"]}
+            )
+            self.filtered_body = result.raw if hasattr(result, 'raw') else str(result)
+        except Exception as e:
+            self.filtered_body = f"Error filtering: {str(e)}"
+        self.filter_done.emit(self.idx, self.filtered_body)
+
+    def _run_triage(self):
+        inputs = {
+            "email_subject": self.email["subject"],
+            "email_sender": self.email["sender"],
+            "email_content": self.filtered_body,
+        }
+        try:
+            result = TriageSingleCrew().crew().kickoff(inputs=inputs)
+            raw = result.raw if hasattr(result, 'raw') else str(result)
+            try:
+                cleaned = raw.strip()
+                if cleaned.startswith("```"):
+                    cleaned = cleaned.split("\n", 1)[-1]
+                    cleaned = cleaned.rsplit("```", 1)[0]
+                parsed = json.loads(cleaned.strip())
+                self.category = parsed.get("category", "Uncategorized")
+                self.extra_info = parsed.get("extra_info", "")
+            except (json.JSONDecodeError, AttributeError):
+                self.category = raw[:100]
+                self.extra_info = "Could not parse structured output"
+        except Exception as e:
+            self.category = "Error"
+            self.extra_info = str(e)
+        self.triage_done.emit(self.idx, self.category, self.extra_info)
 
     def _run_reply(self):
         inputs = {
             "email_subject": self.email["subject"],
-            "email_content": self.email["body"],
+            "email_content": self.filtered_body,
             "email_category": self.category,
             "email_context": self.extra_info,
         }
@@ -177,6 +223,10 @@ class RegenerateWorker(QThread):
         self.reply_done.emit(self.idx, draft_text)
 
 
+# =============================================================================
+# Main Window
+# =============================================================================
+
 class TriageWindow(QMainWindow):
     def __init__(self, raw_emails):
         super().__init__()
@@ -187,12 +237,14 @@ class TriageWindow(QMainWindow):
         self.state = {}
         for i in range(len(self.emails)):
             self.state[i] = {
+                "filtered_body": "",
+                "filter_status": "filtering",     # filtering → done
                 "category": "",
                 "extra_info": "",
-                "category_status": "thinking",   # thinking → done
+                "category_status": "pending",      # pending → thinking → done
                 "reply_text": "",
-                "reply_status": "pending",        # pending → generating → done
-                "send_status": "unsent",          # unsent → sent
+                "reply_status": "pending",          # pending → generating → done
+                "send_status": "unsent",            # unsent → sent
             }
 
         self.init_ui()
@@ -234,12 +286,29 @@ class TriageWindow(QMainWindow):
         self.lbl_orig_sender = QLabel("Sender: ")
         left_layout.addWidget(self.lbl_orig_sender)
 
-        # Content
+        # Content area with overlay support
         left_layout.addWidget(QLabel("Content:"))
+
+        # Container for content + overlay
+        self.content_container = QWidget()
+        content_stack = QStackedLayout(self.content_container)
+        content_stack.setStackingMode(QStackedLayout.StackingMode.StackAll)
+
         self.txt_orig_content = QTextEdit()
         self.txt_orig_content.setReadOnly(True)
         self.txt_orig_content.setStyleSheet("background-color: #f5f5f5; color: #1a1a1a;")
-        left_layout.addWidget(self.txt_orig_content)
+
+        self.filter_overlay = QLabel("🔍 Thinking and filtering...")
+        self.filter_overlay.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.filter_overlay.setStyleSheet(
+            "background-color: rgba(50, 50, 50, 180); "
+            "color: white; font-size: 20px; font-weight: bold;"
+        )
+
+        content_stack.addWidget(self.txt_orig_content)
+        content_stack.addWidget(self.filter_overlay)
+
+        left_layout.addWidget(self.content_container)
 
         # --- RIGHT PANEL (Draft Reply) ---
         right_panel = QFrame()
@@ -257,7 +326,7 @@ class TriageWindow(QMainWindow):
         right_layout.addWidget(self.le_reply_subject)
 
         # Category
-        self.lbl_category = QLabel("Category: ⏳ Thinking...")
+        self.lbl_category = QLabel("Category: ⏳ Waiting...")
         self.lbl_category.setStyleSheet("color: #005A9E; font-weight: bold;")
         self.lbl_category.setWordWrap(True)
         right_layout.addWidget(self.lbl_category)
@@ -317,17 +386,37 @@ class TriageWindow(QMainWindow):
         splitter.addWidget(right_panel)
         splitter.setSizes([600, 800])
 
+    # -------------------------------------------------------------------------
+    # Workers
+    # -------------------------------------------------------------------------
+
     def start_workers(self):
+        self.triage_queue = queue.Queue()
         self.reply_queue = queue.Queue()
 
-        # Mark all as "generating" for reply status once triage finishes
-        self.triage_worker = TriageWorker(self.emails, self.reply_queue)
+        self.filter_worker = FilterWorker(self.emails, self.triage_queue)
+        self.filter_worker.filter_done.connect(self.on_filter_done)
+        self.filter_worker.start()
+
+        self.triage_worker = TriageWorker(self.triage_queue, self.reply_queue)
         self.triage_worker.category_ready.connect(self.on_category_ready)
         self.triage_worker.start()
 
         self.reply_worker = ReplyWorker(self.reply_queue)
         self.reply_worker.reply_generated.connect(self.on_reply_generated)
         self.reply_worker.start()
+
+    # -------------------------------------------------------------------------
+    # Signal Handlers
+    # -------------------------------------------------------------------------
+
+    def on_filter_done(self, idx, cleaned_body):
+        self.state[idx]["filtered_body"] = cleaned_body
+        self.state[idx]["filter_status"] = "done"
+        self.state[idx]["category_status"] = "thinking"
+
+        if idx == self.current_index:
+            self.update_ui_state()
 
     def on_category_ready(self, idx, category, extra_info):
         self.state[idx]["category"] = category
@@ -345,6 +434,10 @@ class TriageWindow(QMainWindow):
         if idx == self.current_index:
             self.update_ui_state()
 
+    # -------------------------------------------------------------------------
+    # UI Updates
+    # -------------------------------------------------------------------------
+
     def load_email(self, idx):
         if idx < 0 or idx >= len(self.emails):
             return
@@ -360,7 +453,13 @@ class TriageWindow(QMainWindow):
         # Left panel
         self.lbl_orig_subject.setText(f"Subject: {email['subject']}")
         self.lbl_orig_sender.setText(f"Sender: {email['sender']}")
-        self.txt_orig_content.setPlainText(email["body"])
+
+        # Show raw body initially; overlay will cover it if still filtering
+        st = self.state[idx]
+        if st["filter_status"] == "done":
+            self.txt_orig_content.setPlainText(st["filtered_body"])
+        else:
+            self.txt_orig_content.setPlainText(email["body"])
 
         # Right panel — static fields
         self.le_reply_subject.setText(f"RE: {email['subject']}")
@@ -372,19 +471,27 @@ class TriageWindow(QMainWindow):
         self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}")
         st = self.state[self.current_index]
 
+        # --- Left panel: filter overlay ---
+        if st["filter_status"] == "filtering":
+            self.filter_overlay.setVisible(True)
+        else:
+            self.filter_overlay.setVisible(False)
+            self.txt_orig_content.setPlainText(st["filtered_body"])
+
         # --- Category label ---
-        if st["category_status"] == "thinking":
+        if st["category_status"] == "pending":
+            self.lbl_category.setText("Category: ⏳ Waiting for filter...")
+        elif st["category_status"] == "thinking":
             self.lbl_category.setText("Category: ⏳ Thinking...")
         else:
             self.lbl_category.setText(f"Category: {st['category']} | {st['extra_info']}")
 
-        # --- Reply content & controls ---
-        # Determine if regenerate should be available
-        has_error = (
-            st["category"] == "Error"
-            or st["reply_text"].startswith("Error generating reply:")
-        )
+        # --- Determine error state for regenerate ---
+        has_filter_error = st["filtered_body"].startswith("Error filtering:")
+        has_triage_error = st["category"] == "Error"
+        has_reply_error = st["reply_text"].startswith("Error generating reply:")
 
+        # --- Reply content & controls ---
         if st["send_status"] == "sent":
             self.txt_reply_content.setPlainText(st["reply_text"])
             self.txt_reply_content.setEnabled(False)
@@ -406,21 +513,30 @@ class TriageWindow(QMainWindow):
                 "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px;"
             )
             self.btn_send.setEnabled(True)
-            self.btn_regenerate.setEnabled(True)  # Always allow regenerating a completed draft
+            self.btn_regenerate.setEnabled(True)
         elif st["reply_status"] == "generating":
             self.txt_reply_content.setPlainText("⏳ Generating reply...\nPlease wait.")
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
         else:
-            # pending — waiting for categorization first
-            self.txt_reply_content.setPlainText("⏳ Waiting for categorization...")
+            # pending — waiting for earlier stages
+            if st["filter_status"] == "filtering":
+                self.txt_reply_content.setPlainText("⏳ Waiting for filter...")
+            elif st["category_status"] == "thinking":
+                self.txt_reply_content.setPlainText("⏳ Waiting for categorization...")
+            else:
+                self.txt_reply_content.setPlainText("⏳ Waiting...")
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
-            self.btn_regenerate.setEnabled(has_error)
+            self.btn_regenerate.setEnabled(has_filter_error or has_triage_error)
 
         self.btn_prev.setEnabled(self.current_index > 0)
         self.btn_next.setEnabled(self.current_index < len(self.emails) - 1)
+
+    # -------------------------------------------------------------------------
+    # Actions
+    # -------------------------------------------------------------------------
 
     def prev_email(self):
         self.load_email(self.current_index - 1)
@@ -429,30 +545,53 @@ class TriageWindow(QMainWindow):
         self.load_email(self.current_index + 1)
 
     def regenerate_current(self):
-        """Regenerate triage or reply for the current email based on which stage failed."""
+        """Regenerate from the earliest failed stage for the current email."""
         idx = self.current_index
         st = self.state[idx]
         email = self.emails[idx]
 
-        if st["category"] == "Error":
-            # Triage failed — re-run triage, which will also chain into reply
-            st["category_status"] = "thinking"
+        if st["filtered_body"].startswith("Error filtering:"):
+            # Filter failed — re-run entire pipeline
+            st["filter_status"] = "filtering"
+            st["category_status"] = "pending"
             st["reply_status"] = "pending"
+            st["filtered_body"] = ""
+            st["category"] = ""
             st["reply_text"] = ""
+            self.txt_orig_content.setPlainText(email["body"])
             self.update_ui_state()
 
-            self._regen_worker = RegenerateWorker(idx, email, mode="triage")
+            self._regen_worker = RegenerateWorker(idx, email, mode="filter")
+            self._regen_worker.filter_done.connect(self.on_filter_done)
             self._regen_worker.triage_done.connect(self.on_category_ready)
             self._regen_worker.reply_done.connect(self.on_reply_generated)
             self._regen_worker.start()
+
+        elif st["category"] == "Error":
+            # Triage failed — re-run triage + reply
+            st["category_status"] = "thinking"
+            st["reply_status"] = "pending"
+            st["category"] = ""
+            st["reply_text"] = ""
+            self.update_ui_state()
+
+            self._regen_worker = RegenerateWorker(
+                idx, email, mode="triage",
+                filtered_body=st["filtered_body"]
+            )
+            self._regen_worker.triage_done.connect(self.on_category_ready)
+            self._regen_worker.reply_done.connect(self.on_reply_generated)
+            self._regen_worker.start()
+
         else:
-            # Triage was fine, only reply needs regeneration
+            # Only reply failed or user wants a new draft
             st["reply_status"] = "generating"
             st["reply_text"] = ""
             self.update_ui_state()
 
             self._regen_worker = RegenerateWorker(
                 idx, email, mode="reply",
+                filtered_body=st["filtered_body"],
                 category=st["category"], extra_info=st["extra_info"]
             )
             self._regen_worker.reply_done.connect(self.on_reply_generated)
@@ -481,14 +620,17 @@ class TriageWindow(QMainWindow):
             QMessageBox.warning(self, "Error", f"Failed to send email:\n{result}")
 
     def closeEvent(self, event):
-        if hasattr(self, 'triage_worker'):
-            self.triage_worker.stop()
-            self.triage_worker.wait()
-        if hasattr(self, 'reply_worker'):
-            self.reply_worker.stop()
-            self.reply_worker.wait()
+        for worker_name in ('filter_worker', 'triage_worker', 'reply_worker'):
+            worker = getattr(self, worker_name, None)
+            if worker:
+                worker.stop()
+                worker.wait()
         super().closeEvent(event)
 
+
+# =============================================================================
+# Entry Point
+# =============================================================================
 
 def show_triage_report(raw_emails):
     """Launch the GUI with a list of raw email dicts."""

@@ -1,0 +1,20 @@
+triage_single_email_task:
+  description: >
+    Analyze the following email and classify it:
+    Subject: {email_subject}
+    Sender: {email_sender}
+    Content: {email_content}
+
+    Categorize the email based on:
+    a. Urgency (Does it need a response ASAP?)
+    b. Actionability (Is it an assignment requiring extra work?)
+    c. Pure Text (Can it be replied to directly?)
+    d. Business vs. Personal
+    e. Construction Domain (RFIs, Submittals/Approvals, Financial/Invoicing, Scheduling/Logistics, Safety & Compliance, etc.)
+
+    Return ONLY a JSON object with exactly two keys:
+    - "category": the assigned category name (string)
+    - "extra_info": additional context about the classification (string)
+  expected_output: >
+    A JSON object like: {"category": "RFI", "extra_info": "Urgent RFI from subcontractor..."}
+  agent: triage_analyst

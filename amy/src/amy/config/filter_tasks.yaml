@@ -1,0 +1,22 @@
+filter_email_task:
+  description: >
+    Clean the following raw email body by removing:
+    - Email signatures beyond name, position, and company
+    - Confidentiality/legal disclaimers
+    - Social media follow links and icons
+    - Image placeholders and tracking URLs
+    - 'Please consider the environment' notices
+    - Any other auto-generated boilerplate
+
+    KEEP:
+    - All actual dialogue/conversation messages
+    - Sender name, position, and company for each message in the thread
+    - Any project-relevant information (dates, reference numbers, etc.)
+
+    Raw email body:
+    {email_body}
+
+    Return ONLY the cleaned text. Do not add any commentary or preamble.
+  expected_output: >
+    The cleaned email body text with only valuable dialogue and sender identities preserved.
+  agent: message_filter
