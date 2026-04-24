@@ -178,9 +178,16 @@ class OutlookSendTool(BaseTool):
                 import win32com.client
                 outlook = win32com.client.Dispatch("Outlook.Application")
                 mail = outlook.CreateItem(0)  # 0 = olMailItem
+                
+                # Access GetInspector to generate the default signature in mail.Body
+                _ = mail.GetInspector
+                
                 mail.To = recipient
                 mail.Subject = subject
-                mail.Body = body
+                
+                # Prepend the generated body to the default signature
+                mail.Body = body + "\n\n" + mail.Body
+                
                 mail.Send()
                 return "Email successfully sent."
             except Exception as e:
