@@ -1,0 +1,447 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><meta name=Generator content="Microsoft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:Candara;
+	panose-1:2 14 5 2 3 3 3 2 2 4;}
+@font-face
+	{font-family:Webdings;
+	panose-1:5 3 1 2 1 5 9 6 7 3;}
+@font-face
+	{font-family:"Lucida Handwriting";
+	panose-1:3 1 1 1 1 1 1 1 1 1;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Lato;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:11.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;
+	mso-fareast-language:EN-US;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#467886;
+	text-decoration:underline;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	font-size:11.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;
+	mso-fareast-language:EN-US;}
+span.EmailStyle20
+	{mso-style-type:personal-reply;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:269169524;
+	mso-list-type:hybrid;
+	mso-list-template-ids:2111482070 -2113251742 201916419 201916421 201916417 201916419 201916421 201916417 201916419 201916421;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;
+	mso-fareast-font-family:Aptos;
+	mso-bidi-font-family:"Times New Roman";}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1
+	{mso-list-id:1100831325;
+	mso-list-type:hybrid;
+	mso-list-template-ids:361114750 1831789852 201916419 201916421 201916417 201916419 201916421 201916417 201916419 201916421;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:-;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Arial",sans-serif;
+	mso-fareast-font-family:Aptos;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2
+	{mso-list-id:1179999617;
+	mso-list-template-ids:-751561578;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3
+	{mso-list-id:1372068758;
+	mso-list-template-ids:398722292;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4
+	{mso-list-id:1492480441;
+	mso-list-template-ids:466485366;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l4:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]--></head><body lang=EN-AU link="#467886" vlink="#96607D" style='word-wrap:break-word'><div class=WordSection1><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'>Hi Peter,<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'>Please find CAD files attached as requested.<o:p></o:p></span></p><table class=MsoNormalTable border=1 cellspacing=3 cellpadding=0 width=550 style='width:412.5pt;margin-left:7.5pt;border-top:solid #DDDDDD 1.0pt;border-left:none;border-bottom:solid #DDDDDD 1.0pt;border-right:none'><tr><td width="29%" valign=top style='width:29.68%;border:none;padding:3.0pt 3.0pt 3.0pt 3.0pt'><p class=MsoNormal><span style='font-size:10.0pt;font-family:"Lato",sans-serif;color:#444749'>Download link:<o:p></o:p></span></p></td><td width="69%" valign=top style='width:69.24%;border:none;padding:3.0pt 3.0pt 3.0pt 3.0pt'><p class=MsoNormal><b><span style='font-size:10.0pt;font-family:"Lato",sans-serif;color:#444749'><a href="https://streaming-us02.procore.com/download?uuid=08a56f77e89d4588f8264de8fac4c784d6cab6d5ddf672f21e7a4efdbf776ead&amp;company_id=598134325706147">arco,_22_hood_street,_subiaco,_wa,_6008-rfi#30-electrical_cad_files_request-202604010158.zip</a><o:p></o:p></span></b></p></td></tr><tr><td width="29%" valign=top style='width:29.68%;border:none;padding:3.0pt 3.0pt 3.0pt 3.0pt'><p class=MsoNormal><span style='font-size:10.0pt;font-family:"Lato",sans-serif;color:#444749'>Attachments list:<o:p></o:p></span></p></td><td width="69%" valign=top style='width:69.24%;border:none;padding:3.0pt 3.0pt 3.0pt 3.0pt;box-sizing:inherit'><p class=MsoNormal><b><span style='font-size:10.0pt;font-family:"Lato",sans-serif;color:#444749'><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B2R2H83YK0NTYKW5EEMX?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=55717a0328b6e8a2a054993734bce9f4878977a4c469ee97b0ce0e455cca4ab6"><span style='color:#266CD3'>E-406.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B2RDPRMVN7220CSKT3TW?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=75f02a11f05c087943fe774bc74ff4de8cba391864b2ecfd5c339bc692176c79"><span style='color:#266CD3'>E-402.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B2QCVJ1ZGF6WB6XGQXHA?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=5de22a15d3ee215a6eb8ced88c85745f4ecf2c052d80747be1a78ce8043956d6"><span style='color:#266CD3'>E-403.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B2QFTCB5RBAQ2T9NEAAZ?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=61038e35024a4ccff3afc057fde62c6d54fd4072fd1ecd275c725eb2caecfabd"><span style='color:#266CD3'>E-405.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B2Q6B26WP5QMW4HC1Y31?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=614e2220ee60420bf530fde7837469a53f3cd0ae0d70e72919549e75530559f3"><span style='color:#266CD3'>E-404.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B2R85789WQYVE93Q0VH1?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=c2bead33f844cb1a16f32993a3e24693c6118a7bf8946e73a83cb73574c3949a"><span style='color:#266CD3'>E-401.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B4Y74TB5PE9VFVN73H6Z?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=a71b57241a52f273aeb1d4e03a5321e61681cb7e53b9fe56b9b25f57cc2f711a"><span style='color:#266CD3'>E-500.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B57C0F0BY4FYJGDCZ23A?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=ca1938686b070c98f929fe51f1c7576fbbd6515270aa0284717d6b182cc520ac"><span style='color:#266CD3'>E-502.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B567XA604N6H6R1415ZJ?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=d692a7b2feff59d524e5f131282bb620629c9732a90a45165dcb2f0f9d6e59f7"><span style='color:#266CD3'>E-501.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B57ZY5WR1BEFW0KTA584?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=50789ec3add6abfc8a347122dc1d8cc66843c28864821dc389cc51cfff714321"><span style='color:#266CD3'>E-503.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B5A24E977MESE5NPW45Z?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=4447404a83fec0b01aaf010ef64581d84b5273900a90b192923cde9939943a98"><span style='color:#266CD3'>E-504.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B5CTM4BPRFF7JW5WZD2V?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=4cde3ce4d1cc3f1c70e967f895df5607ebdda68a1c7ae351b07b762575c30424"><span style='color:#266CD3'>E-505.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B6KASP6QY6QEMJ251XNN?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=a1916acf920d0effd977a97fa611a9ec69866ced6e09a94b7a99bda3f8f4945a"><span style='color:#266CD3'>E-001.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B6KSMNN34S94P7EJ7PCB?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=db300cc3a08ea80c6945557b97e707f9d099e1bb86852928910feca483eb69f4"><span style='color:#266CD3'>E-002.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B6V4EGMS8RG3P43R8GA4?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=3e70fc5b399a5706797fe775579d357bac0030a3048f833c6893e6c2365f9eb9"><span style='color:#266CD3'>E-100.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B6X7QSHTWM40VESDKZ6P?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=70b3698fab524110af3c6b7d05436ca573e29caff8cc6b2577ff0c2e8db7f1cc"><span style='color:#266CD3'>E-101.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B730AFBJWVWB38GKW6BZ?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=037e7067f64512ed26f8520db2a42b82be9abb65365098d0c794d9ae96cbf53b"><span style='color:#266CD3'>E-102.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B898S8NG5DV9AF8FNEGC?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=4b981f30aa813d801098e693d9b98564b54a93a404cb02c5d268e5935cc3e88b"><span style='color:#266CD3'>E-103.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B8GM6DKE4SEYP3FA17ZY?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=4df0a757c7a9f7a42874157a71a632dbdff7a01df8528f495afd9281b9d85a2e"><span style='color:#266CD3'>E-104.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B8Q0SXRD3TYVE1322ENM?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=26e353c4b49f06ae48e6bdb93728d568e21411d57680834609e18bfdda6e6f8c"><span style='color:#266CD3'>E-105.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B8WJ2DTHHNPA42PY9Z45?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=76d3746c47828443288bd580490e1c325e7f24254ca9b0ba387dd145712f8245"><span style='color:#266CD3'>E-106.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B99PP49SQM3CKP45ST07?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=35cc9b27d65a270d17db26b58286d13119851b59d7b22c1516e68861997fb289"><span style='color:#266CD3'>E-107.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BABGGA2WV69HNT01SH5N?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=88b5af503ace79cbd0df73b2c9f6c5cc78a30a19ff44981829f50eb8f640b088"><span style='color:#266CD3'>E-108.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BAJ78508ME6BBP0F0NR3?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=2dadea3c437299b48e23cfc37af1412a0f47f7055053c682fcef89338aa54ad4"><span style='color:#266CD3'>E-200.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BAS2S4H0YY1SPDF7RYN8?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=d0c1207d1f47050c62d6df4b5ea0175c1dcb5d213caa8e228d86431d56e9162f"><span style='color:#266CD3'>E-201.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BAWGGHWTEXFQ9JB3PRW1?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=393756cf8182d4bdb747339823c6fbe8959e22d9b324873cda2d36eb6727b616"><span style='color:#266CD3'>E-202.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BB8M0SA7JQAXXHYVH8JB?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=5172d83e743b4f8c8a0cc6142b8887527cd6b583f66207f261f34b490b0883c5"><span style='color:#266CD3'>E-203.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BCA74T8KDYBHB6JRQPR2?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=1a29afd88a0c02884b88563d2a012480d0133577052efe89f6242b0efc5e9bbb"><span style='color:#266CD3'>E-204.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BCF6Q9636MYG74P3J9C5?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=03b650bec4e57008782d9c76b85095dc0a8a0fb2aba29737f861c501d8654228"><span style='color:#266CD3'>E-205.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BCPN1BSQGF85QMFSGZYP?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=4d2ecb142a606d5b642e8995136cfdd1016c1ecd331214c938d26895b4b87fcb"><span style='color:#266CD3'>E-206.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BDNMGN1HBBMY2CHZBBQN?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=8e5d1cfe17efc5f3205fbab2457794a13eb1b6caeddc500aedd37a9c8e177b91"><span style='color:#266CD3'>E-207.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BDZPST2RWQ4E3MPAMK6W?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=c96aafbcb2ce57b6d1e5d96c1bff16cc846da21621552105d05b1193e10ee473"><span style='color:#266CD3'>E-208.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BF5H2GB894Z1D22THRB0?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=e94e7e523bab824837580d7dddcfa675d9cfea8d200507e43dc56b51abbe538d"><span style='color:#266CD3'>E-210.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BF1W2F6B19H1A9NSH4X4?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=5a5d3547df26aa202cfcc2bbfe9e092c7912daaf24a7960a4064950df764de1e"><span style='color:#266CD3'>E-209.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BF970J5QF52XHMXWMBSD?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=45adbdb3f4b1fe8e2620755faeff94123845f166336e47e4b90568535ebaee4c"><span style='color:#266CD3'>E-300.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BFV6B85HM30DEGMJM4YK?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=385d019a01298e4e3583f5fd4112d4880e000491b215725ffddb4e791839c8a7"><span style='color:#266CD3'>E-301.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BGG19DMT2QGRHEZSP2VP?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=b9583599e574595a03c6b4bf3e30dbf0a9eac425be349270426b3eab5dbbb2a5"><span style='color:#266CD3'>E-302.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BGS56Z9A87A1AJ50D36A?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=5d0692106c9e44be73263984c3904274aec036ebfac66af905fc7e9fc952bd0d"><span style='color:#266CD3'>E-303.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BGWPN5AZ3JX7ACDSXB2K?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=cb4037e2455a610f84758ac74685d848c1a2aa80447374d6160e9cbe6524254f"><span style='color:#266CD3'>E-304.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BH71MCYB92PR7WKZ0H6N?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=097fbd38596543f168927d885e0d108016728c288c212525f61a1cf87bffda8f"><span style='color:#266CD3'>E-305.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BHY5HKBP2K5V77ZGVYQ2?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=95c79779fde060c8caf4ac1f4f5045db684899df00135bbedc243a95b42a787f"><span style='color:#266CD3'>E-306.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BKZ2HN3J48DEFAKQ3XKD?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=c69c713b01dd2529086cacbdee90087af336b48644d041da63a93fa260f38636"><span style='color:#266CD3'>E-400.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BKNHT0STYMJRX4KAVRGA?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=c54237f6d906e1a99db1a708c0966aac2449d02b38a3ad7bfd33253cdd1c2c05"><span style='color:#266CD3'>E-307.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38BKV1ET439ZYKQY3BFQRN?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=902574a6de68b76614ce7feeb2f8a04158d7a17bc7f22dfd32b636dc06e9a92c"><span style='color:#266CD3'>E-308.dwg</span></a><br><a href="https://storage.procore.com/api/v5/files/ap-southeast-2/prostore-apse2/741607523431895-c/740490623431895-p/01KN38B6HE0KJNB15WV5VNC5RH?companyId=598134325706147&amp;projectId=598134326094047&amp;sig=0a9992f0a20b25e66752d94d3f78949670289c6d223ccd636be1f3ebb009b99a"><span style='color:#266CD3'>E-000.dwg</span></a><o:p></o:p></span></b></p></td></tr></table><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'>Commercial Contracts Administrator<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'>E: </span><a href="mailto:amy@welink.com.au"><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:blue;mso-fareast-language:ZH-CN'>amy@welink.com.au</span></a><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-fareast-language:ZH-CN'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'>M: </span><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-fareast-language:ZH-CN'>0493 306 008<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;mso-fareast-language:ZH-CN'>W:&nbsp;&nbsp; </span><a href="https://www.meritor.com.au/"><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:blue;mso-fareast-language:ZH-CN'>Meritor.com.au</span></a><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-fareast-language:ZH-CN'> | </span><a href="https://www.welink.com.au/"><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:blue;mso-fareast-language:ZH-CN'>Welink.com.au</span></a><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:ZH-CN'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:#1F497D;mso-ligatures:none;mso-fareast-language:ZH-CN'><img border=0 width=335 height=70 style='width:3.4916in;height:.7333in' id="Picture_x0020_300522944" src="cid:image007.png@01DCC1B6.30441890"></span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:ZH-CN'><img border=0 width=167 height=108 style='width:1.7416in;height:1.125in' id="Picture_x0020_545099295" src="cid:image008.png@01DCC1B6.30441890" alt="signature_3358593204"></span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-language:ZH-CN'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'>This e-mail is private and confidential.</span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:black;mso-fareast-language:ZH-CN'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:purple;mso-fareast-language:ZH-CN'>info@welink.com.au</span></a><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='font-family:"Calibri",sans-serif;color:black;mso-fareast-language:ZH-CN'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:none;mso-fareast-language:ZH-CN;text-decoration:none'><img border=0 width=28 height=28 style='width:.2916in;height:.2916in' id="Picture_x0020_7" src="cid:image009.png@01DCC1B6.30441890"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:none;mso-fareast-language:ZH-CN;text-decoration:none'><img border=0 width=26 height=26 style='width:.275in;height:.275in' id="Picture_x0020_8" src="cid:image010.png@01DCC1B6.30441890"></span></a><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'>&nbsp;&nbsp;</span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-fareast-language:ZH-CN'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-fareast-language:ZH-CN'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-fareast-language:ZH-CN'>&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#1F497D;mso-fareast-language:ZH-CN'><o:p></o:p></span></p></td></tr></table><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p></div><p class=MsoNormal><span style='font-size:12.0pt;mso-fareast-language:ZH-CN'><o:p>&nbsp;</o:p></span></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:ZH-CN'>From:</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:ZH-CN'> Peter Paterson &lt;Peter@stspatial.com.au&gt; <br><b>Sent:</b> Wednesday, April 1, 2026 7:53 AM<br><b>To:</b> Michael Jauncey &lt;mjauncey@powerhousews.com.au&gt;<br><b>Cc:</b> Shane Scudder &lt;Shane@welink.com.au&gt;; Michael Cheeseman &lt;michael@welink.com.au&gt;; Amy Chen &lt;amy@welink.com.au&gt;; srushforth@powerhousews.com.au; Warrick Corbett &lt;warrick@stspatial.com.au&gt;; Paul Said &lt;paul@stspatial.com.au&gt;<br><b>Subject:</b> RFI DWG files: Hood Street Apartments - Electrical Services - Surveying of Points &amp; Conduit Cast into Slab <br><b>Importance:</b> High<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Hi Michael,<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Can I please urgently request the attached PDF plans as DWG files?&nbsp; I will need to calculate these points for our surveyor on site today.<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><p class=MsoNormal style='margin-right:5.65pt'><span style='font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>Kind Regards,</span><b><span style='font-family:"Lucida Handwriting";color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></b></p><p class=MsoNormal style='margin-right:5.65pt'><b><span style='font-family:"Lucida Handwriting";color:black;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></b></p><p class=MsoNormal style='margin-right:5.65pt'><b><span style='font-family:"Lucida Handwriting";color:black;mso-fareast-language:EN-AU'>Peter Paterson</span></b><span style='font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>Drafting Manager</span><span style='font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><br></span><span style='mso-ligatures:none;mso-fareast-language:EN-AU'><img border=0 width=429 height=130 style='width:4.4666in;height:1.3583in' id="Picture_x0020_6" src="cid:image011.png@01DCC1B6.30441890" alt="A close-up of a logo&#10;&#10;Description automatically generated"></span><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><a href="http://www.stspatial.com.au/"><span style='font-size:12.0pt;font-family:"Candara",sans-serif;color:blue;mso-fareast-language:EN-AU'>www.stspatial.com.au</span></a><span style='font-size:12.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>ST Spatial Pty Ltd</span><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>Unit 13/257 Balcatta Road, Balcatta 6021<o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>PO Box 556 Balcatta WA 6914<o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:darkblue;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>T &nbsp;</span></b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>08 9349 2062</span><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>F &nbsp;</span></b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>08 9349 2167</span><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>M</span></b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>&nbsp; 0408 575 770</span><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>E</span></b><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:black;mso-fareast-language:EN-AU'>&nbsp; </span><a href="mailto:peter@stspatial.com.au"><span style='font-size:10.0pt;font-family:"Candara",sans-serif;color:blue;mso-fareast-language:EN-AU'>peter@stspatial.com.au</span></a><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='mso-ligatures:none;mso-fareast-language:EN-AU'><img border=0 width=320 height=79 style='width:3.3333in;height:.825in' id="Picture_x0020_5" src="cid:image012.png@01DCC1B6.30441890" alt="A close up of a sign&#10;&#10;Description automatically generated"></span><span style='font-family:"Calibri",sans-serif;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='margin-right:5.65pt'><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:7.5pt;font-family:"Arial",sans-serif;color:#999999;mso-fareast-language:EN-AU'>The information contained in this email and any attached files is strictly private and confidential, subject to copyright and is of use of the intended recipient only. The intended recipient of this email may only use, reproduce, disclose or distribute the information contained in this email and any attached files with ST Spatial's permission. If you are not the intended recipient, you are strictly prohibited from using, reproducing, adapting, disclosing or distributing the information contained in this email and any attached files or taking any action in reliance on it. If you have received this email in error, please email the sender by replying to this message, promptly delete and destroy any copies of this email and any attachments. Virus scanning software is used by this organisation to prevent file and system attacks, however the recipient is responsible for their own virus protection. ST Spatial accepts no liability whatsoever for any possible subsequent loss or damage arising from the use of this data or any part thereof.</span><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:10.0pt;font-family:"Verdana",sans-serif;color:black;mso-fareast-language:EN-AU'>&nbsp;<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:14.0pt;font-family:Webdings;color:green;mso-fareast-language:EN-AU'>P </span><b><span style='font-size:7.5pt;font-family:"Arial",sans-serif;color:green;mso-fareast-language:EN-AU'>Please consider the environment before printing this email</span></b><span style='font-family:"Calibri",sans-serif;mso-fareast-language:EN-AU'><o:p></o:p></span></p></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>From:</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'> Michael Jauncey &lt;</span><a href="mailto:mjauncey@powerhousews.com.au"><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>mjauncey@powerhousews.com.au</span></a><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>&gt; <br><b>Sent:</b> Tuesday, 31 March 2026 7:34 PM<br><b>To:</b> Shane Scudder &lt;</span><a href="mailto:sscudder@renascent.com.au"><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>sscudder@renascent.com.au</span></a><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>&gt;; Paul Said &lt;</span><a href="mailto:paul@stspatial.com.au"><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>paul@stspatial.com.au</span></a><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>&gt;; Peter Paterson &lt;</span><a href="mailto:peter@stspatial.com.au"><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>peter@stspatial.com.au</span></a><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>&gt;<br><b>Cc:</b> Michael Cheeseman &lt;</span><a href="mailto:michael@welink.com.au"><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>michael@welink.com.au</span></a><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>&gt;; Scott Rushforth &lt;</span><a href="mailto:srushforth@powerhousews.com.au"><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>srushforth@powerhousews.com.au</span></a><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ligatures:none;mso-fareast-language:EN-AU'>&gt;<br><b>Subject:</b> Hood Street Apartments - Electrical Services - Surveying of Points &amp; Conduit Cast into Slab <br><b>Importance:</b> High<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'>Hi Gents<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'>As discussed with Paul we are working on the Hood Street Apartments project with Welink and require some points surveyed on the GF Slab deck. <o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><ul style='margin-top:0in' type=disc><li class=MsoListParagraph style='margin-left:0in;mso-list:l0 level1 lfo3'><span style='font-family:"Arial",sans-serif'>Lighting points as per the RCP attached<o:p></o:p></span></li><ul style='margin-top:0in' type=circle><li class=MsoListParagraph style='margin-left:0in;mso-list:l0 level2 lfo3'><span style='font-family:"Arial",sans-serif'>Yellow dot to show our lighting points <o:p></o:p></span></li><li class=MsoListParagraph style='margin-left:0in;mso-list:l0 level2 lfo3'><span style='font-family:"Arial",sans-serif'>Pink Dot for Sensors I have transferred from Electrical Drawing <o:p></o:p></span></li><li class=MsoListParagraph style='margin-left:0in;mso-list:l0 level2 lfo3'><span style='font-family:"Arial",sans-serif'>E.100 attached for reference &nbsp;<o:p></o:p></span></li></ul><li class=MsoListParagraph style='margin-left:0in;mso-list:l0 level1 lfo3'><span style='font-family:"Arial",sans-serif'>Points as marked on E.200<o:p></o:p></span></li><li class=MsoListParagraph style='margin-left:0in;mso-list:l0 level1 lfo3'><span style='font-family:"Arial",sans-serif'>Points as marked on E.201 <o:p></o:p></span></li></ul><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'>Let me know if you need anything further – Please note the following as the Slab is in 2 x Sections and we only need Pour 1 marked at this stage <o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><a id=OWAAMDAE29EF3EAAD4B66928293FD18376459 href="mailto:sscudder@renascent.com.au"><span style='font-family:"Arial",sans-serif;text-decoration:none'>@Shane Scudder</span></a><span style='font-family:"Arial",sans-serif'> if you can confirm the following <o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><ul style='margin-top:0in' type=disc><li class=MsoListParagraph style='margin-left:0in;mso-list:l1 level1 lfo6'><span style='font-family:"Arial",sans-serif'>Pour 1 is Grid Line 1-9 , A-G <o:p></o:p></span></li><ul style='margin-top:0in' type=circle><li class=MsoListParagraph style='margin-left:0in;mso-list:l1 level2 lfo6'><span style='font-family:"Arial",sans-serif'>Deck ready for surveying Thursday? <o:p></o:p></span></li><li class=MsoListParagraph style='margin-left:0in;mso-list:l1 level2 lfo6'><span style='font-family:"Arial",sans-serif'>When will the Bottom steel be done as we will attend then for conduit install &nbsp;<o:p></o:p></span></li></ul></ul><p class=MsoListParagraph style='margin-left:1.0in'><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><ul style='margin-top:0in' type=disc><li class=MsoListParagraph style='margin-left:0in;mso-list:l1 level1 lfo6'><span style='font-family:"Arial",sans-serif'>Pour 2 is Grid lines 1-9, D-G <o:p></o:p></span></li><ul style='margin-top:0in' type=circle><li class=MsoListParagraph style='margin-left:0in;mso-list:l1 level2 lfo6'><span style='font-family:"Arial",sans-serif'>Please advise timing for deck readiness and surveying <o:p></o:p></span></li><li class=MsoListParagraph style='margin-left:0in;mso-list:l1 level2 lfo6'><span style='font-family:"Arial",sans-serif'>Indication on bottom layer of steel for our conduit install timing <o:p></o:p></span></li></ul></ul><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'>Thanks, <o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='margin-bottom:12.0pt'><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:#ED7D31;mso-ligatures:none;mso-fareast-language:EN-GB'>Michael Jauncey&nbsp;</span><b><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:#00A3D7;mso-ligatures:none;mso-fareast-language:EN-GB'>|</span></b><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'>&nbsp;</span><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'>Director</span><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'><img border=0 width=255 height=56 style='width:2.6583in;height:.5833in' id="Picture_x0020_4" src="cid:image013.jpg@01DCC1B6.30441890" alt="A blue and orange logo&#10;&#10;Description automatically generated"></span><span style='font-size:12.0pt;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='margin-left:-.25pt;border-collapse:collapse'><tr style='height:47.95pt'><td width=216 valign=top style='width:2.25in;padding:0in 5.4pt 0in 5.4pt;height:47.95pt'><p class=MsoNormal><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'><img border=0 width=64 height=64 style='width:.6666in;height:.6666in' id="Picture_x0020_3" src="cid:image014.jpg@01DCC1B6.30441890"><img border=0 width=64 height=64 style='width:.6666in;height:.6666in' id="Picture_x0020_2" src="cid:image015.jpg@01DCC1B6.30441890" alt="A gold and black badge with a star and text&#10;&#10;Description automatically generated"><img border=0 width=64 height=64 style='width:.6666in;height:.6666in' id="Picture_x0020_1" src="cid:image016.png@01DCC1B6.30441890"></span><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'><o:p></o:p></span></p></td><td width=258 valign=top style='width:193.75pt;padding:0in 5.4pt 0in 5.4pt;height:47.95pt'><p class=MsoNormal><b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'>M</span></b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'>&nbsp;</span><b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#C3D117;mso-ligatures:none;mso-fareast-language:EN-GB'>|</span></b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'>&nbsp;</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'>0417 281 341</span><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'><br><b>E&nbsp;&nbsp;</b></span><span style='font-size:7.0pt;font-family:"Calibri",sans-serif;color:black;mso-ligatures:none;mso-fareast-language:EN-GB'>&nbsp;</span><b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#00A3D7;mso-ligatures:none;mso-fareast-language:EN-GB'>|</span></b><span style='font-size:12.0pt;mso-fareast-language:EN-AU'> </span><a href="mailto:mjauncey@powerhousews.com.au"><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#002060;mso-fareast-language:EN-AU;text-decoration:none'>mjauncey</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#002060;mso-ligatures:none;mso-fareast-language:EN-GB;text-decoration:none'>@powerhousews.com.au</span></a><b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'><o:p></o:p></span></b></p><p class=MsoNormal><b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'>W</span></b><b><span style='font-size:9.0pt;font-family:"Calibri",sans-serif;color:#00A3D7;mso-ligatures:none;mso-fareast-language:EN-GB'>&nbsp;</span></b><b><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#ED7D31;mso-ligatures:none;mso-fareast-language:EN-GB'>|&nbsp;</span></b><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'>powerhousews.com.au</span><span style='font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1A0A53;mso-ligatures:none;mso-fareast-language:EN-GB'><o:p></o:p></span></p></td></tr></table><p class=MsoNormal><span style='font-size:7.0pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:7.0pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'>Confidentiality Notice<b><br></b></span><span style='font-size:6.5pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'>​This email and any other attachments are confidential.&nbsp;</span><span style='font-size:12.0pt;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:6.5pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'>They may contain privileged information or&nbsp;copyright material. You should not read, copy, use or disclose them without authorisation.&nbsp;</span><span style='font-size:12.0pt;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:6.5pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'>If you are&nbsp;not an intended recipient, please contact us at once by return email and then delete all messages.&nbsp;</span><span style='font-size:12.0pt;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:6.5pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'>We do not accept liability in connection with any computer virus, data corruption, delay, interruption,&nbsp;unauthorised amendment.&nbsp;</span><span style='font-size:12.0pt;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:6.5pt;font-family:"Calibri",sans-serif;color:#7F7F7F;mso-fareast-language:EN-AU'>This notice should not be removed</span><span style='font-size:12.0pt;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><o:p>&nbsp;</o:p></p></div></body></html>

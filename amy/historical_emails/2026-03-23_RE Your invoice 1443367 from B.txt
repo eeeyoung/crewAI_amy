@@ -1,0 +1,242 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><meta name=Generator content="Microsoft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"Segoe UI Emoji";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+@font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:UICTFontTextStyleBody;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+p.sku, li.sku, div.sku
+	{mso-style-name:sku;
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+p.variant-title, li.variant-title, div.variant-title
+	{mso-style-name:variant-title;
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+span.col-md-4
+	{mso-style-name:col-md-4;}
+span.EmailStyle24
+	{mso-style-type:personal-reply;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:325136214;
+	mso-list-template-ids:1865949088;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:803549908;
+	mso-list-template-ids:2072539172;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]--></head><body lang=EN-AU link=blue vlink=purple style='word-wrap:break-word'><div class=WordSection1><p class=MsoNormal><span lang=EN-US>Hi Cassie,<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span lang=EN-US>Please see attached. Also saved to current folder.<o:p></o:p></span></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif;color:black'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>Commercial Contracts Administrator<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>E: </span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:amy@welink.com.au">amy@welink.com.au</a></span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>M: </span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>0493 306 008<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/">Meritor.com.au</a><span style='color:black'> | </span><a href="https://www.welink.com.au/">Welink.com.au</a></span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D'><img border=0 width=335 height=70 style='width:3.4916in;height:.7333in' id="Picture_x0020_300522944" src="cid:image002.png@01DCBAA8.F2102A50"></span><span style='font-family:"Calibri",sans-serif'><img border=0 width=167 height=108 style='width:1.7416in;height:1.125in' id="Picture_x0020_545099295" src="cid:image003.png@01DCBAA8.F2102A50" alt="signature_3358593204"></span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>This e-mail is private and confidential.</span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;text-decoration:none'><img border=0 width=28 height=28 style='width:.2916in;height:.2916in' id="Picture_x0020_7" src="cid:image004.png@01DCBAA8.F2102A50"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;text-decoration:none'><img border=0 width=26 height=26 style='width:.275in;height:.275in' id="Picture_x0020_4" src="cid:image005.png@01DCBAA8.F2102A50"></span></a><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>&nbsp;</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr></table><p class=MsoNormal><span style='mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'> Cassie Wu &lt;Cassie@welink.com.au&gt; <br><b>Sent:</b> Monday, March 23, 2026 7:16 AM<br><b>To:</b> Amy Chen &lt;amy@welink.com.au&gt;<br><b>Subject:</b> FW: Your invoice #1443367 from BAD WORKWEAR<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>Hello, Amy,<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>Please process it <o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=615 valign=top style='width:461.55pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>Thank you</span><span style='font-family:"Segoe UI Emoji",sans-serif;color:black;mso-ligatures:standardcontextual'>&#128522;</span><span style='font-family:"Segoe UI Emoji",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal><b><span style='font-family:"Segoe UI Emoji",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></b></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>Kind regards,</span><b><span style='font-family:"Segoe UI Emoji",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></b></p><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><br>Cassie Wu<o:p></o:p></span></b></p><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>General Accountant <o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=615 valign=top style='width:461.55pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>P: 08 9204 3388<o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=615 valign=top style='width:461.55pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>E: <a href="mailto:cassie@welink.com.au">cassie<span style='font-size:12.0pt;line-height:105%'>@welink.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr></table><p class=MsoNormal><span style='display:none;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='margin-left:5.4pt;border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>W: <a href="https://www.meritor.com.au/">Meritor.com.au</a><span style='color:black'> | </span><a href="https://www.welink.com.au/">Welink.com.au</a><span style='color:black'><o:p></o:p></span></span></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal><span style='mso-ligatures:standardcontextual'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal><span style='mso-ligatures:standardcontextual'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif'><img border=0 width=389 height=105 style='width:4.05in;height:1.0916in' id="Picture_x0020_2031107413" src="cid:image006.png@01DCBAA8.F2102A50"></span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal><span style='mso-ligatures:standardcontextual'>&nbsp;</span><o:p></o:p></p></td></tr></table><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt; <br><b>Sent:</b> Friday, 20 March 2026 6:01 PM<br><b>To:</b> Cassie Wu &lt;<a href="mailto:Cassie@welink.com.au">Cassie@welink.com.au</a>&gt;<br><b>Subject:</b> Fwd: Your invoice #1443367 from BAD WORKWEAR<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Cassie&nbsp;<o:p></o:p></p><div><p class=MsoNormal><o:p>&nbsp;</o:p></p></div><div><p class=MsoNormal>I ordered new site boots can you please put on an expenses sheet for Arco thanks.<o:p></o:p></p></div><div><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;-webkit-text-size-adjust: auto'><tr><td valign=top style='padding:0in 5.4pt 0in 5.4pt'><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=636 style='width:477.0pt;border-collapse:collapse;transform-origin: 0px 0px;transform: scale(0.600319)'><tr style='height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>Kind Regards,<o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'><b>Michael Cheeseman</b><o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'><span lang=EN-GB style='border:none windowtext 1.0pt;padding:0in'>Project Director</span><o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'><span lang=EN-GB style='border:none windowtext 1.0pt;padding:0in'>BP 14081</span><o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'><span lang=EN-GB style='border:none windowtext 1.0pt;padding:0in'>BC 101031</span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal>T:&nbsp;&nbsp;<u>08 9204 3388</u><o:p></o:p></p><p class=MsoNormal>M :&nbsp;<u>0408 135 325</u><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>W:&nbsp;<a href="https://www.welink.com.au/">Welink.com.au</a><o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'>A:&nbsp;<u>269 Vincent St, Leederville, WA 6007</u><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=7 style='width:5.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=15 valign=top style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=7 style='width:5.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'></td><td width=15 valign=bottom style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal align=center style='text-align:center;line-height:22.05pt'>&nbsp;<o:p></o:p></p></td></tr><tr style='height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>This e-mail is private and confidential.<o:p></o:p></p><p class=MsoNormal style='line-height:22.05pt'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this&nbsp;<br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;<a href="mailto:info@welink.com.au">info@welink.com.au</a>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.<o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0in 0in 0in 0in;height:1.0pt'><p class=MsoNormal>&nbsp;<o:p></o:p></p></td></tr><tr><td width=7 style='width:5.25pt;padding:0in 0in 0in 0in'></td><td width=580 style='width:435.0pt;padding:0in 0in 0in 0in'></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in'></td><td width=19 style='width:14.25pt;padding:0in 0in 0in 0in'></td><td width=15 style='width:11.25pt;padding:0in 0in 0in 0in'></td></tr></table></div><p class=MsoNormal><span style='font-family:UICTFontTextStyleBody'>&nbsp;<o:p></o:p></span></p></td></tr></table></div><div><p class=MsoNormal style='margin-bottom:12.0pt'><br>Begin forwarded message:<o:p></o:p></p></div><blockquote style='margin-top:5.0pt;margin-bottom:5.0pt'><div><p class=MsoNormal style='margin-bottom:12.0pt'><b>From:</b> BAD WORKWEAR &lt;<a href="mailto:support@vify.io">support@vify.io</a>&gt;<br><b>Date:</b> 20 March 2026 at 17:48:24 AWST<br><b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Subject:</b> <b>Your invoice #1443367 from BAD WORKWEAR</b><br><b>Reply-To:</b> <a href="mailto:support@badworkwear.com.au">support@badworkwear.com.au</a><o:p></o:p></p></div></blockquote><blockquote style='margin-top:5.0pt;margin-bottom:5.0pt'><div><p class=MsoNormal><span style='font-family:"Tahoma",sans-serif'>﻿</span> <o:p></o:p></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 align=left width="100%" style='width:100.0%;aspect-ratio: revert !important;background:revert !important;block-size: revert !important;border:revert !important;bottom: revert !important;color:revert !important;color-scheme: revert !important;content-visibility: revert !important;cursor:revert !important;direction:revert !important;display:revert !important;font-size:revert !important;height:revert !important;hyphens: revert !important;letter-spacing:revert !important;line-height:revert !important;margin:revert !important;opacity: revert !important;order: revert !important;outline: revert !important;overflow:revert !important;padding:revert !important;position:revert !important;resize: revert !important;rotate: revert !important;scale: revert !important;tab-size: revert !important;table-layout:revert !important;text-align:revert !important;text-indent:revert !important;text-orientation: revert !important;text-overflow: revert !important;text-shadow:revert !important;text-transform:revert !important;text-wrap: revert !important;top:revert !important;transition: revert !important;user-select: revert !important;vertical-align:revert !important;visibility:revert !important;white-space:revert !important;width:revert !important;word-break:revert !important;word-spacing:revert !important;writing-mode:revert !important;zoom: revert !important;cellpadding: 0 !important;cellspacing: 0 !important;display:table !important;border-collapse:seperate !important;border-spacing: 0px 0px !important;float:none'><tr style='aspect-ratio: revert !important;background:revert !important;block-size: revert !important;border:revert !important;bottom: revert !important;color:revert !important;color-scheme: revert !important;content-visibility: revert !important;cursor:revert !important;direction:revert !important;display:revert !important;font-size:revert !important;height:revert !important;hyphens: revert !important;letter-spacing:revert !important;line-height:revert !important;margin:revert !important;opacity: revert !important;order: revert !important;outline: revert !important;overflow:revert !important;padding:revert !important;position:revert !important;resize: revert !important;rotate: revert !important;scale: revert !important;tab-size: revert !important;table-layout:revert !important;text-align:revert !important;text-indent:revert !important;text-orientation: revert !important;text-overflow: revert !important;text-shadow:revert !important;text-transform:revert !important;text-wrap: revert !important;top:revert !important;transition: revert !important;user-select: revert !important;vertical-align:revert !important;visibility:revert !important;white-space:revert !important;width:revert !important;word-break:revert !important;word-spacing:revert !important;writing-mode:revert !important;zoom: revert !important'><td width=0 style='width:.3pt;background:#A6A6A6;padding:5.25pt 1.5pt 5.25pt 1.5pt;aspect-ratio: revert !important;background:revert !important;block-size: revert !important;border:revert !important;bottom: revert !important;color:revert !important;color-scheme: revert !important;content-visibility: revert !important;cursor:revert !important;direction:revert !important;display:revert !important;font-size:revert !important;height:revert !important;hyphens: revert !important;letter-spacing:revert !important;line-height:revert !important;margin:revert !important;opacity: revert !important;order: revert !important;outline: revert !important;overflow:revert !important;padding:revert !important;position:revert !important;resize: revert !important;rotate: revert !important;scale: revert !important;tab-size: revert !important;table-layout:revert !important;text-align:revert !important;text-indent:revert !important;text-orientation: revert !important;text-overflow: revert !important;text-shadow:revert !important;text-transform:revert !important;text-wrap: revert !important;top:revert !important;transition: revert !important;user-select: revert !important;vertical-align:revert !important;visibility:revert !important;white-space:revert !important;width:revert !important;word-break:revert !important;word-spacing:revert !important;writing-mode:revert !important;zoom: revert !important;valign: middle !important'></td><td width="100%" style='width:100.0%;background:#EAEAEA;padding:5.25pt 3.75pt 5.25pt 11.25pt;aspect-ratio: revert !important;background:revert !important;block-size: revert !important;border:revert !important;bottom: revert !important;color:revert !important;color-scheme: revert !important;content-visibility: revert !important;cursor:revert !important;direction:revert !important;display:revert !important;font-size:revert !important;height:revert !important;hyphens: revert !important;letter-spacing:revert !important;line-height:revert !important;margin:revert !important;opacity: revert !important;order: revert !important;outline: revert !important;overflow:revert !important;padding:revert !important;position:revert !important;resize: revert !important;rotate: revert !important;scale: revert !important;tab-size: revert !important;table-layout:revert !important;text-align:revert !important;text-indent:revert !important;text-orientation: revert !important;text-overflow: revert !important;text-shadow:revert !important;text-transform:revert !important;text-wrap: revert !important;top:revert !important;transition: revert !important;user-select: revert !important;vertical-align:revert !important;visibility:revert !important;white-space:revert !important;width:revert !important;word-break:revert !important;word-spacing:revert !important;writing-mode:revert !important;zoom: revert !important'><div><p class=MsoNormal style='mso-element:frame;mso-element-frame-hspace:2.25pt;mso-element-wrap:around;mso-element-anchor-vertical:paragraph;mso-element-anchor-horizontal:column;mso-height-rule:exactly'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#212121'>You don't often get email from <a href="mailto:support@vify.io">support@vify.io</a>. <a href="https://aka.ms/LearnAboutSenderIdentification">Learn why this is important</a> <o:p></o:p></span></p></div></td><td width=75 style='width:56.25pt;background:#EAEAEA;padding:5.25pt 3.75pt 5.25pt 3.75pt;aspect-ratio: revert !important;background:revert !important;block-size: revert !important;border:revert !important;bottom: revert !important;color:revert !important;color-scheme: revert !important;content-visibility: revert !important;cursor:revert !important;direction:revert !important;display:revert !important;font-size:revert !important;height:revert !important;hyphens: revert !important;letter-spacing:revert !important;line-height:revert !important;margin:revert !important;opacity: revert !important;order: revert !important;outline: revert !important;overflow:revert !important;padding:revert !important;position:revert !important;resize: revert !important;rotate: revert !important;scale: revert !important;tab-size: revert !important;table-layout:revert !important;text-align:revert !important;text-indent:revert !important;text-orientation: revert !important;text-overflow: revert !important;text-shadow:revert !important;text-transform:revert !important;text-wrap: revert !important;top:revert !important;transition: revert !important;user-select: revert !important;vertical-align:revert !important;visibility:revert !important;white-space:revert !important;width:revert !important;word-break:revert !important;word-spacing:revert !important;writing-mode:revert !important;zoom: revert !important;align: left !important'></td></tr></table><div align=center><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=600 style='width:6.25in'><tr><td style='padding:0in 0in 0in 0in'><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%;background:#FAFBFB'><tr><td style='padding:0in 0in 0in 0in'><div align=center><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='max-width:6.25in'><tr><td width="100%" style='width:100.0%;padding:11.25pt 11.25pt 11.25pt 11.25pt'><div align=center><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%'><tr><td style='padding:22.5pt 0in 0in 0in'><p class=MsoNormal align=center style='text-align:center;mso-line-height-alt:12.75pt'><b><span style='font-size:13.5pt;font-family:"Segoe UI",sans-serif;color:#6B7280;text-transform:uppercase'>BAD WORKWEAR <o:p></o:p></span></b></p></td></tr></table></div></td></tr><tr><td width="100%" style='width:100.0%;padding:11.25pt 11.25pt 11.25pt 11.25pt;box-sizing: border-box'><table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%;background:white;border:solid #D1D5DB 1.0pt;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%;overflow-x: auto;border-radius: 8px'><tr><td style='border:none;padding:11.25pt 15.0pt 11.25pt 15.0pt;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%;overflow-x: auto;border-radius: 8px'><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='box-sizing: border-box;max-width:100vw'><tr><td style='padding:0in 0in 0in 0in;box-sizing: border-box'><p class=MsoNormal style='margin-top:15.0pt;line-height:18.0pt'><span style='font-size:11.5pt;font-family:"Segoe UI",sans-serif;color:#374151'>You have a new order<o:p></o:p></span></p></td></tr></table><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:11.5pt;font-family:"Segoe UI",sans-serif;display:none'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%;box-sizing: border-box'><tr><td valign=top style='padding:7.5pt 0in 0in 0in;box-sizing: border-box'><p style='margin:0in;line-height:18.0pt;box-sizing: border-box'><b><span style='font-size:10.5pt;font-family:"Segoe UI",sans-serif;color:#374151'>SHIPPING ADDRESS<o:p></o:p></span></b></p><p style='margin:0in;line-height:18.0pt;box-sizing: border-box'><span style='font-size:10.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>Michael Cheeseman<o:p></o:p></span></p><p style='margin:0in;line-height:18.0pt;box-sizing: border-box'><span style='font-size:10.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>+61408135328<o:p></o:p></span></p><p style='margin:0in;line-height:18.0pt;box-sizing: border-box'><span style='font-size:10.0pt;font-family:"Segoe UI",sans-serif;color:#374151'><a href="mailto:michael@welink.com.au">michael@welink.com.au</a><o:p></o:p></span></p><p style='margin:0in;line-height:18.0pt;box-sizing: border-box'><span style='font-size:10.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>C/o Welink - 20 Hood Street, Subiaco, Western Australia, Australia , 6008 <o:p></o:p></span></p></td></tr></table><div style='border:none;border-top:solid #D1D5DB 1.0pt;padding:0in 0in 0in 0in;margin-top:7.5pt;box-sizing: border-box;overflow-x: auto'><div><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:11.5pt;font-family:"Segoe UI",sans-serif;display:none'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width="100%" style='width:100.0%;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%;border-spacing: 0'><tr><td colspan=2 style='border:none;border-bottom:solid #EDEFF2 1.0pt;padding:7.5pt 3.75pt 7.5pt 7.5pt'><p class=MsoNormal><b><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;text-transform:uppercase'>Items<o:p></o:p></span></b></p></td><td style='border:none;border-bottom:solid #EDEFF2 1.0pt;padding:7.5pt 3.75pt 7.5pt 3.75pt'><p class=MsoNormal align=center style='text-align:center'><b><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;text-transform:uppercase'>Qty<o:p></o:p></span></b></p></td><td style='border:none;border-bottom:solid #EDEFF2 1.0pt;padding:7.5pt 7.5pt 7.5pt 3.75pt'><p class=MsoNormal><b><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;text-transform:uppercase'>Subtotal<o:p></o:p></span></b></p></td></tr><tr><td width=70 style='width:52.5pt;background:#FAFAFA;padding:3.75pt 3.75pt 3.75pt 7.5pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'><img border=0 width=50 height=51 style='width:.525in;height:.5333in' id="_x0000_i1026" src="https://cdn.shopify.com/s/files/1/0726/3965/files/bad-cage-zip-side-safety-work-boots-514931_large.jpg?v=1750381484" alt="Item image"></span><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'><o:p></o:p></span></p></td><td style='background:#FAFAFA;padding:3.75pt 3.75pt 3.75pt 3.75pt;box-sizing: border-box'><p class=MsoNormal style='margin-bottom:12.0pt;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>BAD CAGE™ ZIP SIDE SAFETY WORK BOOTS - BLACK / 11<o:p></o:p></span></p><ul type=disc><li class=sku style='color:#374151;mso-list:l1 level1 lfo3;box-sizing: border-box'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif'>FW17-Black-11<o:p></o:p></span></li><li class=variant-title style='color:#374151;mso-list:l1 level1 lfo3;box-sizing: border-box'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif'>BLACK / 11<o:p></o:p></span></li></ul></td><td style='background:#FAFAFA;padding:3.75pt 3.75pt 3.75pt 3.75pt;box-sizing: border-box'><p class=MsoNormal align=center style='text-align:center;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>1<o:p></o:p></span></p></td><td style='background:#FAFAFA;padding:3.75pt 7.5pt 3.75pt 3.75pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>AU$129.00<o:p></o:p></span></p></td></tr><tr><td width=73 style='width:54.75pt;padding:0in 0in 0in 0in'></td><td width=333 style='width:249.75pt;padding:0in 0in 0in 0in'></td><td width=37 style='width:27.75pt;padding:0in 0in 0in 0in'></td><td width=83 style='width:62.25pt;padding:0in 0in 0in 0in'></td></tr></table><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:11.5pt;font-family:"Segoe UI",sans-serif;display:none'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width="100%" style='width:100.0%;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%;border-spacing: 0'><tr><td valign=top style='padding:0in 0in 0in 0in;box-sizing: border-box'></td><td width="50%" valign=top style='width:50.0%;padding:0in 0in 0in 0in;box-sizing: border-box;min-width: 300px'><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width="100%" style='width:100.0%;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%;border-spacing: 0'><tr><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;padding:6.0pt 6.0pt 6.0pt 7.5pt;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%;border-spacing: 0'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>Subtotal<o:p></o:p></span></p></td><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;padding:6.0pt 7.5pt 6.0pt 6.0pt;box-sizing: border-box'><p class=MsoNormal align=right style='text-align:right;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>AU$129.00<o:p></o:p></span></p></td></tr><tr><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;background:#FAFAFA;padding:6.0pt 6.0pt 6.0pt 7.5pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>Discount<o:p></o:p></span></p></td><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;background:#FAFAFA;padding:6.0pt 7.5pt 6.0pt 6.0pt;box-sizing: border-box'><p class=MsoNormal align=right style='text-align:right;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>-AU$6.45<o:p></o:p></span></p></td></tr><tr><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;padding:6.0pt 6.0pt 6.0pt 7.5pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>Shipping<o:p></o:p></span></p></td><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;padding:6.0pt 7.5pt 6.0pt 6.0pt;box-sizing: border-box'><p class=MsoNormal align=right style='text-align:right;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>AU$0.00<o:p></o:p></span></p></td></tr><tr><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;background:#FAFAFA;padding:6.0pt 6.0pt 6.0pt 7.5pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>Tax (Included) <span class=col-md-4>GST: 10% </span><o:p></o:p></span></p></td><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;background:#FAFAFA;padding:6.0pt 7.5pt 6.0pt 6.0pt;box-sizing: border-box'><p class=MsoNormal align=right style='text-align:right;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>AU$11.14 <o:p></o:p></span></p></td></tr><tr><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;padding:6.0pt 6.0pt 6.0pt 7.5pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>Paid by customer <o:p></o:p></span></p></td><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;padding:6.0pt 7.5pt 6.0pt 6.0pt;box-sizing: border-box'><p class=MsoNormal align=right style='text-align:right;line-height:12.75pt'><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#374151'>AU$122.55 <o:p></o:p></span></p></td></tr><tr><td style='border:none;border-bottom:solid #E5E7EB 1.0pt;background:#717883;padding:6.0pt 6.0pt 6.0pt 7.5pt;box-sizing: border-box'><p class=MsoNormal style='line-height:12.75pt'><b><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#F0F0F0;text-transform:uppercase'>Grand total<o:p></o:p></span></b></p></td><td width="50%" style='width:50.0%;border:none;border-bottom:solid #E5E7EB 1.0pt;background:#717883;padding:6.0pt 7.5pt 6.0pt 6.0pt;box-sizing: border-box'><p class=MsoNormal align=right style='text-align:right;line-height:12.75pt'><b><span style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#F0F0F0;text-transform:uppercase'>AU$122.55<o:p></o:p></span></b></p></td></tr></table></td></tr></table></div></div><p class=MsoNormal><o:p></o:p></p></td></tr></table></td></tr><tr><td style='padding:11.25pt 11.25pt 11.25pt 11.25pt;box-sizing: border-box'><div align=center><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%'><tr><td style='padding:0in 0in 0in 0in;box-sizing: border-box;-premailer-cellpadding: 0;-premailer-cellspacing: 0;-premailer-width: 100%'></td></tr><tr><td style='padding:0in 0in 0in 0in;box-sizing: border-box;max-width:100vw'><div><p class=MsoNormal align=center style='margin-bottom:12.0pt;text-align:center'><span style='font-size:11.5pt;font-family:"Arial",sans-serif'>If you wish to stop receiving emails from us, you can <a href="https://fgzb5j2n.r.us-east-1.awstrack.me/L0/https:%2F%2Fapi-pdf.vify.ai%2Fapi%2Femail%2Funsubscribe%3Femail=michael%2540welink.com.au%26shop=bad-workwear-3.myshopify.com%26signature=3b5871de8e3af9ba53573d4a78de651bb76aec13b67c827b4f9bf3d4af1b13c1/1/0100019d0aa546c0-e720b1eb-79bc-4e8f-98cf-ab21d5afe40c-000000/QZPZ5iyrVwrC8arFBP3P0UFw7R0=470"><span style='font-family:"Segoe UI",sans-serif;color:#337AB7'>unsubscribe</span></a> . <o:p></o:p></span></p><p align=center style='mso-margin-top-alt:0in;margin-right:0in;margin-bottom:3.75pt;margin-left:0in;text-align:center;line-height:18.0pt'><span style='font-size:7.5pt;font-family:"Segoe UI",sans-serif;color:#ACACAC'>This means that the email <a href="mailto:michael@welink.com.au">michael@welink.com.au</a> will stop receiving messages. <o:p></o:p></span></p></div></td></tr></table></div></td></tr></table></div></td></tr></table></td></tr></table></div><p class=MsoNormal><img border=0 width=1 height=1 style='width:.0083in;height:.0083in' id="_x0000_i1025" src="https://fgzb5j2n.r.us-east-1.awstrack.me/I0/0100019d0aa546c0-e720b1eb-79bc-4e8f-98cf-ab21d5afe40c-000000/1nnTptxiSEllehaFISiy8VW3Xr0=470"><o:p></o:p></p></div></blockquote></div></div></body></html>

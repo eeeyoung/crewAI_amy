@@ -1,0 +1,220 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><meta name=Generator content="Microsoft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;
+	mso-fareast-language:EN-US;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;
+	mso-fareast-language:EN-US;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:11.0pt;
+	mso-ligatures:none;
+	mso-fareast-language:EN-US;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:748040183;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1808609790 201916431 201916441 201916443 201916431 201916441 201916443 201916431 201916441 201916443;}
+@list l0:level1
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level2
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level3
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l0:level4
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level5
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level6
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l0:level7
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level8
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level9
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l1
+	{mso-list-id:756945309;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-391716970 201916431 201916441 201916443 201916431 201916441 201916443 201916431 201916441 201916443;}
+@list l1:level1
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level2
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level3
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l1:level4
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level5
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level6
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l1:level7
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level8
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level9
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l2
+	{mso-list-id:2010524691;
+	mso-list-type:hybrid;
+	mso-list-template-ids:154973476 201916417 201916419 201916421 201916417 201916419 201916421 201916417 201916419 201916421;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]--></head><body lang=EN-AU link="#0563C1" vlink="#954F72" style='word-wrap:break-word'><div class=WordSection1><p class=MsoNormal>Hi Michael,<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Please see attached PO to issue:<o:p></o:p></p><div style='mso-element:para-border-div;border:none;border-bottom:dotted windowtext 3.0pt;padding:0cm 0cm 1.0pt 0cm'><p class=MsoNormal style='border:none;padding:0cm'><o:p>&nbsp;</o:p></p><p class=MsoNormal style='border:none;padding:0cm'>Thank Robert for creating this PO and coaching me<span style='font-family:"Segoe UI Emoji",sans-serif'>&#128522;</span><o:p></o:p></p><p class=MsoNormal style='border:none;padding:0cm'><o:p>&nbsp;</o:p></p></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Subject: ARCO - PO Hoarding - Prime West<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Dear Brian,<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Welink is pleased to award you the opportunity to work with us on ARCO project at 22-24 Hood Street, Subiaco WA.<o:p></o:p></p><p class=MsoNormal>Please find the attached purchase order on supply and install of items detailed in the email received 29/04/2025 3:13 PM RE: Welink Site Establishment – ARCO for your reference.<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><b>Scope of Works</b>:<o:p></o:p></p><p class=MsoNormal><span style='mso-fareast-language:ZH-CN'>Stage 1 Offsite Hording: <o:p></o:p></span></p><p class=MsoNormal><span style='mso-fareast-language:ZH-CN'>Material (F17 + FIXINGS) : $3000<o:p></o:p></span></p><p class=MsoNormal><span style='mso-fareast-language:ZH-CN'>Labor: $1450<o:p></o:p></span></p><p class=MsoNormal><span style='mso-fareast-language:ZH-CN'>Stage 2: Building site Side Hording<o:p></o:p></span></p><p class=MsoNormal><span style='mso-fareast-language:ZH-CN'>Material (F17 + FIXINGS)&nbsp; : $3500.00<o:p></o:p></span></p><p class=MsoNormal><span style='mso-fareast-language:ZH-CN'>Labor: $1750<o:p></o:p></span></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><b>Important Notes &amp; Requirements</b>:<o:p></o:p></p><ol style='margin-top:0cm' start=1 type=1><li class=MsoListParagraph style='margin-left:0cm;mso-list:l0 level1 lfo3'>PPE Requirements:<o:p></o:p></li></ol><p class=MsoNormal style='text-indent:36.0pt'>All personnel attending site must adhere to our Personal Protective Equipment policy, which includes:<o:p></o:p></p><ul style='margin-top:0cm' type=disc><li class=MsoListParagraph style='margin-left:0cm;mso-list:l2 level1 lfo1'>Steel-capped boots<o:p></o:p></li><li class=MsoListParagraph style='margin-left:0cm;mso-list:l2 level1 lfo1'>Safety glasses<o:p></o:p></li><li class=MsoListParagraph style='margin-left:0cm;mso-list:l2 level1 lfo1'>High-visibility clothing<o:p></o:p></li><li class=MsoListParagraph style='margin-left:0cm;mso-list:l2 level1 lfo1'>Hard hats<o:p></o:p></li><li class=MsoListParagraph style='margin-left:0cm;mso-list:l2 level1 lfo1'>Task-specific gloves<o:p></o:p></li></ul><p class=MsoNormal><o:p>&nbsp;</o:p></p><ol style='margin-top:0cm' start=2 type=1><li class=MsoListParagraph style='margin-left:0cm;mso-list:l0 level1 lfo3'>Procore System:<o:p></o:p></li></ol><p class=MsoNormal style='margin-left:36.0pt'>All project documentation, including drawings, specifications, and updates, will be managed through Procore. It is essential that your team becomes familiar with the platform, as it will serve as the central hub for communication and document control.<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><ol style='margin-top:0cm' start=3 type=1><li class=MsoListParagraph style='margin-left:0cm;mso-list:l0 level1 lfo3'>SignOnSite Registration (Mandatory):<o:p></o:p></li></ol><p class=MsoNormal style='text-indent:36.0pt'>Welink uses SignOnSite for managing site attendance, inductions, and safety compliance. All workers must be registered on the app before attending site. This is a mandatory requirement.<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><ol style='margin-top:0cm' start=4 type=1><li class=MsoListParagraph style='margin-left:0cm;mso-list:l0 level1 lfo3'>Site Coordination:<o:p></o:p></li></ol><p class=MsoNormal style='text-indent:36.0pt'>Our site manager will be in touch with you to coordinate delivery schedules and site logistics. Please ensure clear communication regarding timing and access requirements.<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><b>Action Required</b>:<o:p></o:p></p><ol style='margin-top:0cm' start=1 type=1><li class=MsoListParagraph style='margin-left:0cm;mso-list:l1 level1 lfo2'>Confirm lead times for all materials ASAP.<o:p></o:p></li><li class=MsoListParagraph style='margin-left:0cm;mso-list:l1 level1 lfo2'>Provide names, roles, and email addresses of your project team so we can add them to Procore.<o:p></o:p></li></ol><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><b>Welink Project Team Contacts</b>:<o:p></o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'><tr><td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>JOB TITLE<o:p></o:p></p></td><td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>COMPANY<o:p></o:p></p></td><td width=176 valign=top style='width:131.65pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>CONTACT<o:p></o:p></p></td><td width=113 valign=top style='width:3.0cm;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>MOBILE<o:p></o:p></p></td><td width=161 valign=top style='width:120.9pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>EMAIL<o:p></o:p></p></td></tr><tr><td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Project Director<o:p></o:p></p></td><td width=125 valign=top style='width:93.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Welink<o:p></o:p></p></td><td width=176 valign=top style='width:131.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Michael Cheeseman<o:p></o:p></p></td><td width=113 valign=top style='width:3.0cm;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>0408 135 325<o:p></o:p></p></td><td width=161 valign=top style='width:120.9pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>michael@welink.com.au<o:p></o:p></p></td></tr><tr><td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Site Supervisor<o:p></o:p></p></td><td width=125 valign=top style='width:93.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Welink<o:p></o:p></p></td><td width=176 valign=top style='width:131.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Shane Scudder<o:p></o:p></p></td><td width=113 valign=top style='width:3.0cm;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>0474 565 569<o:p></o:p></p></td><td width=161 valign=top style='width:120.9pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>shane@welink.com.au<o:p></o:p></p></td></tr><tr><td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Contract Admin<o:p></o:p></p></td><td width=125 valign=top style='width:93.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Welink<o:p></o:p></p></td><td width=176 valign=top style='width:131.65pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>Robert Chen - TBC<o:p></o:p></p></td><td width=113 valign=top style='width:3.0cm;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>0493 306 008<o:p></o:p></p></td><td width=161 valign=top style='width:120.9pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal>robert@welink.com.au<o:p></o:p></p></td></tr></table><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><b><span style='font-size:12.0pt;line-height:105%;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></b></p><p class=MsoNormal style='line-height:105%'><b><span style='font-size:12.0pt;line-height:105%;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>Commercial CA<o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-size:12.0pt;color:black;mso-fareast-language:EN-AU'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;color:black;mso-fareast-language:EN-AU'>E: </span><span style='font-size:12.0pt;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><a href="mailto:amy@welink.com.au"><span style='color:blue'>amy</span><span style='color:blue'>@welink.com.au</span></a></span><span style='font-size:12.0pt;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-size:12.0pt;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;color:black;mso-fareast-language:EN-AU'>M: </span><span style='font-size:12.0pt;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>0493 306 008<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:12.0pt;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>W:&nbsp;&nbsp; </span><span style='font-size:12.0pt;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><a href="https://www.meritor.com.au/"><span style='color:blue'>Meritor.com.au</span></a></span><span style='font-size:12.0pt;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'> | </span><span style='font-size:12.0pt;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><a href="https://www.welink.com.au/"><span style='color:blue'>Welink.com.au</span></a></span><span style='font-size:12.0pt;color:black;mso-fareast-language:EN-AU'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;color:#1F497D;mso-fareast-language:EN-AU'><img border=0 width=334 height=70 style='width:3.4833in;height:.7333in' id="Picture_x0020_1" src="cid:image001.png@01DBFBB9.D6B613E0"></span><span style='font-size:12.0pt;line-height:105%;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'> </span><span style='font-size:12.0pt;line-height:105%;mso-fareast-language:EN-AU'><img border=0 width=167 height=108 style='width:1.7416in;height:1.125in' id="Picture_x0020_2" src="cid:image002.png@01DBFBB9.D6B613E0" alt="signature_3358593204"><span style='color:#1F497D;mso-ligatures:standardcontextual'><o:p></o:p></span></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=602 colspan=2 valign=top style='width:451.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>This e-mail is private and confidential.</span><span style='font-size:12.0pt;line-height:105%;color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-size:12.0pt;line-height:105%;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='color:black;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=602 colspan=2 valign=top style='width:451.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-fareast-language:EN-AU;text-decoration:none'><img border=0 width=28 height=28 style='width:.2916in;height:.2916in' id="Picture_x0020_3" src="cid:image003.png@01DBFBB9.D6B613E0"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-fareast-language:EN-AU;text-decoration:none'><img border=0 width=26 height=26 style='width:.275in;height:.275in' id="Picture_x0020_4" src="cid:image004.png@01DBFBB9.D6B613E0"></span></a><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>&nbsp;&nbsp;</span><span style='font-size:12.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;color:#404040;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;color:#BFBFBF;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;color:#BFBFBF;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'>&nbsp;</span><span style='color:#1F497D;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr></table><p class=MsoNormal><span style='font-size:12.0pt;mso-ligatures:standardcontextual;mso-fareast-language:EN-AU'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><o:p>&nbsp;</o:p></p></div></body></html>

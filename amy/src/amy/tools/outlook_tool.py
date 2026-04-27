@@ -4,7 +4,7 @@ from crewai.tools import BaseTool
 from pydantic import Field
 
 
-def fetch_inbox_emails(count=10, max_body=4000):
+def fetch_inbox_emails(count=10, max_body=4000, unread_only=False):
     """Fetch the latest emails from Outlook Inbox directly via win32com.
     Returns a list of dicts with Subject, Sender, ReceivedTime, Body.
     This is a plain Python function, NOT a CrewAI tool.
@@ -17,6 +17,8 @@ def fetch_inbox_emails(count=10, max_body=4000):
     outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
     inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
     messages = inbox.Items
+    if unread_only:
+        messages = messages.Restrict("[UnRead] = True")
     messages.Sort("[ReceivedTime]", True)
 
     emails = []
@@ -28,9 +30,43 @@ def fetch_inbox_emails(count=10, max_body=4000):
         try:
             if message.Class != 43:  # 43 = olMail
                 continue
+            sender_name = getattr(message, "SenderName", "Unknown")
+            sender_email = getattr(message, "SenderEmailAddress", "Unknown")
+            if sender_email and sender_email.upper().startswith("/O="):
+                try:
+                    # Using PR_SMTP_ADDRESS property tag
+                    sender_email = message.Sender.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
+                except Exception:
+                    try:
+                        exch_user = message.Sender.GetExchangeUser()
+                        if exch_user: sender_email = exch_user.PrimarySmtpAddress
+                    except Exception:
+                        pass
+            
+            # Resolve CC addresses
+            cc_list = []
+            try:
+                for rec in message.Recipients:
+                    if rec.Type == 2:  # 2 = olCC
+                        rec_email = rec.Address
+                        if rec_email and rec_email.upper().startswith("/O="):
+                            try:
+                                rec_email = rec.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
+                            except Exception:
+                                try:
+                                    exch_user = rec.AddressEntry.GetExchangeUser()
+                                    if exch_user: rec_email = exch_user.PrimarySmtpAddress
+                                except Exception:
+                                    pass
+                        cc_list.append(f"{rec.Name} <{rec_email}>")
+                cc_str = "; ".join(cc_list)
+            except Exception:
+                cc_str = getattr(message, "CC", "")
+
             emails.append({
                 "subject": getattr(message, "Subject", "No Subject"),
-                "sender": getattr(message, "SenderEmailAddress", "Unknown"),
+                "sender": f"{sender_name} <{sender_email}>",
+                "cc": cc_str,
                 "received_time": str(getattr(message, "ReceivedTime", "Unknown Date")),
                 "body": getattr(message, "Body", "")[:max_body],
             })
@@ -146,11 +182,46 @@ class OutlookInboxBatchTool(BaseTool):
                     if message.Class != 43:  # 43 = olMail
                         continue
                     
+                    sender_name = getattr(message, "SenderName", "Unknown")
+                    sender_email = getattr(message, "SenderEmailAddress", "Unknown")
+                    
+                    # If it's an internal Exchange address (starts with /O=), try to resolve the SMTP address
+                    if sender_email and sender_email.upper().startswith("/O="):
+                        try:
+                            sender = message.Sender
+                            if sender:
+                                exch_user = sender.GetExchangeUser()
+                                if exch_user:
+                                    sender_email = exch_user.PrimarySmtpAddress
+                        except Exception:
+                            pass # Fallback to original string if resolution fails
+
+                    # Resolve CC addresses
+                    cc_list = []
+                    try:
+                        for rec in message.Recipients:
+                            if rec.Type == 2:  # 2 = olCC
+                                rec_email = rec.Address
+                                if rec_email and rec_email.upper().startswith("/O="):
+                                    try:
+                                        rec_email = rec.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
+                                    except Exception:
+                                        try:
+                                            exch_user = rec.AddressEntry.GetExchangeUser()
+                                            if exch_user: rec_email = exch_user.PrimarySmtpAddress
+                                        except Exception:
+                                            pass
+                                cc_list.append(f"{rec.Name} <{rec_email}>")
+                        cc_str = "; ".join(cc_list)
+                    except Exception:
+                        cc_str = getattr(message, "CC", "")
+
                     extracted_emails.append({
                         "Subject": getattr(message, "Subject", "No Subject"),
-                        "Sender": getattr(message, "SenderEmailAddress", "Unknown"),
+                        "Sender": f"{sender_name} <{sender_email}>",
+                        "CC": cc_str,
                         "ReceivedTime": str(getattr(message, "ReceivedTime", "Unknown Date")),
-                        "BodySnippet": getattr(message, "Body", "")[:500]  # Limit body to save context window
+                        "BodySnippet": getattr(message, "Body", "")[:500]
                     })
                     count += 1
                 except Exception as msg_e:
@@ -170,23 +241,71 @@ class OutlookSendTool(BaseTool):
     name: str = "outlook_send_tool"
     description: str = "Sends an email using the Microsoft Outlook application."
 
-    def _run(self, recipient: str, subject: str, body: str) -> str:
+    def _run(self, recipient: str, subject: str, body: str, cc: str = "", is_html: bool = False) -> str:
         current_os = platform.system()
         
         if current_os == "Windows":
             try:
                 import win32com.client
+                import os
                 outlook = win32com.client.Dispatch("Outlook.Application")
                 mail = outlook.CreateItem(0)  # 0 = olMailItem
                 
-                # Access GetInspector to generate the default signature in mail.Body
-                _ = mail.GetInspector
-                
                 mail.To = recipient
+                if cc:
+                    mail.CC = cc
                 mail.Subject = subject
                 
-                # Prepend the generated body to the default signature
-                mail.Body = body + "\n\n" + mail.Body
+                if is_html:
+                    image_files = [
+                        ("knowledge/logo_meritor_welink.png", "logo_meritor_welink.png"),
+                        ("knowledge/logo_hia_awards.png", "logo_hia_awards.png"),
+                        ("knowledge/icon_instagram.png", "icon_instagram.png"),
+                        ("knowledge/icon_facebook.png", "icon_facebook.png")
+                    ]
+                    for img_path, cid in image_files:
+                        if os.path.exists(img_path):
+                            abs_img_path = os.path.abspath(img_path)
+                            attachment = mail.Attachments.Add(abs_img_path)
+                            # Set PR_ATTACH_CONTENT_ID
+                            attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x3712001F", cid)
+                            
+                            # Replace occurrences of absolute path, file URI, and relative path with CID
+                            file_uri = f"file:///{abs_img_path.replace(chr(92), '/')}"
+                            body = body.replace(file_uri, f"cid:{cid}")
+                            body = body.replace(abs_img_path, f"cid:{cid}")
+                            body = body.replace(img_path, f"cid:{cid}")
+                    
+                    mail.HTMLBody = body
+                else:
+                    # Convert the plain text draft into basic HTML paragraphs
+                    body_html = "".join(f"<p>{line}</p>" if line.strip() else "<br>" for line in body.split("\n"))
+                    
+                    # Check for our custom HTML signature
+                    sig_path = "knowledge/amy_signature.html"
+                    if os.path.exists(sig_path):
+                        with open(sig_path, "r", encoding="utf-8") as f:
+                            signature_html = f.read()
+                        
+                        mail.HTMLBody = f'<div style="font-family: Calibri, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
+                        
+                        # Attach signature images and set their Content-ID
+                        image_files = [
+                            ("knowledge/logo_meritor_welink.png", "logo_meritor_welink.png"),
+                            ("knowledge/logo_hia_awards.png", "logo_hia_awards.png"),
+                            ("knowledge/icon_instagram.png", "icon_instagram.png"),
+                            ("knowledge/icon_facebook.png", "icon_facebook.png")
+                        ]
+                        for img_path, cid in image_files:
+                            if os.path.exists(img_path):
+                                abs_img_path = os.path.abspath(img_path)
+                                attachment = mail.Attachments.Add(abs_img_path)
+                                # Set PR_ATTACH_CONTENT_ID
+                                attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x3712001F", cid)
+                    else:
+                        # Fallback to plain text with default outlook signature if html signature is missing
+                        _ = mail.GetInspector
+                        mail.Body = body + "\n\n" + mail.Body
                 
                 mail.Send()
                 return "Email successfully sent."

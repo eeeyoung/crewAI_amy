@@ -1,0 +1,1012 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<div dir="ltr" style="font-family: Aptos, Aptos_MSFontService, -apple-system, Roboto, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div id="ms-outlook-mobile-body-separator-line" data-applydefaultfontstyles="true" style="font-family: Aptos, Aptos_MSFontService, -apple-system, Roboto, Arial, Helvetica, sans-serif; font-size: 12pt;" dir="ltr">
+<div style="font-family: Aptos, Aptos_MSFontService, -apple-system, Roboto, Arial, Helvetica, sans-serif; font-size: 12pt;" dir="ltr">
+<br>
+</div>
+</div>
+<div style="font-family: Aptos, Aptos_MSFontService, -apple-system, Roboto, Arial, Helvetica, sans-serif; font-size: 12pt;" id="ms-outlook-mobile-signature">
+<table class="MsoNormalTable" cellspacing="0" cellpadding="0" border="0" style="text-align: left; text-transform: none; color: rgb(33, 33, 33); box-sizing: border-box; border-collapse: collapse; border-spacing: 0px;">
+<tbody>
+<tr>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; padding: 0cm 5.4pt; vertical-align: top; width: 440.2pt; height: 1pt;">
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">Kind regards,</span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;"><b>Amy Chen</b></span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">Commercial Contracts Administrator</span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">T:&nbsp; </span><span style="color: currentcolor;"><u>08 9204 3388</u></span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">E: </span><span style="color: blue;"><u><a href="mailto:amy@welink.com.au" class="outlook-break-word-in-links" data-outlook-id="16ca018d-1a0f-44d5-87c6-f7465ef41396" data-linkindex="0" style="color: blue; margin-top: 0px; margin-bottom: 0px;">amy@welink.com.au</a></u></span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">A: </span><span style="color: currentcolor;"><u>269 Vincent St, Leederville, WA 6007</u></span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: black;">M: </span><span style="color: currentcolor;"><u>0493 306 008</u></span></p>
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: rgb(33, 33, 33);">W:&nbsp; &nbsp;</span><span style="color: blue;"><u><a href="https://www.meritor.com.au/" class="outlook-break-word-in-links" data-outlook-id="f07c4da5-e95c-4972-9b6a-88fcae589d2f" data-linkindex="1" style="color: blue; margin-top: 0px; margin-bottom: 0px;">Meritor.com.au</a></u></span><span style="color: black;">&nbsp;|
+</span><span style="color: blue;"><u><a href="https://www.welink.com.au/" class="outlook-break-word-in-links" data-outlook-id="4fa29d5a-ce38-482e-ae29-836186b1085b" data-linkindex="2" style="color: blue; margin-top: 0px; margin-bottom: 0px;">Welink.com.au</a></u></span></p>
+</td>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; border-width: medium; border-style: none; border-color: currentcolor; padding: 0cm; width: 15px; height: 1px;">
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: rgb(33, 33, 33);">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; padding: 0cm 5.4pt; vertical-align: top; width: 440.2pt; height: 1pt;">
+<p class="MsoNormal" style="text-align: left; line-height: 17.639999px; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="font-size: 11pt; color: rgb(31, 73, 125); line-height: 16.17px;"><img src="blob:outlook-mobile-compose:///ad9c277a-18bf-4df4-9a2b-894a2607d52e" alt="Image" id="Picture_x0020_300522944" width="335" height="70" style="width: 335px; height: 70px; max-width: 100%; margin-top: 0px; margin-bottom: 0px;"></span><span style="color: rgb(33, 33, 33);"><img src="blob:outlook-mobile-compose:///1136bbae-1753-40de-a1d6-51413f0b4c48" alt="signature_3358593204" id="Picture_x0020_545099295" width="167" height="108" style="width: 167px; height: 108px; max-width: 100%; margin-top: 0px; margin-bottom: 0px;"></span></p>
+</td>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; border-width: medium; border-style: none; border-color: currentcolor; padding: 0cm; width: 15px; height: 1px;">
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: rgb(33, 33, 33);">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; padding: 0cm 5.4pt; vertical-align: top; width: 440.2pt; height: 1pt;">
+<p class="MsoNormal" style="text-align: left; line-height: 17.639999px; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="font-size: 8pt; color: rgb(64, 64, 64); line-height: 11.76px;">This e-mail is private and confidential.</span></p>
+<p class="MsoNormal" style="text-align: left; line-height: 17.639999px; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="font-size: 8pt; color: rgb(64, 64, 64); line-height: 11.76px;">If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this&nbsp;<br>
+e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at
+</span><span style="font-size: 8pt; color: purple; line-height: 11.76px;"><u><a href="mailto:info@welink.com.au" class="outlook-break-word-in-links" data-outlook-id="5a11ed07-379d-4e78-b06b-ae20831ddd5d" data-linkindex="3" style="color: purple; margin-top: 0px; margin-bottom: 0px;">info@welink.com.au</a></u></span><span style="font-size: 8pt; color: rgb(64, 64, 64); line-height: 11.76px;">&nbsp;that
+ it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span></p>
+</td>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; border-width: medium; border-style: none; border-color: currentcolor; padding: 0cm; width: 15px; height: 1px;">
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: rgb(33, 33, 33);">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; padding: 0cm 5.4pt; vertical-align: top; width: 440.2pt; height: 1pt;">
+<p class="MsoNormal" style="text-align: left; line-height: 17.639999px; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="font-size: 8pt; color: rgb(64, 64, 64); line-height: 11.76px;">&nbsp;</span></p>
+<p class="MsoNormal" style="text-align: left; line-height: 17.639999px; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="font-size: 8pt; color: rgb(64, 64, 64); line-height: 11.76px;"><u><a href="https://www.instagram.com/meritorhomes/?hl=en" class="outlook-break-word-in-links" data-outlook-id="339a2a8a-2273-4b40-823f-d0ddfe5b7112" data-linkindex="4" style="color: rgb(64, 64, 64); margin-top: 0px; margin-bottom: 0px;"><img src="blob:outlook-mobile-compose:///1d464fc0-7b7e-4347-8ff0-1f8f31206710" alt="Image" id="Picture_x0020_3" width="28" height="28" style="width: 28px; height: 28px; max-width: 100%; margin-top: 0px; margin-bottom: 0px;"></a><a href="https://www.facebook.com/meritorhomes/" class="outlook-break-word-in-links" data-outlook-id="59060a5b-275c-4d17-b4ba-808042bc6064" data-linkindex="5" style="color: rgb(64, 64, 64); margin-top: 0px; margin-bottom: 0px;"><img src="blob:outlook-mobile-compose:///1d60f10d-7d3f-4e75-886c-374de759fa40" alt="Image" id="Picture_x0020_4" width="26" height="26" style="width: 26px; height: 26px; max-width: 100%; margin-top: 0px; margin-bottom: 0px;"></a></u>&nbsp;
+</span><span style="color: rgb(64, 64, 64);">FOLLOW US ON SOCIAL MEDIA</span></p>
+</td>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; border-width: medium; border-style: none; border-color: currentcolor; padding: 0cm; width: 15px; height: 1px;">
+<p class="MsoNormal" style="text-align: left; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="color: rgb(33, 33, 33);">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td class="MsoNormalTable" style="text-align: left; text-transform: none; padding: 0cm 5.4pt; vertical-align: top; width: 440.2pt; height: 1pt;">
+<p class="MsoNormal" style="text-align: left; line-height: 17.639999px; text-transform: none; margin: 0cm; font-family: Calibri, sans-serif; font-size: 12pt;">
+<span style="font-size: 7.5pt; color: rgb(191, 191, 191); line-height: 11.025px;">Please consider the environment before printing this email</span><span style="font-size: 10pt; color: rgb(191, 191, 191); line-height: 14.699999px;">&nbsp;</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div dir="ltr" style="font-family: Aptos, Aptos_MSFontService, -apple-system, Roboto, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(33, 33, 33);">
+<br>
+</div>
+</div>
+<hr style="display:inline-block;width:98%" tabindex="-1">
+<div id="divRplyFwdMsg" dir="ltr"><font face="Calibri, sans-serif" style="font-size:11pt" color="#000000"><b>From:</b> Estimating Piedra &lt;estimating@piedra.com.au&gt;<br>
+<b>Sent:</b> Friday, January 16, 2026 9:52:32 AM<br>
+<b>To:</b> Michael Cheeseman &lt;michael@welink.com.au&gt;; Amy Chen &lt;amy@welink.com.au&gt;<br>
+<b>Cc:</b> Zoltan Kovacs &lt;zoltan@piedra.com.au&gt;; Shane Scudder &lt;Shane@welink.com.au&gt;<br>
+<b>Subject:</b> Re: ARCO 22/24 Hood Street, Subiaco</font>
+<div>&nbsp;</div>
+</div>
+<style type="text/css" style="display:none">
+<!--
+p
+	{margin-top:0;
+	margin-bottom:0}
+-->
+</style>
+<div dir="ltr">
+<div class="x_elementToProof" style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+Hi Michael,</div>
+<div class="x_elementToProof" style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+Further on below project, we are pleased to submit to you our proposal for the ARCO Subiaco project as attached.</div>
+<div class="x_elementToProof" style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<br>
+</div>
+<div class="x_elementToProof" style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+    Note: since we do not have the selected stone schemes for each apartment, we consider prices on each apartment type.</div>
+<div class="x_elementToProof" style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<br>
+</div>
+<div class="x_elementToProof" style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+Thanks,</div>
+<div id="x_Signature">
+<div style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<br>
+</div>
+<p style="margin:0in"><span style="font-family:Calibri,sans-serif; font-size:11pt; color:rgb(0,0,0)">Ayleen Navas</span></p>
+<div style="margin:0in; font-family:Calibri,sans-serif; font-size:11pt; color:rgb(0,0,0)">
+<br>
+</div>
+<div style="margin:0in; font-family:Calibri,sans-serif; font-size:11pt; color:rgb(0,0,0)">
+<br>
+</div>
+<div style="margin:0in; font-family:Calibri,sans-serif; font-size:11pt; color:rgb(0,0,0)">
+<img height="58" width="162" id="x_x_x_x_image_0" data-outlook-trace="F:1|T:1" src="cid:43fe4c86-4b70-4259-8f94-954bca73c733" style="width:162px; height:58px; max-width:432px; margin-top:0px; margin-bottom:0px"></div>
+<p style="margin:0in"><span style="font-family:Calibri,sans-serif; font-size:11pt; color:rgb(47,84,150)">E: estimating@piedra.com.au</span></p>
+<p style="margin:0in"><span style="font-family:Calibri,sans-serif; font-size:11pt; color:rgb(47,84,150)">P : 0420 683 134</span></p>
+<p style="margin:0in"><span style="font-family:Calibri,sans-serif; font-size:11pt; color:rgb(47,84,150)">18 John St, Bayswater WA 6053</span></p>
+<p style="margin:0in"><span style="font-family:Calibri,sans-serif; font-size:11pt; color:rgb(47,84,150)">www.piedra.com.au</span></p>
+<p style="margin:0in"><span style="font-family:Calibri,sans-serif; font-size:11pt; color:rgb(0,0,0)">&nbsp;</span></p>
+<div style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<br>
+</div>
+</div>
+<div id="x_appendonsend"></div>
+<hr tabindex="-1" style="display:inline-block; width:98%">
+<div id="x_divRplyFwdMsg" dir="ltr"><font face="Calibri, sans-serif" color="#000000" style="font-size:11pt"><b>From:</b> Michael Cheeseman &lt;michael@welink.com.au&gt;<br>
+<b>Sent:</b> Tuesday, January 13, 2026 12:49 PM<br>
+<b>To:</b> Estimating Piedra &lt;estimating@piedra.com.au&gt;; Amy Chen &lt;amy@welink.com.au&gt;<br>
+<b>Cc:</b> Zoltan Kovacs &lt;zoltan@piedra.com.au&gt;; Shane Scudder &lt;Shane@welink.com.au&gt;<br>
+<b>Subject:</b> RE: ARCO 22/24 Hood Street, Subiaco</font>
+<div>&nbsp;</div>
+</div>
+<style>
+<!--
+@font-face
+	{font-family:Wingdings}
+@font-face
+	{font-family:"Cambria Math"}
+@font-face
+	{font-family:Calibri}
+@font-face
+	{font-family:"Calibri Light"}
+@font-face
+	{font-family:Aptos}
+@font-face
+	{font-family:"Segoe UI"}
+p.x_x_MsoNormal, li.x_x_MsoNormal, div.x_x_MsoNormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif}
+a:link, span.x_x_MsoHyperlink
+	{color:#467886;
+	text-decoration:underline}
+p.x_x_MsoListParagraph, li.x_x_MsoListParagraph, div.x_x_MsoListParagraph
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif}
+p.x_x_xmsonormal, li.x_x_xmsonormal, div.x_x_xmsonormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif}
+p.x_x_xxmsonormal, li.x_x_xxmsonormal, div.x_x_xxmsonormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif}
+p.x_x_xxmsolistparagraph, li.x_x_xxmsolistparagraph, div.x_x_xxmsolistparagraph
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif}
+span.x_x_xxmsosmartlink
+	{color:blue;
+	background:#F3F2F1;
+	text-decoration:underline}
+span.x_x_EmailStyle25
+	{font-family:"Aptos",sans-serif;
+	color:windowtext}
+.x_x_MsoChpDefault
+	{font-size:10.0pt}
+@page WordSection1
+	{margin:72.0pt 72.0pt 72.0pt 72.0pt}
+ol
+	{margin-bottom:0cm}
+ul
+	{margin-bottom:0cm}
+-->
+</style>
+<div lang="EN-AU" style="word-wrap:break-word">
+<div class="x_x_WordSection1">
+<p class="x_x_MsoNormal"><span style="">Hi</span></p>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<p class="x_x_MsoNormal"><span style="">Please find attached the following:</span></p>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<ol start="1" type="1" style="margin-top:0cm">
+<li class="x_x_MsoListParagraph" style="margin-left:0cm"><b><span style="">Schedule of Finishes per Unit.</span></b></li></ol>
+<p class="x_x_MsoNormal"><b><span style="">&nbsp;</span></b></p>
+<ol start="2" type="1" style="margin-top:0cm">
+<li class="x_x_MsoListParagraph" style="margin-left:0cm"><b><span style="">Finishes for Affordable Units.</span></b></li></ol>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<div>
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<table class="x_x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="636" style="width:477.25pt; border-collapse:collapse">
+<tbody>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Kind Regards,</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><b><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">Michael Cheeseman</span></b></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">Project Director</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><b><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">BP 14081/BC 101031</span></b></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">T:&nbsp;&nbsp;08 9204 3388</span></p>
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">E:
+<a href="mailto:michael@welink.com.au"><span style="color:blue">michael@welink.com.au</span></a></span></p>
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">A: 269 Vincent St, Leederville, WA 6007</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">M: 0408 135 325</span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">W:</span><span style="font-family:&quot;Calibri&quot;,sans-serif">
+</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#0038A8"><a href="https://www.welink.com.au/"><span style="font-size:12.0pt; line-height:105%; color:#0038A8">Welink.com.au</span></a>;
+</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:#0038A8"><a href="https://www.meritor.com.au/"><span style="color:#0038A8">Meritor.com.au</span></a></span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</td>
+<td width="15" valign="top" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D"><img border="0" width="335" height="70" id="x_x_Picture_x0020_471867884" data-outlook-trace="F:1|T:1" src="cid:image001.png@01DC848A.A64FE780" style="width:3.4861in; height:.7291in"></span></p>
+</td>
+<td width="15" valign="bottom" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" align="center" style="text-align:center; line-height:105%">
+<span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">This e-mail is private and confidential.</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or
+ disseminate this <br>
+e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"><a href="mailto:info@welink.com.au"><span style="font-size:8.0pt; line-height:105%; color:purple">info@welink.com.au</span></a></span><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">&nbsp;that
+ it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr height="0">
+<td width="7" style="border:none"></td>
+<td width="580" style="border:none"></td>
+<td width="15" style="border:none"></td>
+<td width="19" style="border:none"></td>
+<td width="15" style="border:none"></td>
+</tr>
+</tbody>
+</table>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+</div>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_x_MsoNormal"><b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Michael Cheeseman
+<br>
+<b>Sent:</b> Monday, 12 January 2026 8:26 PM<br>
+<b>To:</b> 'Estimating Piedra' &lt;estimating@piedra.com.au&gt;; Amy Chen &lt;amy@welink.com.au&gt;<br>
+<b>Cc:</b> Zoltan Kovacs &lt;zoltan@piedra.com.au&gt;<br>
+<b>Subject:</b> RE: ARCO 22/24 Hood Street, Subiaco</span></p>
+</div>
+</div>
+<p class="x_x_MsoNormal">&nbsp;</p>
+<p class="x_x_MsoNormal"><span style="">Ayleen</span></p>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<p class="x_x_MsoNormal"><span style="">Confirm the following thanks:</span></p>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="margin-left:72.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="color:black"><span style="mso-list:Ignore">1.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">A07-502 (detail 8)</span></p>
+<p class="x_x_MsoNormal" style="margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Shows powder coated trim 20x10 act as shadow line, should we include this in our scope or its part of cabinetry’s scope?
+<b>PLEASE INCLUDE</b></span></p>
+<p class="x_x_MsoNormal" style="margin-left:72.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="color:black"><span style="mso-list:Ignore">2.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">A07-201 (general)</span></p>
+<p class="x_x_MsoNormal" style="margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Should return be considered on shower/wall cladding? Nothing is shown.
+<b>PLEASE ALLOW</b></span></p>
+<p class="x_x_MsoNormal" style="margin-left:72.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="color:black"><span style="mso-list:Ignore">3.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">A07-100 (colour scheme)</span></p>
+<p class="x_x_MsoNormal" style="margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Colour scheme section shown “DAWN, DUSK, TWILIGHT” but at finishing schedule shown “Medium, Dark, Light, Affordable”</span></p>
+<p class="x_x_MsoNormal" style="margin-right:0cm; margin-bottom:8.0pt; margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Do we have the final selected color scheme?
+<b>ATTACHED</b></span></p>
+<p class="x_x_MsoNormal" style="margin-right:0cm; margin-bottom:8.0pt; margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><b><span style="color:black">There are 6 x Affordable Unit</span></b></p>
+<div>
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<table class="x_x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="636" style="width:477.25pt; border-collapse:collapse">
+<tbody>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Kind Regards,</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><b><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">Michael Cheeseman</span></b></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">Project Director</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><b><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">BP 14081/BC 101031</span></b></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">T:&nbsp;&nbsp;08 9204 3388</span></p>
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">E:
+<a href="mailto:michael@welink.com.au"><span style="color:blue">michael@welink.com.au</span></a></span></p>
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">A: 269 Vincent St, Leederville, WA 6007</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+<p class="x_x_MsoNormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">M: 0408 135 325</span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">W:</span><span style="font-family:&quot;Calibri&quot;,sans-serif">
+</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#0038A8"><a href="https://www.welink.com.au/"><span style="font-size:12.0pt; line-height:105%; color:#0038A8">Welink.com.au</span></a>;
+</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:#0038A8"><a href="https://www.meritor.com.au/"><span style="color:#0038A8">Meritor.com.au</span></a></span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"></span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</td>
+<td width="15" valign="top" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D"><img border="0" width="335" height="70" id="x_x_Picture_x0020_560776234" data-outlook-trace="F:1|T:1" src="cid:image001.png@01DC848A.A64FE780" style="width:3.493in; height:.7291in"></span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D"></span></p>
+</td>
+<td width="15" valign="bottom" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" align="center" style="text-align:center; line-height:105%">
+<span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D">&nbsp;</span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">This e-mail is private and confidential.</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or
+ disseminate this <br>
+e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"><a href="mailto:info@welink.com.au"><span style="font-size:8.0pt; line-height:105%; color:purple">info@welink.com.au</span></a></span><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">&nbsp;that
+ it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal" style="line-height:105%"><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="580" style="width:435.0pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="19" style="width:14.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm"></td>
+</tr>
+</tbody>
+</table>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+</div>
+<p class="x_x_MsoNormal"><span style="">&nbsp;</span></p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_x_MsoNormal"><b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Estimating Piedra &lt;<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a>&gt;
+<br>
+<b>Sent:</b> Monday, 12 January 2026 2:08 PM<br>
+<b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;<br>
+<b>Cc:</b> Zoltan Kovacs &lt;<a href="mailto:zoltan@piedra.com.au">zoltan@piedra.com.au</a>&gt;<br>
+<b>Subject:</b> Re: ARCO 22/24 Hood Street, Subiaco</span></p>
+</div>
+</div>
+<p class="x_x_MsoNormal">&nbsp;</p>
+<table class="x_x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" align="left" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td width="0" style="width:.3pt; background:#A6A6A6; padding:5.25pt 1.5pt 5.25pt 1.5pt">
+</td>
+<td width="100%" style="width:100.0%; background:#EAEAEA; padding:5.25pt 3.75pt 5.25pt 11.25pt; background:revert!important; border:revert!important; bottom:revert!important; color:revert!important; direction:revert!important; display:revert!important; font-size:revert!important; height:revert!important; letter-spacing:revert!important; line-height:revert!important; margin:revert!important; opacity:revert!important; order:revert!important; outline:revert!important; overflow:revert!important; padding:revert!important; position:revert!important; tab-size:revert!important; table-layout:revert!important; text-align:revert!important; text-indent:revert!important; text-orientation:revert!important; text-overflow:revert!important; text-transform:revert!important; top:revert!important; vertical-align:revert!important; visibility:revert!important; white-space:revert!important; width:revert!important; word-break:revert!important; word-spacing:revert!important; writing-mode:revert!important; zoom:revert!important">
+<div>
+<p class="x_x_MsoNormal" style=""><span style="font-size:9.0pt; font-family:&quot;Segoe UI&quot;,sans-serif; color:#212121">Some people who received this message don't often get email from
+<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a>. <a href="https://aka.ms/LearnAboutSenderIdentification">
+Learn why this is important</a> </span></p>
+</div>
+</td>
+<td width="75" style="width:56.25pt; background:#EAEAEA; padding:5.25pt 3.75pt 5.25pt 3.75pt; background:revert!important; border:revert!important; bottom:revert!important; color:revert!important; direction:revert!important; display:revert!important; font-size:revert!important; height:revert!important; letter-spacing:revert!important; line-height:revert!important; margin:revert!important; opacity:revert!important; order:revert!important; outline:revert!important; overflow:revert!important; padding:revert!important; position:revert!important; tab-size:revert!important; table-layout:revert!important; text-align:revert!important; text-indent:revert!important; text-orientation:revert!important; text-overflow:revert!important; text-transform:revert!important; top:revert!important; vertical-align:revert!important; visibility:revert!important; white-space:revert!important; width:revert!important; word-break:revert!important; word-spacing:revert!important; writing-mode:revert!important; zoom:revert!important">
+</td>
+</tr>
+</tbody>
+</table>
+<div>
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">Hi Michael and Amy,</span></p>
+</div>
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">Following below project can you kindly clarify me the following:</span></p>
+</div>
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">&nbsp;</span></p>
+</div>
+<ol start="1" type="1" style="margin-top:0cm">
+<li class="x_x_MsoNormal" style="color:black; line-height:115%; list-style-type:&quot;1) &quot;">
+A07-502 (detail 8)</li></ol>
+<p class="x_x_MsoNormal" style="margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Shows powder coated trim 20x10 act as shadow line, should we include this in our scope or its part of cabinetry’s scope?</span></p>
+<ol start="2" type="1" style="margin-top:0cm">
+<li class="x_x_MsoNormal" style="color:black; line-height:115%; list-style-type:&quot;2) &quot;">
+A07-201 (general)</li></ol>
+<p class="x_x_MsoNormal" style="margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Should return be considered on shower/wall cladding? Nothing is shown.</span></p>
+<ol start="3" type="1" style="margin-top:0cm">
+<li class="x_x_MsoNormal" style="color:black; line-height:115%; list-style-type:&quot;3) &quot;">
+A07-100 (colour scheme)</li></ol>
+<p class="x_x_MsoNormal" style="margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Colour scheme section shown “DAWN, DUSK, TWILIGHT” but at finishing schedule shown “Medium, Dark, Light, Affordable”</span></p>
+<p class="x_x_MsoNormal" style="margin-right:0cm; margin-bottom:8.0pt; margin-left:90.0pt; text-indent:-18.0pt; line-height:115%">
+<span style="font-size:10.0pt; line-height:115%; font-family:Symbol; color:black"><span style="mso-list:Ignore">?<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="color:black">Do we have the final selected color scheme?</span></p>
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">&nbsp;</span></p>
+</div>
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">Thanks,</span></p>
+</div>
+<div id="x_x_Signature">
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">&nbsp;</span></p>
+</div>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">Ayleen Navas</span></p>
+<div>
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</div>
+<div>
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</div>
+<div>
+<p class="x_x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"><img border="0" width="162" height="58" id="x_x_x_x_x_image_0" data-outlook-trace="F:1|T:1" src="cid:image002.png@01DC848A.A64FE780" style="width:1.6875in; height:.6041in"></span><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"></span></p>
+</div>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496">E:
+<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a></span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496">P : 0420 683 134</span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496">18 John St, Bayswater WA 6053</span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496"><a href="http://www.piedra.com.au">www.piedra.com.au</a></span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<div>
+<p class="x_x_MsoNormal"><span style="color:black">&nbsp;</span></p>
+</div>
+</div>
+<div class="x_x_MsoNormal" align="center" style="text-align:center">
+<hr size="1" width="98%" align="center">
+</div>
+<div id="x_x_divRplyFwdMsg">
+<p class="x_x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br>
+<b>Sent:</b> Thursday, December 11, 2025 7:39 AM<br>
+<b>To:</b> Estimating Piedra &lt;<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a>&gt;<br>
+<b>Cc:</b> Zoltan Kovacs &lt;<a href="mailto:zoltan@piedra.com.au">zoltan@piedra.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;<br>
+<b>Subject:</b> RE: ARCO 22/24 Hood Street, Subiaco</span> </p>
+<div>
+<p class="x_x_MsoNormal">&nbsp;</p>
+</div>
+</div>
+<div>
+<div>
+<p class="x_x_xmsonormal">Aileen</p>
+<p class="x_x_xmsonormal">&nbsp;</p>
+<p class="x_x_xmsonormal">This should help. Please advise if this is what you need thanks to assess.</p>
+<p class="x_x_xmsonormal">&nbsp;</p>
+<div>
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<table class="x_x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="636" style="width:477.25pt; border-collapse:collapse">
+<tbody>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Kind Regards,</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><b><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">Michael Cheeseman</span></b></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">Project Director</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><b><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">BP 14081/BC 101031</span></b></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">T:&nbsp;&nbsp;08 9204 3388</span></p>
+<p class="x_x_xmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">E:
+<a href="mailto:michael@welink.com.au"><span style="color:blue">michael@welink.com.au</span></a></span></p>
+<p class="x_x_xmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">A: 269 Vincent St, Leederville, WA 6007</span></p>
+<p class="x_x_xmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">M: 0408 135 325</span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">W:</span><span style="font-family:&quot;Calibri&quot;,sans-serif">
+</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#0038A8"><a href="https://www.welink.com.au/"><span style="font-size:12.0pt; line-height:105%; color:#0038A8">Welink.com.au</span></a>;
+</span><span style="font-family:&quot;Calibri&quot;,sans-serif; color:#0038A8"><a href="https://www.meritor.com.au/"><span style="color:#0038A8">Meritor.com.au</span></a></span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</td>
+<td width="15" valign="top" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D"><img border="0" width="335" height="70" id="x_x_x_Picture_x0020_165986611" data-outlook-trace="F:1|T:1" src="cid:image001.png@01DC848A.A64FE780" style="width:3.4861in; height:.7291in"></span></p>
+</td>
+<td width="15" valign="bottom" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" align="center" style="text-align:center; line-height:105%">
+<span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">&nbsp;</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">&nbsp;</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><img border="0" width="413" height="207" id="x_x_x_Picture_x0020_4" data-outlook-trace="F:1|T:1" src="cid:image003.png@01DC848A.A64FE780" style="width:4.2986in; height:2.1597in"></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D">&nbsp;</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">This e-mail is private and confidential.</span></p>
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon
+ or disseminate this <br>
+e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"><a href="mailto:info@welink.com.au"><span style="font-size:8.0pt; line-height:105%; color:purple">info@welink.com.au</span></a></span><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">&nbsp;that
+ it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal" style="line-height:105%"><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="580" style="width:435.0pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="19" style="width:14.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm"></td>
+</tr>
+</tbody>
+</table>
+<p class="x_x_xmsonormal">&nbsp;</p>
+</div>
+<p class="x_x_xmsonormal">&nbsp;</p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_x_xmsonormal"><b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Estimating Piedra &lt;<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a>&gt;
+<br>
+<b>Sent:</b> Wednesday, 10 December 2025 4:51 PM<br>
+<b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br>
+<b>Cc:</b> Zoltan Kovacs &lt;<a href="mailto:zoltan@piedra.com.au">zoltan@piedra.com.au</a>&gt;<br>
+<b>Subject:</b> Re: ARCO 22/24 Hood Street, Subiaco</span></p>
+</div>
+</div>
+<p class="x_x_xmsonormal">&nbsp;</p>
+<table class="x_x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" align="left" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td width="0" style="width:.3pt; background:#A6A6A6; padding:5.25pt 1.5pt 5.25pt 1.5pt">
+</td>
+<td width="100%" style="width:100.0%; background:#EAEAEA; padding:5.25pt 3.75pt 5.25pt 11.25pt; background:revert!important; border:revert!important; bottom:revert!important; color:revert!important; direction:revert!important; display:revert!important; font-size:revert!important; height:revert!important; letter-spacing:revert!important; line-height:revert!important; margin:revert!important; opacity:revert!important; order:revert!important; outline:revert!important; overflow:revert!important; padding:revert!important; position:revert!important; tab-size:revert!important; table-layout:revert!important; text-align:revert!important; text-indent:revert!important; text-orientation:revert!important; text-overflow:revert!important; text-transform:revert!important; top:revert!important; vertical-align:revert!important; visibility:revert!important; white-space:revert!important; width:revert!important; word-break:revert!important; word-spacing:revert!important; writing-mode:revert!important; zoom:revert!important">
+<div>
+<p class="x_x_xmsonormal" style=""><span style="font-size:9.0pt; font-family:&quot;Segoe UI&quot;,sans-serif; color:#212121">You don't often get email from
+<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a>. <a href="https://aka.ms/LearnAboutSenderIdentification">
+Learn why this is important</a> </span></p>
+</div>
+</td>
+<td width="75" style="width:56.25pt; background:#EAEAEA; padding:5.25pt 3.75pt 5.25pt 3.75pt; background:revert!important; border:revert!important; bottom:revert!important; color:revert!important; direction:revert!important; display:revert!important; font-size:revert!important; height:revert!important; letter-spacing:revert!important; line-height:revert!important; margin:revert!important; opacity:revert!important; order:revert!important; outline:revert!important; overflow:revert!important; padding:revert!important; position:revert!important; tab-size:revert!important; table-layout:revert!important; text-align:revert!important; text-indent:revert!important; text-orientation:revert!important; text-overflow:revert!important; text-transform:revert!important; top:revert!important; vertical-align:revert!important; visibility:revert!important; white-space:revert!important; width:revert!important; word-break:revert!important; word-spacing:revert!important; writing-mode:revert!important; zoom:revert!important">
+</td>
+</tr>
+</tbody>
+</table>
+<div>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">Hi Michael,</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">Looking at the drawings and to complete our general overview I might require 1 document which I did not find on the provided link.</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">Updated selection of colour scheme, on drawing A07-100 rev 01 shows few selected APT but not matching with the finishing schedule. Do you have the
+<b><i><u>updated colour scheme selection sheet?</u></i></b>&nbsp;appreciate if you can share it to us.</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">&nbsp;</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">Thanks,</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">&nbsp;</span></p>
+</div>
+<div id="x_x_x_Signature">
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">&nbsp;</span></p>
+</div>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">Aileen Navas</span></p>
+<div>
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</div>
+<div>
+<p class="x_x_xmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"><img border="0" width="162" height="58" id="x_x_x_x_image_0" data-outlook-trace="F:1|T:1" src="cid:image002.png@01DC848A.A64FE780" style="width:1.6875in; height:.6041in"></span></p>
+</div>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496">E:
+<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a></span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496">P : 0420 683 134</span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496">30B, Sarich Court, Osborne Park, WA 6017</span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#2F5496"><a href="http://www.piedra.com.au">www.piedra.com.au</a></span></p>
+<p><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<div>
+<p class="x_x_xmsonormal"><span style="color:black">&nbsp;</span></p>
+</div>
+</div>
+<div class="x_x_MsoNormal" align="center" style="text-align:center">
+<hr size="1" width="98%" align="center">
+</div>
+<div id="x_x_x_divRplyFwdMsg">
+<p class="x_x_xmsonormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"> Zoltan Kovacs &lt;<a href="mailto:zoltan@piedra.com.au">zoltan@piedra.com.au</a>&gt;<br>
+<b>Sent:</b> Wednesday, December 10, 2025 12:51 PM<br>
+<b>To:</b> Estimating Piedra &lt;<a href="mailto:estimating@piedra.com.au">estimating@piedra.com.au</a>&gt;<br>
+<b>Subject:</b> FW: ARCO 22/24 Hood Street, Subiaco</span> </p>
+<div>
+<p class="x_x_xmsonormal">&nbsp;</p>
+</div>
+</div>
+<div>
+<div>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<div>
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt">&nbsp;</span></p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal"><b><span style="font-size:10.0pt; color:black">Zoltan Kovacs</span></b><span style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black"><br>
+</span><b><span style="font-size:10.0pt; color:black"><br>
+</span></b><span style="font-size:10.0pt; color:black"><a href="mailto:zoltan@piedra.com.au">zoltan@piedra.com.au</a><b><br>
+</b></span><span style="font-size:9.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black">+61 8 9421 1714</span></p>
+<p class="x_x_xxmsonormal"><span style="font-size:9.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black">+61 411556717<br>
+18 John Street, Bayswater, WA 6053</span></p>
+<p class="x_x_xxmsonormal"><span style="font-size:9.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_x_xxmsonormal"><b><img border="0" width="162" height="58" id="x_x_x_x_Picture_x0020_27" alt="logo-CHICO" data-outlook-trace="F:1|T:1" src="cid:image004.png@01DC848A.A64FE780" style="width:1.6875in; height:.6041in"></b><span style="font-size:9.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black"><br>
+</span><b><span style="font-size:10.0pt; color:black"><br>
+</span></b><b><span style="font-size:9.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black">piedra.com.au<br>
+<br>
+</span></b><span lang="EN-US" style="font-size:10.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:#D0CECE">--------------</span></p>
+<p class="x_x_xxmsonormal" style="margin-bottom:12.0pt"><span lang="EN-US" style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:#AEAAAA">Follow us:</span><span lang="EN-US" style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black"><br>
+<br>
+</span><a href="https://www.facebook.com/piedraptyltd1"><span style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black; text-decoration:none"><img border="0" width="25" height="25" id="x_x_x_x_Picture_x0020_28" alt="facebook" data-outlook-trace="F:1|T:1" src="cid:image005.png@01DC848A.A64FE780" style="width:.2638in; height:.2638in"></span></a><span lang="EN-US" style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black">&nbsp;&nbsp;
+</span><span style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black">&nbsp;</span><a href="https://www.instagram.com/piedra_pty_ltd/"><span style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black; text-decoration:none"><img border="0" width="25" height="25" id="x_x_x_x_Picture_x0020_29" alt="instagram" data-outlook-trace="F:1|T:1" src="cid:image006.png@01DC848A.A64FE780" style="width:.2638in; height:.2638in"></span></a></p>
+<p class="x_x_xxmsonormal"><span style="font-size:8.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:black"><img border="0" width="67" height="33" id="x_x_x_x_Picture_x0020_30" alt="cm3" data-outlook-trace="F:1|T:1" src="cid:image007.png@01DC848A.A64FE780" style="width:.7013in; height:.3472in"></span></p>
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt">&nbsp;</span></p>
+</div>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_x_xxmsonormal"><b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span lang="EN-US" style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;
+<br>
+<b>Sent:</b> Tuesday, 9 December 2025 1:06 PM<br>
+<b>To:</b> Zoltan Kovacs &lt;<a href="mailto:zoltan@piedra.com.au">zoltan@piedra.com.au</a>&gt;<br>
+<b>Subject:</b> ARCO 22/24 Hood Street, Subiaco<br>
+<b>Importance:</b> High</span></p>
+</div>
+</div>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">Zoltan</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">Good to chat earlier, please find attached details for the Project for pricing for Joinery and Stone for ARCO Subiaco -
+<b><a href="http://www.arcosubiaco.com.au"><span style="color:windowtext">www.arcosubiaco.com.au</span></a></b> - please read through and meet up on site next week to review.</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">This will be a new 50 Apartment building with 2 Commercial Tenancies. Works commenced and Joinery required by late 2026 and complete by 3<sup>rd</sup> Quarter 2027.</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal"><b><u>Request for Tender</u></b></p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">WeLink Construction Pty Ltd would like to invite <b>PIEDRA
+</b>to provide a Tender for <b>JOINERY &amp; STONE </b>Works for the above project.</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">We are seeking proposals from qualified Suppliers/Vendors that can meet our requirements and deliver high-quality solutions.</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">The scope of the Tender includes the following Design Drawings and the current IFC
+</p>
+<p class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>ARCHITECTURAL – </b>
+<a href="https://welinkcomau-my.sharepoint.com/:b:/g/personal/sam_welink_com_au/EXz7oXJ349RAo4Y9jxMw35YBCUtNGboIPrf2f-iqKKF7PA?e=6649QM"><span class="x_x_xxmsosmartlink">2216_ARCO Architecture Drawings_250411.pdf</span></a></li></ul>
+<p class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>ARCHITECTURAL - </b>
+<span lang="EN-US"><a href="https://www.dropbox.com/scl/fo/4d9uwq57elz5x1wleru24/AHr_57VjTY-Gp0cxdM8i0dM?rlkey=n8ysli7m4eaevvt0cg75q94sa&amp;st=yjdetp3f&amp;dl=0"><span style="color:blue">https://www.dropbox.com/scl/fo/4d9uwq57elz5x1wleru24/AHr_57VjTY-Gp0cxdM8i0dM?rlkey=n8ysli7m4eaevvt0cg75q94sa&amp;st=yjdetp3f&amp;dl=0</span></a></span></li></ul>
+<p class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b><span lang="EN-US">&nbsp;</span></b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b><span lang="EN-US">ARCHITECTURAL - &nbsp;FF&amp;E -
+</span></b></li></ul>
+<p class="x_x_xxmsonormal" style="margin-left:72.0pt"><span lang="EN-US"><a href="https://www.dropbox.com/scl/fo/4d9uwq57elz5x1wleru24/AHr_57VjTY-Gp0cxdM8i0dM?rlkey=n8ysli7m4eaevvt0cg75q94sa&amp;st=yjdetp3f&amp;dl=0">https://www.dropbox.com/scl/fo/4d9uwq57elz5x1wleru24/AHr_57VjTY-Gp0cxdM8i0dM?rlkey=n8ysli7m4eaevvt0cg75q94sa&amp;st=yjdetp3f&amp;dl=0</a></span></p>
+<p class="x_x_xxmsonormal"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>TECHNICAL DOCUMENTS -
+</b><a href="https://welinkcomau-my.sharepoint.com/:u:/g/personal/sam_welink_com_au/EV9NWjB79gREkcMNpSIzhAYBSr_5NCTdq5Q8ejIZICbVXg?e=TPWWqM"><span class="x_x_xxmsosmartlink">Technical Documents.zip</span></a></li></ul>
+<p class="x_x_xxmsonormal"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>HYDRAULICS – </b><a href="https://welinkcomau-my.sharepoint.com/:b:/g/personal/sam_welink_com_au/EUapRc10EthKlc83vKPLN1YB9p7nEXB-weY7pQH2alM1_g?e=6zorNV"><span class="x_x_xxmsosmartlink">Hydraulic
+ Drawings_BP_250327.pdf</span></a></li></ul>
+<p class="x_x_xxmsonormal"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>STRUCTURAL –</b><a href="https://welinkcomau-my.sharepoint.com/:b:/g/personal/sam_welink_com_au/EbQbxJxxpvBFq9B1Lw2NSx8Bbeq3Xu227wIc2afHmjST5g?e=ekmp7c"><span class="x_x_xxmsosmartlink">Structural
+ Drawings_BP_250320.pdf</span></a></li></ul>
+<p class="x_x_xxmsonormal"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>ELECTRICAL – </b><a href="https://welinkcomau-my.sharepoint.com/:b:/g/personal/sam_welink_com_au/ESR9xbOgPSlOtmlDVmEJ32QBUy-JUGyqQe16QWmqcUjaQg?e=WObfkw"><span class="x_x_xxmsosmartlink">Electrical
+ Drawings_DFES and BP_250313.pdf</span></a></li></ul>
+<p class="x_x_xxmsonormal"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>WET FIRE – </b><a href="https://welinkcomau-my.sharepoint.com/:b:/g/personal/sam_welink_com_au/ET0ykjGuT1ZAnfJreyPdpJ8Bk6TuqJbWQNjttf_sMt0eKQ?e=ookUr8"><span class="x_x_xxmsosmartlink">Wet Fire Drawings_DFES
+ &amp; BP_250317.pdf</span></a></li></ul>
+<p class="x_x_xxmsolistparagraph"><b>&nbsp;</b></p>
+<ul type="disc" style="margin-top:0cm">
+<li class="x_x_xxmsolistparagraph" style="margin-left:0cm"><b>MECHANICAL - </b><a href="https://welinkcomau-my.sharepoint.com/:b:/g/personal/sam_welink_com_au/ETWAiJUxBElNg5_eC2WpT-4BaTTWaIsf6ReNMiHV1E_AzQ?e=iacdJC"><span class="x_x_xxmsosmartlink">Combined
+ Building Permit Set - AZ Mechanical.pdf</span></a></li></ul>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal"><b><u>Please submit your proposal addressing the following:</u></b></p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">All proposals must be submitted by to <b><u><span style="color:black"><a href="mailto:michael@welink.com.au"><span style="color:black">michael@welink.com.au</span></a> by
+</span>16<sup>th</sup> January 2026.</u></b></p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">Please ensure your submission adheres to the requirements outlined in the attached documentation. Late submissions may not be considered. For further details or clarification, please contact Michael Cheeseman on details below for
+ any further information.</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">We look forward to receiving your proposal and the opportunity to collaborate with your organisation.</p>
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<table class="x_x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="636" style="width:477.25pt; border-collapse:collapse">
+<tbody>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">Kind Regards,</span></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><b><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">Michael Cheeseman</span></b></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">Project Director</span></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><b><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:#212121; border:none windowtext 1.0pt; padding:0cm; background:white">BP 14081/BC 101</span></b><b><span lang="EN-GB" style="font-family:&quot;Calibri&quot;,sans-serif; color:black; border:none windowtext 1.0pt; padding:0cm; background:white">031</span></b></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">T:&nbsp;&nbsp;08 9204 3388</span></p>
+<p class="x_x_xxmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">E:
+<a href="mailto:michael@welink.com.au"><span style="color:blue">michael@welink.com.au</span></a></span></p>
+<p class="x_x_xxmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">A: 269 Vincent St, Leederville, WA 6007</span></p>
+<p class="x_x_xxmsonormal"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">M: 0408 135 325</span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">W:</span><span style="font-family:&quot;Calibri&quot;,sans-serif">
+</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"><a href="https://www.welink.com.au/"><span style="font-size:12.0pt; line-height:105%; color:blue">Welink.com.au</span></a></span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+</td>
+<td width="15" valign="top" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="614" colspan="3" valign="top" style="width:460.75pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D"><img border="0" width="335" height="70" id="x_x_x_x_Picture_x0020_1" data-outlook-trace="F:1|T:1" src="cid:image001.png@01DC848A.A64FE780" style="width:3.4861in; height:.7291in"></span></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#1F497D"><img border="0" width="235" height="91" id="x_x_x_x_Picture_x0020_6" data-outlook-trace="F:1|T:1" src="cid:image008.png@01DC848A.A64FE780" style="width:2.4513in; height:.9513in"></span><span style="font-family:&quot;Calibri&quot;,sans-serif"><img border="0" width="167" height="108" id="x_x_x_x_Picture_x0020_2" alt="signature_3358593204" data-outlook-trace="F:1|T:1" src="cid:image009.png@01DC848A.A64FE780" style="width:1.743in; height:1.125in"></span></p>
+</td>
+<td width="15" valign="bottom" style="width:11.1pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" align="center" style="text-align:center; line-height:105%">
+<span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr style="height:1.0pt">
+<td width="587" colspan="2" valign="top" style="width:440.2pt; padding:0cm 5.4pt 0cm 5.4pt; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">This e-mail is private and confidential.</span></p>
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon
+ or disseminate this <br>
+e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style="font-size:11.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif"><a href="mailto:info@welink.com.au"><span style="font-size:8.0pt; line-height:105%; color:purple">info@welink.com.au</span></a></span><span style="font-size:8.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif; color:#404040">&nbsp;that
+ it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span></p>
+</td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal" style="line-height:105%"><span style="font-size:10.0pt; line-height:105%; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+<td width="34" colspan="2" style="width:25.5pt; padding:0cm 0cm 0cm 0cm; height:1.0pt">
+<p class="x_x_xxmsonormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td width="7" style="width:5.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="580" style="width:435.0pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="19" style="width:14.25pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="15" style="width:11.25pt; padding:0cm 0cm 0cm 0cm"></td>
+</tr>
+</tbody>
+</table>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+<p class="x_x_xxmsonormal">&nbsp;</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

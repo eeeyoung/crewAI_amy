@@ -13,4 +13,5 @@ generate_reply_task:
   expected_output: >
     A plain text string containing ONLY the body of the generated email reply. 
     Do not include the subject line or any preamble like "Here is the response:".
+    Do not include the sender's signature or any other boilerplate text.
   agent: reply_assistant

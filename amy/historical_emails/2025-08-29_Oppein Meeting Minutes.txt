@@ -1,0 +1,95 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=us-ascii"><meta name=Generator content="Microsoft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Calibri",sans-serif;
+	mso-ligatures:standardcontextual;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:364911388;
+	mso-list-template-ids:-2028686574;}
+@list l1
+	{mso-list-id:1297032386;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1526617096 201916431 201916441 201916443 201916431 201916441 201916443 201916431 201916441 201916443;}
+@list l1:level1
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level2
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level3
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l1:level4
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level5
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level6
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+@list l1:level7
+	{mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level8
+	{mso-level-number-format:alpha-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level9
+	{mso-level-number-format:roman-lower;
+	mso-level-tab-stop:none;
+	mso-level-number-position:right;
+	text-indent:-9.0pt;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]--></head><body lang=EN-AU link="#0563C1" vlink="#954F72" style='word-wrap:break-word'><div class=WordSection1><p class=MsoNormal><span style='font-size:11.0pt'>Hi team,<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'>Please see below meeting minutes from today&#8217;s meeting with Oppein (for internal use only):<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'>Oppein presented factory, global projects and samples. <o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'>Key issues:<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'>For ARCO, the quote provided was based on alternatives they are currently using on another job with SDA, the majority of which have been approved by SDA. I asked them to confirm that they are confident their alternatives on 2pc materials will be approved by our architect, and further requested that Oppein confirm verbally that there will be no variations or extra costs regardless of whether the architect accepts their alternatives.<o:p></o:p></span></p><ol style='margin-top:0cm' start=1 type=1><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>I will send Oppein the colour upgrades chosen by the apartment buyers. For the standard apartments, we will switch to their standard colours for pricing, and Oppein will advise on any cost savings.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Oppein will not sign a contract with us; the contract will be between their designated local installer and Welink. I have requested to meet with their local installer next month, and they will arrange a time. This presents a risk for us, as Oppein will still be involved in paperwork such as alternatives, value engineering, variations, and defects, while we only contract with the local installer.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Manufacture warranties on hardware of up to five years on hardware can be provided.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Their 2pc boards will have colour fading tests and the result will be between 3-4 out of 5, which is acceptable per Australian Standards. </span><span style='font-size:11.0pt'>All </span><span style='font-size:11.0pt'>boards will have water resistance test and MDF for abrasion test and certificates will be provided in O&amp;M as well.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Their alternative stone product is ZERO </span><span style='font-size:11.0pt'>SILICONE contained Quartz stone, which can be a good alternative to the porcelain finishes. Samples will be sent to us, and Shane has sent over some photos from today&#8217;s meeting.</span><span style='font-size:11.0pt'><o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>The lead time from shop drawing approval is three months, including two months for manufacturing and one month for shipment to Fremantle depot.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Horizontal-size material transportation is not allowed, and materials must be loaded via the site elevator.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Oppein can provide a quote for our curved bathroom vanities and will update the price following our request in the meeting.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>A key concern is that Oppein does not accept our general payment terms, as their terms require full payment for materials before they are loaded into containers. They are open to discussion, and I proposed a compromise: a 5% deposit at the time of placing the order for shop drawings and preliminaries, with the next payment due when materials are installed on site. This will be further discussed with their local installer next month to confirm acceptable terms and likely reach a middle ground.<o:p></o:p></span></li><li class=MsoNormal style='mso-list:l0 level1 lfo2'><span style='font-size:11.0pt'>Oppein will not conduct site measurements due to manufacturing timeframes, but they will provide spare materials so that the local installer can adjust cuts and edges on site. This approach is acceptable for ARCO, as Shane will coordinate with the local installer beforehand and raise any concerns about clashes or deviations three months prior to installation.<o:p></o:p></span></li></ol><p class=MsoNormal><span style='font-size:11.0pt'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt'><o:p>&nbsp;</o:p></span></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal><span style='color:black;mso-ligatures:none'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span style='color:black;mso-ligatures:none'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span style='color:black;mso-ligatures:none'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal><span style='color:black;mso-ligatures:none'>Commercial Contracts Administrator<o:p></o:p></span></p><p class=MsoNormal><span style='color:black;mso-ligatures:none'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='color:black;mso-ligatures:none'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='color:black;mso-ligatures:none'>E: </span><a href="mailto:amy@welink.com.au"><span style='color:blue'>amy</span><span style='color:blue'>@welink.com.au</span></a><span style='color:black;mso-ligatures:none'><o:p></o:p></span></p><p class=MsoNormal><span style='color:black'>A: 269 Vincent St, Leederville, WA 6007<span style='mso-ligatures:none'><o:p></o:p></span></span></p><p class=MsoNormal><span style='color:black;mso-ligatures:none'>M: </span><span style='color:black'>0493 306 008<o:p></o:p></span></p><p class=MsoNormal>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/"><span style='color:blue'>Meritor.com.au</span></a><span style='color:black'> | </span><a href="https://www.welink.com.au/"><span style='color:blue'>Welink.com.au</span></a><span style='color:black;mso-ligatures:none'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='color:#1F497D'><img border=0 width=334 height=70 style='width:3.4833in;height:.7333in' id="Picture_x0020_1" src="cid:image001.png@01DC18EA.B050EE20"></span> <img border=0 width=167 height=108 style='width:1.7416in;height:1.125in' id="Picture_x0020_2" src="cid:image002.png@01DC18EA.B050EE20" alt="signature_3358593204"><span style='color:#1F497D'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040'>This e-mail is private and confidential.</span><span style='color:black'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a><span style='font-size:8.0pt;line-height:105%;color:#404040'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='font-size:11.0pt;line-height:105%;color:black'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;color:#404040;text-decoration:none'><img border=0 width=28 height=28 style='width:.2916in;height:.2916in' id="Picture_x0020_3" src="cid:image003.png@01DC18EA.B050EE20"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;color:#404040;text-decoration:none'><img border=0 width=26 height=26 style='width:.275in;height:.275in' id="Picture_x0020_4" src="cid:image004.png@01DC18EA.B050EE20"></span></a><span style='font-size:8.0pt;line-height:105%;color:#404040'>&nbsp;&nbsp;</span><span style='color:#404040'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;color:#404040'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;color:#BFBFBF'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;color:#BFBFBF'>&nbsp;</span><span style='font-size:11.0pt;line-height:105%;color:#1F497D'><o:p></o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal><span style='color:black;mso-ligatures:none'><o:p>&nbsp;</o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='color:#1F497D'><o:p>&nbsp;</o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='height:1.0pt'><td width=602 colspan=2 valign=top style='width:451.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;color:black'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='height:1.0pt'><td width=602 colspan=2 valign=top style='width:451.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;color:#404040'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;color:#1F497D'><o:p>&nbsp;</o:p></span></p></td><td style='border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr></table><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><o:p>&nbsp;</o:p></p></div></body></html>

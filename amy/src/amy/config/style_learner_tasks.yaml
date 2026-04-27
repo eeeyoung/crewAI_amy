@@ -1,0 +1,16 @@
+extract_style_blueprint_task:
+  description: >
+    Read all historical sent emails from the provided directory path.
+    Analyze the corpus to extract the specific personal writing and thinking style of the owner
+    (Amy Chen, Contract Admin of Construction Projects of Welink).
+    
+    You must extract and formulate:
+    1. Sentence structure (average length, complexity).
+    2. Vocabulary preferences (words used frequently vs. words avoided).
+    3. Formatting habits (sign-offs, bullet points vs. prose).
+    4. Reasoning Logic (how follow-up questions or direct requests are handled).
+
+    The files are available in: {directory_path}
+  expected_output: >
+    A JSON object containing the exact structure defined by the StyleBlueprint Pydantic model.
+  agent: style_analyst

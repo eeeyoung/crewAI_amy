@@ -1,0 +1,409 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><meta name=Generator content="Microsoft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+span.EmailStyle21
+	{mso-style-type:personal-reply;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:80957763;
+	mso-list-template-ids:1439732032;}
+@list l0:level1
+	{mso-level-start-at:2;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level2
+	{mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level3
+	{mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level4
+	{mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level5
+	{mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level6
+	{mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level7
+	{mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level8
+	{mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l0:level9
+	{mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1
+	{mso-list-id:83307079;
+	mso-list-template-ids:1104474848;}
+@list l1:level1
+	{mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level2
+	{mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level3
+	{mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level4
+	{mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level5
+	{mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level6
+	{mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level7
+	{mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level8
+	{mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l1:level9
+	{mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l2
+	{mso-list-id:125898358;
+	mso-list-template-ids:-463417454;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l3
+	{mso-list-id:639457657;
+	mso-list-template-ids:1989299928;}
+@list l3:level1
+	{mso-level-start-at:3;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level2
+	{mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level3
+	{mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level4
+	{mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level5
+	{mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level6
+	{mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level7
+	{mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level8
+	{mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l3:level9
+	{mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;}
+@list l4
+	{mso-list-id:777868386;
+	mso-list-template-ids:278688100;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l4:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l4:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5
+	{mso-list-id:1288312034;
+	mso-list-template-ids:-1074348864;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l5:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l5:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+@list l5:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]--></head><body lang=EN-AU link=blue vlink=purple style='word-wrap:break-word'><div class=WordSection1><p class=MsoNormal> No worries, <span lang=EN-US>will keep you posted</span><span lang=EN-US style='font-family:"Segoe UI Emoji",sans-serif'>&#128521;</span><span lang=EN-US><o:p></o:p></span></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif;color:black'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>Commercial Contracts Administrator<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>E: </span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:amy@welink.com.au">amy@welink.com.au</a></span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>M: </span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>0493 306 008<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/">Meritor.com.au</a><span style='color:black'> | </span><a href="https://www.welink.com.au/">Welink.com.au</a></span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D'><img border=0 width=335 height=70 style='width:3.4916in;height:.7333in' id="_x0000_i1055" src="cid:image001.png@01DCC837.74A55120"></span><span style='font-family:"Calibri",sans-serif'><img border=0 width=167 height=108 style='width:1.7416in;height:1.125in' id="_x0000_i1054" src="cid:image002.png@01DCC837.74A55120" alt="signature_3358593204"></span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>This e-mail is private and confidential.</span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;text-decoration:none'><img border=0 width=28 height=28 style='width:.2916in;height:.2916in' id="Picture_x0020_22" src="cid:image003.png@01DCC837.74A55120"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;text-decoration:none'><img border=0 width=26 height=26 style='width:.275in;height:.275in' id="Picture_x0020_23" src="cid:image004.png@01DCC837.74A55120"></span></a><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>&nbsp;</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr></table><p class=MsoNormal><span style='mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'> Sam Zhao &lt;sam@welink.com.au&gt; <br><b>Sent:</b> Thursday, April 9, 2026 3:40 PM<br><b>To:</b> Amy Chen &lt;amy@welink.com.au&gt;<br><b>Cc:</b> Michael Cheeseman &lt;michael@welink.com.au&gt;; Nicholas Shao &lt;nicholas@welink.com.au&gt;; Shane Scudder &lt;Shane@welink.com.au&gt;<br><b>Subject:</b> RE: *URGENT* Approval Request – ARCO - FFE Order Placement &amp; Cost Saving Proposal (ARCO)<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>I just need one sample so I can have it side by side with YnZ that Nicholas brought back to the office.<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><b><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>Sam Zhao<o:p></o:p></span></b></p><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>Director<o:p></o:p></span></p></td><td width=15 valign=top style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>M:&nbsp;&nbsp; 0488 885 887<o:p></o:p></span></p></td><td width=15 valign=top style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>E:&nbsp;&nbsp;&nbsp;&nbsp; </span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:sam@welink.com.au"><span style='font-size:12.0pt;line-height:105%;color:#0563C1'>sam@welink.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td><td width=15 valign=top style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>W:&nbsp;&nbsp; </span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="https://www.meritor.com.au/"><span style='font-size:12.0pt;line-height:105%;color:#0563C1'>Meritor.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'> | </span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="https://www.welink.com.au/"><span style='font-size:12.0pt;line-height:105%;color:#0563C1'>Welink.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td><td width=15 valign=top style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>A: 269 Vincent St, Leederville, WA 6007<o:p></o:p></span></p></td><td width=15 valign=top style='width:11.1pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></td></tr></table><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><img border=0 width=502 height=108 style='width:5.225in;height:1.125in' id="Picture_x0020_453782930" src="cid:image005.png@01DCC837.74A55120"></span><span style='font-family:SimSun;color:black'><o:p></o:p></span></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=602 valign=top style='width:451.3pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><span style='font-size:12.0pt;line-height:105%;font-family:SimSun;color:black;mso-ligatures:standardcontextual;mso-fareast-language:ZH-CN'><br clear=all style='page-break-before:always'></span><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>This e-mail is private and confidential.</span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.<o:p></o:p></span></p></td></tr></table><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:windowtext;text-decoration:none'><img border=0 width=30 height=30 style='width:.3166in;height:.3166in' id="Picture_x0020_408633812" src="cid:image006.jpg@01DCC837.74A55120"></span></a><a href="https://www.facebook.com/people/Meritor-Homes/61554125366149/?_rdr"><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:windowtext;text-decoration:none'><img border=0 width=29 height=29 style='width:.3in;height:.3in' id="Picture_x0020_4" src="cid:image007.jpg@01DCC837.74A55120"></span></a><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>FOLLOW US ON SOCIAL MEDIA<br></span><span lang=EN-US style='font-size:7.5pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>&nbsp;</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D;mso-ligatures:standardcontextual'><o:p></o:p></span></p></div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><o:p>&nbsp;</o:p></span></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'> Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt; <br><b>Sent:</b> Thursday, 9 April 2026 3:07 PM<br><b>To:</b> Sam Zhao &lt;<a href="mailto:sam@welink.com.au">sam@welink.com.au</a>&gt;<br><b>Cc:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;; Nicholas Shao &lt;<a href="mailto:nicholas@welink.com.au">nicholas@welink.com.au</a>&gt;; Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;<br><b>Subject:</b> RE: *URGENT* Approval Request – ARCO - FFE Order Placement &amp; Cost Saving Proposal (ARCO)<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal>Hi <span lang=EN-US>Sam,<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span lang=EN-US>I just spoke with the Novas rep, and he is arranging for some kitchen mixer samples to be delivered now.<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US>The samples will be kitchen mixers in colours: gold, bronze, and gun metal.<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span lang=EN-US>Please note, however, that Novas does not supply coloured sinks as they are prone to scratching.<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US>If we proceed with Novas products, we should consider using the brass Nicho colour consistently throughout.<o:p></o:p></span></p><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif;color:black'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>Commercial Contracts Administrator<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>E: </span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:amy@welink.com.au">amy@welink.com.au</a></span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black'>M: <span style='mso-ligatures:standardcontextual'>0493 306 008<o:p></o:p></span></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/">Meritor.com.au</a><span style='color:black'> | </span><a href="https://www.welink.com.au/">Welink.com.au</a></span><span style='font-family:"Calibri",sans-serif;color:black'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D'><img border=0 width=335 height=70 style='width:3.4916in;height:.7333in' id="Picture_x0020_300522944" src="cid:image001.png@01DCC837.74A55120"></span><span style='font-family:"Calibri",sans-serif'><img border=0 width=167 height=108 style='width:1.7416in;height:1.125in' id="Picture_x0020_545099295" src="cid:image002.png@01DCC837.74A55120" alt="signature_3358593204"></span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>This e-mail is private and confidential.</span><span style='font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-family:"Calibri",sans-serif;mso-ligatures:standardcontextual'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:black;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;text-decoration:none'><img border=0 width=28 height=28 style='width:.2916in;height:.2916in' id="Picture_x0020_15" src="cid:image003.png@01DCC837.74A55120"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;text-decoration:none'><img border=0 width=26 height=26 style='width:.275in;height:.275in' id="Picture_x0020_16" src="cid:image004.png@01DCC837.74A55120"></span></a><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#BFBFBF;mso-ligatures:standardcontextual'>&nbsp;</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D;mso-ligatures:standardcontextual'><o:p></o:p></span></p></td></tr></table><p class=MsoNormal><span style='mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in 0in 0in'><p class=MsoNormal><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif'> Sam Zhao &lt;<a href="mailto:sam@welink.com.au">sam@welink.com.au</a>&gt; <br><b>Sent:</b> Thursday, April 9, 2026 3:03 PM<br><b>To:</b> Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;<br><b>Cc:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;; Nicholas Shao &lt;<a href="mailto:nicholas@welink.com.au">nicholas@welink.com.au</a>&gt;; Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;<br><b>Subject:</b> Re: *URGENT* Approval Request – ARCO - FFE Order Placement &amp; Cost Saving Proposal (ARCO)<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><div><div><p class=MsoNormal><span style='color:black'>Hi Amy,<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='color:black'><o:p>&nbsp;</o:p></span></p></div><div><p class=MsoNormal><span style='color:black'>I had a quick look at the tap.<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='color:black'><o:p>&nbsp;</o:p></span></p></div><div><p class=MsoNormal><span style='color:black'>Can we organise a sample from Novas for the same kitchen tap and in the same colour so we have a side by side comparison?<o:p></o:p></span></p></div></div><div id=ms-outlook-mobile-body-separator-line><p class=MsoNormal><o:p>&nbsp;</o:p></p></div><div id=ms-outlook-mobile-signature><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse'><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><b><span style='font-family:"Calibri",sans-serif;color:black'>Sam Zhao</span></b><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p><p style='margin:0in'><span style='font-family:"Calibri",sans-serif;color:black'>Director</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td><td width=18 valign=top style='width:13.5pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif;color:black'>P:&nbsp;&nbsp;&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#0078D4'>08 9204 3388</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td><td width=18 valign=top style='width:13.5pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif;color:black'>M:&nbsp;&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#0078D4'>0488 885 887</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td><td width=18 valign=top style='width:13.5pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>E:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><a href="mailto:sam@welink.com.au" title="mailto:sam@welink.com.au"><span style='font-size:12.0pt;color:#0078D4'>sam@welink.com.au</span></a></span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td><td width=18 valign=top style='width:13.5pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>W:&nbsp;&nbsp;&nbsp;</span><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><a href="https://www.meritor.com.au/" title="https://www.meritor.com.au/"><span style='font-size:12.0pt;color:#0563C1'>Meritor.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black'>&nbsp;|&nbsp;</span><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'><a href="https://www.welink.com.au/" title="https://www.welink.com.au/"><span style='font-size:12.0pt;color:#0563C1'>Welink.com.au</span></a></span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td><td width=18 valign=top style='width:13.5pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td></tr><tr style='height:1.0pt'><td width=587 valign=top style='width:440.2pt;padding:0in 5.4pt 0in 5.4pt;height:1.0pt'><p style='margin:0in'><span style='font-family:"Calibri",sans-serif;color:black'>A:&nbsp;269 Vincent St, Leederville, WA 6007</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif'><o:p></o:p></span></p></td><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'></td></tr></table></div></div><div class=MsoNormal align=center style='text-align:center'><hr size=2 width="98%" align=center></div><div id=divRplyFwdMsg><p class=MsoNormal><b><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:black'>From:</span></b><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:black'> Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;<br><b>Sent:</b> Thursday, April 9, 2026 12:15:19 PM<br><b>To:</b> Sam Zhao &lt;<a href="mailto:sam@welink.com.au">sam@welink.com.au</a>&gt;<br><b>Cc:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;; Nicholas Shao &lt;<a href="mailto:nicholas@welink.com.au">nicholas@welink.com.au</a>&gt;; Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;<br><b>Subject:</b> RE: *URGENT* Approval Request – ARCO - FFE Order Placement &amp; Cost Saving Proposal (ARCO)</span> <o:p></o:p></p><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div></div><div><div><p class=MsoNormal>Hi Sam,<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><div><p class=MsoNormal>Noted. Nicholas has brought samples today for your final review—please confirm if you would like to switch back to Novas.<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><div><p class=MsoNormal>Please note that Novas only supplies plumbing fixtures and does not include other items such as shower trays, cloth hooks, towel rails, shower curtains, change tables, mirrors, and pedestal sinks (86 ea).<o:p></o:p></p></div><div><p class=MsoNormal>I have already requested Novas to review and confirm their pricing. Please let me know how you would like to proceed.<o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width=587 style='width:440.2pt'><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>Kind regards, <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>&nbsp;<o:p></o:p></span></p></div><div><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif'>Amy Chen</span></b><span style='font-family:"Calibri",sans-serif'><o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>Commercial Contracts Administrator<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>&nbsp;<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>E: <a href="mailto:amy@welink.com.au">amy@welink.com.au</a><o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>A: 269 Vincent St, Leederville, WA 6007<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>M: 0493 306 008<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/">Meritor.com.au</a> | <a href="https://www.welink.com.au/">Welink.com.au</a><o:p></o:p></span></p></div></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Times New Roman",serif'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1044" src="cid:image001.png@01DCAFE3.3594BF50"></span><span style='font-family:"Times New Roman",serif'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1043" src="cid:8707FDC65B7E22E0421DF74C2E6D352267F1729D@1"></span><span style='font-family:"Times New Roman",serif'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1042" src="cid:image002.png@01DCAFE3.3594BF50"></span><span style='font-family:"Times New Roman",serif'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1041" src="cid:B876DE6604E2BA29C9DA22614C5E62D581AED81D@1"></span><o:p></o:p></p></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>This e-mail is private and confidential. <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;<a href="mailto:info@welink.com.au"><span style='color:purple'>info@welink.com.au</span></a>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.<o:p></o:p></span></p></div></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Times New Roman",serif;color:#404040'>&nbsp; <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif;color:#404040'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='text-decoration:none'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1040" src="cid:image003.png@01DCAFE3.3594BF50"></span><span style='text-decoration:none'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1039" src="cid:E4EBEA548380D2EF08E98FD24B735B78C861C44F@1"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='text-decoration:none'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1038" src="cid:image004.png@01DCAFE3.3594BF50"></span><span style='text-decoration:none'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1037" src="cid:4A21DF82A9CECCB00726D17DD72CCBFD00A732C0@1"></span></a></span><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#404040'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-family:"Times New Roman",serif;color:#404040'><o:p></o:p></span></p></div></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-size:7.5pt;font-family:"Calibri",sans-serif;color:#BFBFBF'>Please consider the environment before printing this email</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#BFBFBF'>&nbsp;</span><o:p></o:p></p></td></tr></table><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>_____________________________________________<br><b>From:</b> Sam Zhao &lt;<a href="mailto:sam@welink.com.au">sam@welink.com.au</a>&gt; <br><b>Sent:</b> Wednesday, April 8, 2026 5:59 PM<br><b>To:</b> Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;<br><b>Cc:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Subject:</b> RE: *URGENT* Approval Request – ARCO - FFE Order Placement &amp; Cost Saving Proposal (ARCO)</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><a name="_Hlk206081706"></a><a name="_Hlk206081911"></a><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>Hi Amy,</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>I spoke with Nicholas and we can’t go with YnZ.</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>Can you resend Novas’ quote as the attachment didn’t come through from the email you shared.</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>I also want to understand a bit more on Pedestal savings. How much is Novas charging and how much is YnZ charging and how many of them do we need?</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>Regards,</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></div><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width=602 style='width:451.3pt'><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif'>Sam Zhao</span></b><span style='font-family:"Calibri",sans-serif'> <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>Director<o:p></o:p></span></p></div></td><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>M:&nbsp;&nbsp; 0488 885 887</span><o:p></o:p></p></td><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>E:&nbsp;&nbsp;&nbsp;&nbsp; <a href="mailto:sam@welink.com.au"><span style='color:#0563C1'>sam@welink.com.au</span></a></span><o:p></o:p></p></td><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/"><span style='color:#0563C1'>Meritor.com.au</span></a> | <a href="https://www.welink.com.au/"><span style='color:#0563C1'>Welink.com.au</span></a></span><o:p></o:p></p></td><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>A: 269 Vincent St, Leederville, WA 6007</span><o:p></o:p></p></td><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'></td></tr></table><div><p class=MsoNormal>&lt;&lt; OLE Object: Picture (Device Independent Bitmap) &gt;&gt; <o:p></o:p></p></div><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width=602 style='width:451.3pt'><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>This e-mail is private and confidential. <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;<a href="mailto:info@welink.com.au"><span style='color:purple'>info@welink.com.au</span></a>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.<o:p></o:p></span></p></div></td></tr></table><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-family:"Aptos",sans-serif'>&lt;&lt; OLE Object: Picture (Device Independent Bitmap) &gt;&gt; </span></a><a href="https://www.facebook.com/people/Meritor-Homes/61554125366149/?_rdr"><span style='font-family:"Aptos",sans-serif'>&lt;&lt; OLE Object: Picture (Device Independent Bitmap) &gt;&gt; </span></a></span><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:#404040'>FOLLOW US ON SOCIAL MEDIA<br></span><span style='font-size:7.5pt;font-family:"Calibri",sans-serif;color:#BFBFBF'>Please consider the environment before printing this email</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#BFBFBF'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif'>_____________________________________________<br><b>From:</b> Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt; <br><b>Sent:</b> Thursday, 19 March 2026 12:23 PM<br><b>To:</b> Sam Zhao &lt;<a href="mailto:sam@welink.com.au">sam@welink.com.au</a>&gt;<br><b>Cc:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Subject:</b> *URGENT* Approval Request – ARCO - FFE Order Placement &amp; Cost Saving Proposal (ARCO)<br><b>Importance:</b> High</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal>Hi Sam,<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><div><p class=MsoNormal>Due to ongoing global supply impacts and recent changes to tax rebates on FFE items, we recommend proceeding with placing the FFE order for ARCO now to lock in current pricing.<o:p></o:p></p></div><div><p class=MsoNormal>We have undertaken a cost-saving review by proposing a switch from NOVAS products to HOKA products (refer to attached plumbing allowance and pricing comparison).<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><div><p class=MsoNormal>Plumber allowance on plumbing FFE from Novas: $171,275+Gst<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp; &lt;&lt; Message: RE: Arco Fixtures See of White &gt;&gt; (No Allowance had&nbsp;been made for the Free Standing Basins Towel Holders Hooks and Grab Rails and No allowances for channel Drains to Showers.)<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><div><p class=MsoNormal>Alternative pricing: $135,328+GST<o:p></o:p></p></div><div><p class=MsoNormal>&lt;&lt; File: ARCO FFE cost analysis.xlsx &gt;&gt;&nbsp; &lt;&lt; File: Quotation Subiaco Project.pdf &gt;&gt; <o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal>The following key items have been assessed:<o:p></o:p></p></div><ol start=1 type=1><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l1 level1 lfo1'><b>Green Star Compliance<br></b>We have confirmed that HOKA products meet the Green Star WELS rating requirements. The architect has reviewed and consented to this proposed change.<o:p></o:p></li></ol><ul type=disc><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l4 level1 lfo2'>Taps – 5 Star<o:p></o:p></li><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l4 level1 lfo2'>Toilets – 4 Star<o:p></o:p></li><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l4 level1 lfo2'>Showers – 3 Star<o:p></o:p></li></ul><ol start=2 type=1><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l0 level1 lfo3'><b>Design &amp; Colour Selection<br></b>At the second PCG, colour samples were presented and reviewed on site by the architect.<br>Selected HOKA finishes to mixers, tapware and sinks to match each colour scheme are:<o:p></o:p></li></ol><ul type=disc><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l5 level1 lfo4'>French Gold<o:p></o:p></li><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l5 level1 lfo4'>Brushed Bronze<o:p></o:p></li><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l5 level1 lfo4'>Gun Metal (Black)<br>The architect has approved these selections across all proposed plumbing FFE items.<o:p></o:p></li></ul><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><ol start=3 type=1><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l3 level1 lfo5'><b>Supplier &amp; Warranty Review (Y&amp;Z)<br></b>HOKA products are supplied by Y&amp;Z, and we initially had concerns regarding warranty reliability.<br>Following further investigation, prior issues (e.g. loose mixer panels) were attributed to installation deficiencies rather than product faults.<o:p></o:p></li></ol><div><p class=MsoNormal>We have since secured confirmation of a 20-year product warranty. We also agreed to a pre-installation workshop with the supplier to brief the plumbing contractor on correct installation methods to mitigate risks.<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><div><p class=MsoNormal>With the above considerations addressed, we propose proceeding with HOKA via Y&amp;Z. This change is expected to deliver:<o:p></o:p></p></div><ul type=disc><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l2 level1 lfo6'>Approx. $40,000 savings on hydraulic fixtures<o:p></o:p></li><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l2 level1 lfo6'>Approx. $30,000 savings on pedestal<o:p></o:p></li><li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;mso-list:l2 level1 lfo6'>Additional savings across drains and all general fixtures<o:p></o:p></li></ul><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal>To secure current supplier pricing, the order will need to be placed by the end of next week.<o:p></o:p></p></div><div><p class=MsoNormal>Please let me know if you are happy to proceed.<o:p></o:p></p></div><div><p class=MsoNormal>&nbsp;<o:p></o:p></p></div><table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width=587 style='width:440.2pt'><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>Kind regards, <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>&nbsp;<o:p></o:p></span></p></div><div><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif'>Amy Chen</span></b><span style='font-family:"Calibri",sans-serif'><o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>Commercial Contracts Administrator<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>&nbsp;<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>E: <a href="mailto:amy@welink.com.au">amy@welink.com.au</a><o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>A: 269 Vincent St, Leederville, WA 6007<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>M: 0493 306 008<o:p></o:p></span></p></div><div><p class=MsoNormal><span style='font-family:"Calibri",sans-serif'>W:&nbsp;&nbsp; <a href="https://www.meritor.com.au/">Meritor.com.au</a> | <a href="https://www.welink.com.au/">Welink.com.au</a><o:p></o:p></span></p></div></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Times New Roman",serif'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1036" src="cid:image001.png@01DCAFE3.3594BF50"></span><span style='font-family:"Times New Roman",serif'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1035" src="cid:image002.png@01DCAFE3.3594BF50"></span><o:p></o:p></p></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>This e-mail is private and confidential. <o:p></o:p></span></p><div><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;<a href="mailto:info@welink.com.au"><span style='color:purple'>info@welink.com.au</span></a>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.<o:p></o:p></span></p></div></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Times New Roman",serif;color:#404040'>&nbsp; <o:p></o:p></span></p><div><p class=MsoNormal><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-family:"Times New Roman",serif;text-decoration:none'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1034" src="cid:image003.png@01DCAFE3.3594BF50"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-family:"Times New Roman",serif;text-decoration:none'><img border=0 width=32 height=32 style='width:.3333in;height:.3333in' id="_x0000_i1033" src="cid:image004.png@01DCAFE3.3594BF50"></span></a><span style='font-size:8.0pt;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;color:#404040'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-family:"Times New Roman",serif;color:#404040'><o:p></o:p></span></p></div></td></tr><tr style='height:1.0pt'><td style='padding:.75pt .75pt .75pt .75pt;height:1.0pt'><p class=MsoNormal><span style='font-size:7.5pt;font-family:"Calibri",sans-serif;color:#BFBFBF'>Please consider the environment before printing this email</span><span style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#BFBFBF'>&nbsp;</span><o:p></o:p></p></td></tr></table><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div><div><p class=MsoNormal><span style='font-family:"Times New Roman",serif'>&nbsp;</span><o:p></o:p></p></div></div></div></body></html>

@@ -1,0 +1,984 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><meta name=ProgId content=Word.Document><meta name=Generator content="Microsoft Word 15"><meta name=Originator content="Microsoft Word 15"><link rel=File-List href="cid:filelist.xml@01DC3448.97532310"><link rel=Edit-Time-Data href="cid:editdata.mso"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><!--[if gte mso 9]><xml>
+<o:OfficeDocumentSettings>
+<o:AllowPNG/>
+</o:OfficeDocumentSettings>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<w:WordDocument>
+<w:SpellingState>Clean</w:SpellingState>
+<w:DocumentKind>DocumentEmail</w:DocumentKind>
+<w:TrackMoves>false</w:TrackMoves>
+<w:TrackFormatting/>
+<w:EnvelopeVis/>
+<w:ValidateAgainstSchemas/>
+<w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+<w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+<w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+<w:DoNotPromoteQF/>
+<w:LidThemeOther>EN-AU</w:LidThemeOther>
+<w:LidThemeAsian>ZH-CN</w:LidThemeAsian>
+<w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript>
+<w:Compatibility>
+<w:DoNotExpandShiftReturn/>
+<w:BreakWrappedTables/>
+<w:SnapToGridInCell/>
+<w:WrapTextWithPunct/>
+<w:UseAsianBreakRules/>
+<w:DontGrowAutofit/>
+<w:SplitPgBreakAndParaMark/>
+<w:EnableOpenTypeKerning/>
+<w:DontFlipMirrorIndents/>
+<w:OverrideTableStyleHps/>
+</w:Compatibility>
+<w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+<m:mathPr>
+<m:mathFont m:val="Cambria Math"/>
+<m:brkBin m:val="before"/>
+<m:brkBinSub m:val="&#45;-"/>
+<m:smallFrac m:val="off"/>
+<m:dispDef/>
+<m:lMargin m:val="0"/>
+<m:rMargin m:val="0"/>
+<m:defJc m:val="centerGroup"/>
+<m:wrapIndent m:val="1440"/>
+<m:intLim m:val="subSup"/>
+<m:naryLim m:val="undOvr"/>
+</m:mathPr></w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="false" DefSemiHidden="false" DefQFormat="false" DefPriority="99" LatentStyleCount="376">
+<w:LsdException Locked="false" Priority="0" QFormat="true" Name="Normal"/>
+<w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 1"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 2"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 3"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 4"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 5"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 6"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 7"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 8"/>
+<w:LsdException Locked="false" Priority="9" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="heading 9"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 6"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 7"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 8"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index 9"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 1"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 2"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 3"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 4"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 5"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 6"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 7"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 8"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" Name="toc 9"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Normal Indent"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="footnote text"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="annotation text"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="header"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="footer"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="index heading"/>
+<w:LsdException Locked="false" Priority="35" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="caption"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="table of figures"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="envelope address"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="envelope return"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="footnote reference"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="annotation reference"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="line number"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="page number"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="endnote reference"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="endnote text"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="table of authorities"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="macro"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="toa heading"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Bullet"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Number"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Bullet 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Bullet 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Bullet 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Bullet 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Number 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Number 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Number 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Number 5"/>
+<w:LsdException Locked="false" Priority="10" QFormat="true" Name="Title"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Closing"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Signature"/>
+<w:LsdException Locked="false" Priority="1" SemiHidden="true" UnhideWhenUsed="true" Name="Default Paragraph Font"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text Indent"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Continue"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Continue 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Continue 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Continue 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="List Continue 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Message Header"/>
+<w:LsdException Locked="false" Priority="11" QFormat="true" Name="Subtitle"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Salutation"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Date"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text First Indent"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text First Indent 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Note Heading"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text Indent 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Body Text Indent 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Block Text"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Hyperlink"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="FollowedHyperlink"/>
+<w:LsdException Locked="false" Priority="22" QFormat="true" Name="Strong"/>
+<w:LsdException Locked="false" Priority="20" QFormat="true" Name="Emphasis"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Document Map"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Plain Text"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="E-mail Signature"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Top of Form"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Bottom of Form"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Normal (Web)"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Acronym"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Address"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Cite"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Code"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Definition"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Keyboard"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Preformatted"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Sample"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Typewriter"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="HTML Variable"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Normal Table"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="annotation subject"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="No List"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Outline List 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Outline List 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Outline List 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Simple 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Simple 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Simple 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Classic 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Classic 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Classic 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Classic 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Colorful 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Colorful 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Colorful 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Columns 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Columns 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Columns 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Columns 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Columns 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 6"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 7"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Grid 8"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 4"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 5"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 6"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 7"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table List 8"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table 3D effects 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table 3D effects 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table 3D effects 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Contemporary"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Elegant"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Professional"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Subtle 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Subtle 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Web 1"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Web 2"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Web 3"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Balloon Text"/>
+<w:LsdException Locked="false" Priority="39" Name="Table Grid"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Table Theme"/>
+<w:LsdException Locked="false" SemiHidden="true" Name="Placeholder Text"/>
+<w:LsdException Locked="false" Priority="1" QFormat="true" Name="No Spacing"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 1"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List Accent 1"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 1"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 1"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 1"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 1"/>
+<w:LsdException Locked="false" SemiHidden="true" Name="Revision"/>
+<w:LsdException Locked="false" Priority="34" QFormat="true" Name="List Paragraph"/>
+<w:LsdException Locked="false" Priority="29" QFormat="true" Name="Quote"/>
+<w:LsdException Locked="false" Priority="30" QFormat="true" Name="Intense Quote"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 1"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 1"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 1"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 1"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List Accent 1"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 1"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 1"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 1"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 2"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List Accent 2"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 2"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 2"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 2"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 2"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 2"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 2"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 2"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 2"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List Accent 2"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 2"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 2"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 2"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 3"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List Accent 3"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 3"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 3"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 3"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 3"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 3"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 3"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 3"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 3"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List Accent 3"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 3"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 3"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 3"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 4"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List Accent 4"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 4"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 4"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 4"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 4"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 4"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 4"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 4"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 4"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List Accent 4"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 4"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 4"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 4"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 5"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List Accent 5"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 5"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 5"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 5"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 5"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 5"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 5"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 5"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 5"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List Accent 5"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 5"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 5"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 5"/>
+<w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 6"/>
+<w:LsdException Locked="false" Priority="61" Name="Light List Accent 6"/>
+<w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 6"/>
+<w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 6"/>
+<w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 6"/>
+<w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 6"/>
+<w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 6"/>
+<w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 6"/>
+<w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 6"/>
+<w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 6"/>
+<w:LsdException Locked="false" Priority="70" Name="Dark List Accent 6"/>
+<w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 6"/>
+<w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 6"/>
+<w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 6"/>
+<w:LsdException Locked="false" Priority="19" QFormat="true" Name="Subtle Emphasis"/>
+<w:LsdException Locked="false" Priority="21" QFormat="true" Name="Intense Emphasis"/>
+<w:LsdException Locked="false" Priority="31" QFormat="true" Name="Subtle Reference"/>
+<w:LsdException Locked="false" Priority="32" QFormat="true" Name="Intense Reference"/>
+<w:LsdException Locked="false" Priority="33" QFormat="true" Name="Book Title"/>
+<w:LsdException Locked="false" Priority="37" SemiHidden="true" UnhideWhenUsed="true" Name="Bibliography"/>
+<w:LsdException Locked="false" Priority="39" SemiHidden="true" UnhideWhenUsed="true" QFormat="true" Name="TOC Heading"/>
+<w:LsdException Locked="false" Priority="41" Name="Plain Table 1"/>
+<w:LsdException Locked="false" Priority="42" Name="Plain Table 2"/>
+<w:LsdException Locked="false" Priority="43" Name="Plain Table 3"/>
+<w:LsdException Locked="false" Priority="44" Name="Plain Table 4"/>
+<w:LsdException Locked="false" Priority="45" Name="Plain Table 5"/>
+<w:LsdException Locked="false" Priority="40" Name="Grid Table Light"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light Accent 1"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 1"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 1"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 1"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 1"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful Accent 1"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful Accent 1"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light Accent 2"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 2"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 2"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 2"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 2"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful Accent 2"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful Accent 2"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light Accent 3"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 3"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 3"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 3"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 3"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful Accent 3"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful Accent 3"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light Accent 4"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 4"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 4"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 4"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 4"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful Accent 4"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful Accent 4"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light Accent 5"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 5"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 5"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 5"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 5"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful Accent 5"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful Accent 5"/>
+<w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light Accent 6"/>
+<w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 6"/>
+<w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 6"/>
+<w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 6"/>
+<w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 6"/>
+<w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful Accent 6"/>
+<w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful Accent 6"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light Accent 1"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 1"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 1"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 1"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 1"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful Accent 1"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful Accent 1"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light Accent 2"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 2"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 2"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 2"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 2"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful Accent 2"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful Accent 2"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light Accent 3"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 3"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 3"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 3"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 3"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful Accent 3"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful Accent 3"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light Accent 4"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 4"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 4"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 4"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 4"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful Accent 4"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful Accent 4"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light Accent 5"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 5"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 5"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 5"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 5"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful Accent 5"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful Accent 5"/>
+<w:LsdException Locked="false" Priority="46" Name="List Table 1 Light Accent 6"/>
+<w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 6"/>
+<w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 6"/>
+<w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 6"/>
+<w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 6"/>
+<w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful Accent 6"/>
+<w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful Accent 6"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Mention"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Smart Hyperlink"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Hashtag"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Unresolved Mention"/>
+<w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true" Name="Smart Link"/>
+</w:LatentStyles>
+</xml><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:-536869121 1107305727 33554432 0 415 0;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-alt:等线;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:-1610612033 953122042 22 0 262159 0;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-469750017 -1040178053 9 0 511 0;}
+@font-face
+	{font-family:Aptos;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 3 0 0 415 0;}
+@font-face
+	{font-family:UICTFontTextStyleBody;
+	panose-1:0 0 0 0 0 0 0 0 0 0;
+	mso-font-alt:Cambria;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-format:other;
+	mso-font-pitch:auto;
+	mso-font-signature:0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;
+	mso-font-charset:134;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:-1610612033 953122042 22 0 262159 0;}
+@font-face
+	{font-family:Lato;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-520092929 1342237951 33 0 415 0;}
+@font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-469750017 -1073683329 9 0 511 0;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-520081665 -1073717157 41 0 66047 0;}
+@font-face
+	{font-family:inherit;
+	mso-font-alt:Calibri;
+	mso-font-charset:0;
+	mso-generic-font-family:auto;
+	mso-font-pitch:auto;
+	mso-font-signature:0 0 0 0 0 0;}
+@font-face
+	{font-family:"Futura Lt BT";
+	mso-font-alt:"Century Gothic";
+	mso-font-charset:0;
+	mso-generic-font-family:auto;
+	mso-font-pitch:auto;
+	mso-font-signature:0 0 0 0 0 0;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	margin:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-fareast-font-family:DengXian;
+	mso-bidi-font-family:Aptos;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#467886;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p.msonormal0, li.msonormal0, div.msonormal0
+	{mso-style-name:msonormal;
+	mso-style-unhide:no;
+	mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-fareast-font-family:DengXian;
+	mso-bidi-font-family:Aptos;}
+p.elementtoproof, li.elementtoproof, div.elementtoproof
+	{mso-style-name:elementtoproof;
+	mso-style-unhide:no;
+	margin:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-fareast-font-family:DengXian;
+	mso-bidi-font-family:Aptos;}
+p.xmsonormal, li.xmsonormal, div.xmsonormal
+	{mso-style-name:x_msonormal;
+	mso-style-unhide:no;
+	margin:0cm;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-fareast-font-family:DengXian;
+	mso-bidi-font-family:Aptos;}
+p.xmsolistparagraph, li.xmsolistparagraph, div.xmsolistparagraph
+	{mso-style-name:x_msolistparagraph;
+	mso-style-unhide:no;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-fareast-font-family:DengXian;
+	mso-bidi-font-family:Aptos;}
+span.EmailStyle21
+	{mso-style-type:personal;
+	mso-style-noshow:yes;
+	mso-style-unhide:no;
+	font-family:"Aptos",sans-serif;
+	mso-ascii-font-family:Aptos;
+	mso-hansi-font-family:Aptos;
+	color:windowtext;}
+span.EmailStyle23
+	{mso-style-type:personal-reply;
+	mso-style-noshow:yes;
+	mso-style-unhide:no;
+	mso-ansi-font-size:11.0pt;
+	mso-bidi-font-size:11.0pt;
+	font-family:"Calibri",sans-serif;
+	mso-ascii-font-family:Calibri;
+	mso-fareast-font-family:Calibri;
+	mso-hansi-font-family:Calibri;
+	mso-bidi-font-family:"Times New Roman";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	mso-default-props:yes;
+	font-size:10.0pt;
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;
+	mso-font-kerning:0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;
+	mso-header-margin:36.0pt;
+	mso-footer-margin:36.0pt;
+	mso-paper-source:0;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:75059722;
+	mso-list-template-ids:1083972836;}
+@list l0:level1
+	{mso-level-start-at:2;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1
+	{mso-list-id:166291208;
+	mso-list-template-ids:-202616028;}
+@list l1:level1
+	{mso-level-start-at:3;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2
+	{mso-list-id:433786133;
+	mso-list-template-ids:721331258;}
+@list l2:level1
+	{mso-level-start-at:3;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3
+	{mso-list-id:447045068;
+	mso-list-template-ids:1324410308;}
+@list l3:level1
+	{mso-level-start-at:2;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4
+	{mso-list-id:766578703;
+	mso-list-template-ids:-1538869102;}
+@list l4:level1
+	{mso-level-start-at:2;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5
+	{mso-list-id:1042707795;
+	mso-list-template-ids:-1944436578;}
+@list l5:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6
+	{mso-list-id:1219560234;
+	mso-list-template-ids:158132130;}
+@list l6:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7
+	{mso-list-id:1543981234;
+	mso-list-template-ids:258883614;}
+@list l7:level1
+	{mso-level-start-at:3;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8
+	{mso-list-id:1694528478;
+	mso-list-template-ids:-1502564426;}
+@list l8:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l8:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+--></style><!--[if gte mso 10]><style>/* Style Definitions */
+table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman",serif;}
+</style><![endif]--></head><body lang=EN-AU link="#467886" vlink=purple style='tab-interval:36.0pt;word-wrap:break-word'><div class=WordSection1><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:Calibri;mso-bidi-font-family:"Times New Roman"'>Hi Kah Wai,<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:Calibri;mso-bidi-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:Calibri;mso-bidi-font-family:"Times New Roman"'>Thanks for the update. Drawings uploaded.<o:p></o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:Calibri;mso-bidi-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;mso-yfti-tbllook:1184;mso-padding-alt:0cm 0cm 0cm 0cm'><tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'>Amy Chen<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'>Commercial Contracts Administrator<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'>T:&nbsp;&nbsp;08 9204 3388<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'>E: </span><span style='font-family:"Calibri",sans-serif;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><a href="mailto:amy@welink.com.au"><span style='color:blue'>amy</span><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:DengXian;mso-hansi-font-family:Calibri;mso-bidi-font-family:"Times New Roman";color:blue'>@welink.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>A: 269 Vincent St, Leederville, WA 6007</span><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'><o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'>M: </span><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:black;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>0493 306 008<o:p></o:p></span></p><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>W:&nbsp;&nbsp; </span><span style='font-family:"Calibri",sans-serif;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><a href="https://www.meritor.com.au/"><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:DengXian;mso-hansi-font-family:Calibri;mso-bidi-font-family:"Times New Roman";color:blue'>Meritor.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:black;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'> | </span><span style='font-family:"Calibri",sans-serif;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><a href="https://www.welink.com.au/"><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:DengXian;mso-hansi-font-family:Calibri;mso-bidi-font-family:"Times New Roman";color:blue'>Welink.com.au</span></a></span><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'><o:p></o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:1;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#1F497D;mso-font-kerning:1.0pt;mso-no-proof:yes'><img border=0 width=334 height=70 id="Picture_x0020_1965102453" src="cid:image006.png@01DC3448.97115F20"></span><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'> </span><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-no-proof:yes'><img border=0 width=167 height=108 id="Picture_x0020_1306014346" src="cid:image008.png@01DC3448.97115F20" alt="signature_3358593204"><span style='color:#1F497D;mso-ligatures:standardcontextual'><o:p></o:p></span></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:2;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>This e-mail is private and confidential.</span><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:black;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p></o:p></span></p><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-family:"Calibri",sans-serif;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;mso-ascii-font-family:Calibri;mso-fareast-font-family:DengXian;mso-hansi-font-family:Calibri;mso-bidi-font-family:"Times New Roman";color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:black;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p></o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:3;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style='line-height:105%'><a href="https://www.instagram.com/meritorhomes/?hl=en"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=28 height=28 id="Picture_x0020_791690964" src="cid:image016.png@01DC3448.97115F20"></span></a><a href="https://www.facebook.com/meritorhomes/"><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=26 height=26 id="Picture_x0020_1641150892" src="cid:image017.png@01DC3448.97115F20"></span></a><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>&nbsp;&nbsp;</span><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'>FOLLOW US ON SOCIAL MEDIA</span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p></o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:4;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span lang=EN-US style='font-size:7.5pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#BFBFBF;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-ansi-language:EN-US;mso-no-proof:yes'>Please consider the environment before printing this email</span><span lang=EN-US style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#BFBFBF;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-ansi-language:EN-US;mso-no-proof:yes'>&nbsp;</span><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#1F497D;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p></o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:5;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;color:black;mso-font-kerning:1.0pt;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:6;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#1F497D;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr><tr style='mso-yfti-irow:7;height:1.0pt'><td width=602 colspan=2 valign=top style='width:451.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:black;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='mso-yfti-irow:8;height:1.0pt'><td width=602 colspan=2 valign=top style='width:451.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#404040;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p></td></tr><tr style='mso-yfti-irow:9;mso-yfti-lastrow:yes;height:1.0pt;mso-row-margin-right:11.1pt'><td width=587 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=MsoNormal style='line-height:105%'><span style='font-size:11.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-fareast-font-family:DengXian;mso-bidi-font-family:"Times New Roman";color:#1F497D;mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p></td><td style='mso-cell-special:placeholder;border:none;padding:0cm 0cm 0cm 0cm' width=15><p class='MsoNormal'>&nbsp;</td></tr></table><p class=MsoNormal><span style='font-family:"Calibri",sans-serif;mso-bidi-font-family:"Times New Roman";mso-font-kerning:1.0pt;mso-ligatures:standardcontextual;mso-no-proof:yes'><o:p>&nbsp;</o:p></span></p></div><p class=MsoNormal><span style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:Calibri;mso-bidi-font-family:"Times New Roman"'><o:p>&nbsp;</o:p></span></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=MsoNormal><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'> Kah Wai Leong &lt;Kah@spacecollective.com.au&gt; <br><b>Sent:</b> Friday, 3 October 2025 9:00 AM<br><b>To:</b> Bogdan Arama &lt;ba@ghcgroup.com.au&gt;; Michael Cheeseman &lt;michael@welink.com.au&gt;<br><b>Cc:</b> Shane Scudder &lt;Shane@welink.com.au&gt;; Amy Chen &lt;amy@welink.com.au&gt;; Mandy Leung &lt;Mandy@spacecollective.com.au&gt;<br><b>Subject:</b> RE: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates<o:p></o:p></span></p></div></div><p class=MsoNormal><o:p>&nbsp;</o:p></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Hi All,<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Further to my previous email, please see attached updated basement GA plan for your information &amp; action.<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='background:yellow;mso-highlight:yellow;mso-ansi-language:EN-US'>Amy</span></b><span lang=EN-US style='mso-ansi-language:EN-US'>, can you please upload this to Procore? <o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><div><p class=MsoNormal><span lang=EN-US style='font-size:11.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='font-size:11.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Kah Wai Leong<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='font-size:11.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Senior Project Architect <o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>A</span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>&nbsp; &nbsp;3/140 Onslow Road, Shenton Park WA 6008<o:p></o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>M </span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>&nbsp;&nbsp;+61 416042688<o:p></o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>E &nbsp;</span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";mso-ligatures:standardcontextual;mso-ansi-language:EN-US'><a href="mailto:kah@spacecollective.com.au"><span style='color:blue'>kah@spacecollective.com.au</span></a><span style='color:#3B3838'><o:p></o:p></span></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>W &nbsp;spacecollective.com.au<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-size:11.0pt;color:#3B3838;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;color:#3B3838;mso-no-proof:yes'><img border=0 width=380 height=81 id="Picture_x0020_257763436" src="cid:image018.jpg@01DC3448.97115F20"></span><span style='font-size:11.0pt;color:#3B3838;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></b></p><p class=MsoNormal><a href="http://instagram.com/spacecollective_architects?igshid=s30mqxgtp7fm"><b style='mso-bidi-font-weight:normal'><span style='font-size:9.0pt;color:#FF2F92;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=29 height=29 id="_x0000_i1053" src="cid:image019.png@01DC3448.97115F20" alt="Title: instagram - Description: instagram icon"></span></b></a><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white;mso-ligatures:standardcontextual'>This message may contain confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute, or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system.</span><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;mso-ligatures:standardcontextual'> </span><span lang=EN-US style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Space Collective Architects do not guarantee that this email message is free of errors, virus, or any other interference<b><o:p></o:p></b></span></p></div><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=MsoNormal style='mso-outline-level:1'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'> Kah Wai Leong <br><b>Sent:</b> Friday, October 3, 2025 8:41 AM<br><b>To:</b> 'Bogdan Arama' &lt;<a href="mailto:ba@ghcgroup.com.au">ba@ghcgroup.com.au</a>&gt;; Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Cc:</b> Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;; Mandy Leung &lt;<a href="mailto:Mandy@spacecollective.com.au">Mandy@spacecollective.com.au</a>&gt;<br><b>Subject:</b> RE: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates<o:p></o:p></span></p></div></div><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Morning Bogdan, <o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Please see our response in <b><span style='color:#00B050'>GREEN</span></b> below. <o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><div><p class=MsoNormal><span lang=EN-US style='font-size:11.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Kind regards,<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='font-size:11.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Kah Wai Leong<o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='font-size:11.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Senior Project Architect <o:p></o:p></span></p><p class=MsoNormal><span lang=EN-US style='font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>A</span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>&nbsp; &nbsp;3/140 Onslow Road, Shenton Park WA 6008<o:p></o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>M </span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>&nbsp;&nbsp;+61 416042688<o:p></o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>E &nbsp;</span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";mso-ligatures:standardcontextual;mso-ansi-language:EN-US'><a href="mailto:kah@spacecollective.com.au"><span style='color:blue'>kah@spacecollective.com.au</span></a><span style='color:#3B3838'><o:p></o:p></span></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>W &nbsp;spacecollective.com.au<o:p></o:p></span></b></p><p class=MsoNormal><span style='font-size:11.0pt;color:#3B3838;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:11.0pt;color:#3B3838;mso-no-proof:yes'><img border=0 width=380 height=81 id="Picture_x0020_809558108" src="cid:image018.jpg@01DC3448.97115F20"></span><span style='font-size:11.0pt;color:#3B3838;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></b></p><p class=MsoNormal><a href="http://instagram.com/spacecollective_architects?igshid=s30mqxgtp7fm"><b style='mso-bidi-font-weight:normal'><span style='font-size:9.0pt;color:#FF2F92;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=29 height=29 id="Picture_x0020_111" src="cid:image019.png@01DC3448.97115F20" alt="Title: instagram - Description: instagram icon"></span></b></a><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white;mso-ligatures:standardcontextual'><o:p></o:p></span></p><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white;mso-ligatures:standardcontextual'><o:p>&nbsp;</o:p></span></p><p class=MsoNormal><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white;mso-ligatures:standardcontextual'>This message may contain confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute, or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system.</span><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;mso-ligatures:standardcontextual'> </span><span lang=EN-US style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;mso-ligatures:standardcontextual;mso-ansi-language:EN-US'>Space Collective Architects do not guarantee that this email message is free of errors, virus, or any other interference<b><o:p></o:p></b></span></p></div><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=MsoNormal style='mso-outline-level:1'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'> Bogdan Arama &lt;<a href="mailto:ba@ghcgroup.com.au">ba@ghcgroup.com.au</a>&gt; <br><b>Sent:</b> Thursday, October 2, 2025 6:17 PM<br><b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;; Kah Wai Leong &lt;<a href="mailto:Kah@spacecollective.com.au">Kah@spacecollective.com.au</a>&gt;<br><b>Cc:</b> Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;; Mandy Leung &lt;<a href="mailto:Mandy@spacecollective.com.au">Mandy@spacecollective.com.au</a>&gt;<br><b>Subject:</b> Re: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates<o:p></o:p></span></p></div></div><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><div><p class=MsoNormal><span lang=EN-US style='color:black;mso-ansi-language:EN-US'>Hi Michael,<o:p></o:p></span></p></div><div><p class=MsoNormal><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p></div><div><p class=MsoNormal><span lang=EN-US style='color:black;mso-ansi-language:EN-US'>Please see our comments in </span><span lang=EN-US style='color:#0C64C0;mso-ansi-language:EN-US'>blue</span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'>&nbsp;below<o:p></o:p></span></p></div><div><p class=MsoNormal><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p></div><ol style='margin-top:0cm' start=1 type=1><li class=MsoNormal style='color:#242424;mso-list:l6 level1 lfo1;tab-stops:list 36.0pt;background:white'><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Basement Level – are there any TSS panels next to the pile caps on GL-A and GL-1? Arch and Eng both specify 162 panel. However you mentioned shotcrete</span><span lang=EN-US style='font-size:11.0pt;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'><o:p></o:p></span></li></ol><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:red;mso-ansi-language:EN-US'>Both TSS panel infill and shotcrete are acceptable from our end. Please advise which option is more cost effective.</span></b><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:#0C64C0;mso-ansi-language:EN-US'>We do not have anything against any option. We just documented as per the latest discussions. Will revert to the shotcrete option.</span></b><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'><o:p></o:p></span></b></p><p class=elementtoproof style='background:white'><b><span lang=EN-US style='color:black;mso-ansi-language:EN-US'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></b><span lang=EN-US style='color:#00B050;mso-ansi-language:EN-US'>Noted. </span><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='background:white'><span lang=EN-US style='color:#242424;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><ol style='margin-top:0cm' start=2 type=1><li class=MsoNormal style='color:#242424;mso-list:l0 level1 lfo2;tab-stops:list 36.0pt;background:white'><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Confirm wall type below on basement level:</span><span lang=EN-US style='font-size:11.0pt;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'><o:p></o:p></span></li></ol><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:red;mso-ansi-language:EN-US'>This should be TSS 162.</span></b><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:#0C64C0;mso-ansi-language:EN-US'>Unfortunately, there is a mistake from our part that happened between revision K and revision 1. We need that wall to be 212 TSS as is carries a large load.</span></b><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:#0C64C0;mso-ansi-language:EN-US'>Kah Wai, I believe there should be no issues on this, as the area was documented with the 212 thick wall from your part. Can you please confirm there is no issue from your part, having a 212 wall in here?</span></b><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'><o:p></o:p></span></b></p><p class=elementtoproof style='background:white'><span lang=EN-US style='color:black;mso-ansi-language:EN-US'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span lang=EN-US style='color:#00B050;mso-ansi-language:EN-US'>We will revert back to TSS 212.</span><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><span lang=EN-US style='font-size:11.0pt;color:#242424;mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=358 height=273 id="Picture_x0020_3" src="cid:image020.png@01DC3448.97115F20"></span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><span lang=EN-US style='color:#242424;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><ol style='margin-top:0cm' start=3 type=1><li class=MsoNormal style='color:#242424;mso-list:l1 level1 lfo3;tab-stops:list 36.0pt;background:white'><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Basement Level - Arch shows 162 wall here: Is this correct?</span><span lang=EN-US style='font-size:11.0pt;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'><o:p></o:p></span></li></ol><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;color:#242424;background:yellow;mso-ansi-language:EN-US'>Bogdan</span></b><span lang=EN-US style='font-size:11.0pt;color:#242424;mso-ansi-language:EN-US'>, </span><b><span lang=EN-US style='font-size:11.0pt;color:red;mso-ansi-language:EN-US'>as per our previous discussion this corner needs to be closed off</span></b><span lang=EN-US style='font-size:11.0pt;color:red;mso-ansi-language:EN-US'>&nbsp;<b>as piles are deleted. Can you please confirm TSS162 is sufficient?</b></span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><b><span lang=EN-US style='font-size:11.0pt;color:#0C64C0;mso-ansi-language:EN-US'>Yes, we confirm TSS162 is working. We will delete the last 3 piles and extent this wall to provide retaining of the soil.</span></b><b><span lang=EN-US style='font-size:11.0pt;color:black;mso-ansi-language:EN-US'><o:p></o:p></span></b></p><p class=elementtoproof style='text-indent:36.0pt;background:white'><span lang=EN-US style='color:#00B050;mso-ansi-language:EN-US'>Noted. <o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><span lang=EN-US style='font-size:11.0pt;color:#242424;mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=356 height=243 id="Picture_x0020_2" src="cid:image021.png@01DC3448.97115F20"></span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><p class=elementtoproof style='margin-left:36.0pt;background:white'><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p><p class=elementtoproof style='background:white'><span lang=EN-US style='font-size:11.0pt;color:#242424;mso-ansi-language:EN-US'>Kind regards,</span><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p></o:p></span></p><div><p class=MsoNormal><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p></div><div id=Signature><div><p class=MsoNormal><span lang=EN-US style='color:black;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p></div><div><p class=MsoNormal><span lang=EN-US style='font-size:11.5pt;font-family:"Segoe UI",sans-serif;color:#242424;background:white;mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=373 height=86 id="Picture_x0020_1" src="cid:image022.png@01DC3448.97115F20"></span><span lang=EN-US style='font-size:11.5pt;font-family:"Segoe UI",sans-serif;color:#242424;mso-ansi-language:EN-US'><o:p></o:p></span></p></div></div><div class=MsoNormal align=center style='text-align:center'><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'><hr size=2 width="98%" align=center></span></div><div id=divRplyFwdMsg><p class=MsoNormal style='mso-outline-level:1'><b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-size:11.0pt;font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Sent:</b> Thursday, October 2, 2025 11:31 AM<br><b>To:</b> Kah Wai Leong &lt;<a href="mailto:Kah@spacecollective.com.au">Kah@spacecollective.com.au</a>&gt;; Bogdan Arama &lt;<a href="mailto:ba@ghcgroup.com.au">ba@ghcgroup.com.au</a>&gt;<br><b>Cc:</b> Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;; Mandy Leung &lt;<a href="mailto:Mandy@spacecollective.com.au">Mandy@spacecollective.com.au</a>&gt;<br><b>Subject:</b> RE: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates</span><span lang=EN-US style='mso-ansi-language:EN-US'> <o:p></o:p></span></p><div><p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;<o:p></o:p></span></p></div></div><div><div><p class=xmsonormal><span style='font-size:12.0pt'>Bogdan</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt'>Any comment please – shotcrete will be required in lieu of AFS as per BP design.</span><o:p></o:p></p><div><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=636 style='width:477.25pt;border-collapse:collapse;mso-yfti-tbllook:1184;mso-padding-alt:0cm 0cm 0cm 0cm'><tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif'>Kind Regards,</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><b><span style='font-family:"Calibri",sans-serif'>Michael Cheeseman</span></b><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span lang=EN-GB style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#212121;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;background:white;mso-ansi-language:EN-GB'>Project Director</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><b><span lang=EN-GB style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#212121;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;background:white;mso-ansi-language:EN-GB'>BP 14081/BC 101301</span></b><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:1;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:2;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>T:&nbsp;&nbsp;08 9204 3388</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>E: <a href="mailto:michael@welink.com.au"><span style='color:blue'>michael@welink.com.au</span></a></span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>A: 269 Vincent St, Leederville, WA 6007</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>M: 0408 135 325</span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:3;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>W:</span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif'> </span><span style='font-family:"Calibri",sans-serif;color:#0038A8'><a href="https://www.welink.com.au/"><span style='font-size:12.0pt;line-height:105%;color:#0038A8'>Welink.com.au</span></a>; </span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#0038A8'><a href="https://www.meritor.com.au/"><span style='color:#0038A8'>Meritor.com.au</span></a></span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:4;height:1.0pt'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:black'>&nbsp;</span><o:p></o:p></p></td><td width=15 valign=top style='width:11.1pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:5;height:1.0pt'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:#1F497D;mso-no-proof:yes'><img border=0 width=335 height=70 id="x_Picture_x0020_1242151709" src="cid:image006.png@01DC3448.97115F20"></span><o:p></o:p></p></td><td width=15 valign=bottom style='width:11.1pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal align=center style='text-align:center;line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:6;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:#1F497D;mso-no-proof:yes'><img border=0 width=235 height=91 id="x__x005f_x0000_i1038" src="cid:image023.png@01DC3448.97115F20"></span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-no-proof:yes'><img border=0 width=167 height=108 id="x__x005f_x0000_i1037" src="cid:image008.png@01DC3448.97115F20" alt="signature_3358593204"></span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>This e-mail is private and confidential.</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-family:"Calibri",sans-serif'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:7;mso-yfti-lastrow:yes'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=580 style='width:435.0pt;padding:0cm 0cm 0cm 0cm'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=19 style='width:14.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm'></td></tr></table><p class=xmsonormal><span style='font-size:12.0pt'>&nbsp;</span><o:p></o:p></p></div><p class=xmsonormal><span style='font-size:12.0pt'>&nbsp;</span><o:p></o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=xmsonormal style='mso-outline-level:1'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'> Kah Wai Leong &lt;<a href="mailto:Kah@spacecollective.com.au">Kah@spacecollective.com.au</a>&gt; <br><b>Sent:</b> Thursday, 2 October 2025 8:56 AM<br><b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;; Bogdan Arama &lt;<a href="mailto:ba@ghcgroup.com.au">ba@ghcgroup.com.au</a>&gt;<br><b>Cc:</b> Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;; Mandy Leung &lt;<a href="mailto:Mandy@spacecollective.com.au">Mandy@spacecollective.com.au</a>&gt;<br><b>Subject:</b> RE: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates</span><o:p></o:p></p></div></div><p class=xmsonormal>&nbsp;<o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>Hi Michael,</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>Please see our comments in <b><span style='color:red'>RED</span></b> below. </span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><ol style='margin-top:0cm' start=1 type=1><li class=xmsolistparagraph style='margin-left:0cm;mso-list:l8 level1 lfo4;tab-stops:list 36.0pt'><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Basement Level – are there any TSS panels next to the pile caps on GL-A and GL-1? Arch and Eng both specify 162 panel. However you mentioned shotcrete</span><span style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></li></ol><p class=xmsolistparagraph><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:red;mso-ansi-language:EN-US'>Both TSS panel infill and shotcrete are acceptable from our end. Please advise which option is more cost effective.</span></b><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><ol style='margin-top:0cm' start=2 type=1><li class=xmsolistparagraph style='margin-left:0cm;mso-list:l4 level1 lfo5;tab-stops:list 36.0pt'><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Confirm wall type below on basement level:</span><span style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></li></ol><p class=xmsonormal style='margin-left:36.0pt'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:red;mso-ansi-language:EN-US'>This should be TSS 162.</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'><br></span><span lang=EN-US style='mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=359 height=274 id="x__x005f_x0000_i1036" src="cid:image024.jpg@01DC3448.97115F20"></span><o:p></o:p></p><p class=xmsolistparagraph><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><ol style='margin-top:0cm' start=3 type=1><li class=xmsolistparagraph style='margin-left:0cm;mso-list:l7 level1 lfo6;tab-stops:list 36.0pt'><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Basement Level - Arch shows 162 wall here: Is this correct?</span><span style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></li></ol><p class=xmsolistparagraph><b><span lang=EN-US style='color:black;background:yellow;mso-ansi-language:EN-US'>Bogdan</span></b><span lang=EN-US style='mso-ansi-language:EN-US'>, <b><span style='color:red'>as per our previous discussion this corner needs to be closed off</span></b><span style='color:red'> <b>as piles are deleted. Can you please confirm TSS162 is sufficient?</b> </span></span><o:p></o:p></p><p class=xmsolistparagraph><span lang=EN-US style='mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=357 height=244 id="x__x005f_x0000_i1035" src="cid:image025.png@01DC3448.97115F20"></span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'><br clear=all style='mso-special-character:line-break'></span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><div><p class=xmsonormal><span lang=EN-US style='font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>Kind regards,</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>Kah Wai Leong</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>Senior Project Architect </span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>A</span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>&nbsp; &nbsp;3/140 Onslow Road, Shenton Park WA 6008</span><o:p></o:p></p><p class=xmsonormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>M </span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>&nbsp;&nbsp;+61 416042688</span><o:p></o:p></p><p class=xmsonormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>E &nbsp;</span></b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";mso-ansi-language:EN-US'><a href="mailto:kah@spacecollective.com.au"><span style='color:blue'>kah@spacecollective.com.au</span></a></span><o:p></o:p></p><p class=xmsonormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>W &nbsp;spacecollective.com.au</span></b><o:p></o:p></p><p class=xmsonormal><span style='color:#3B3838'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span style='color:#3B3838;mso-no-proof:yes'><img border=0 width=380 height=81 id="x_Picture_x0020_396213960" src="cid:image018.jpg@01DC3448.97115F20"></span><o:p></o:p></p><p class=xmsonormal><b><span lang=EN-US style='font-size:10.0pt;font-family:"Futura Lt BT";color:#3B3838;mso-ansi-language:EN-US'>&nbsp;</span></b><o:p></o:p></p><p class=xmsonormal><a href="http://instagram.com/spacecollective_architects?igshid=s30mqxgtp7fm"><b style='mso-bidi-font-weight:normal'><span style='font-size:9.0pt;color:#FF2F92;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=29 height=29 id="x_Picture_x0020_111" src="cid:image019.png@01DC3448.97115F20" alt="Title: instagram - Description: instagram icon"></span></b></a><o:p></o:p></p><p class=xmsonormal><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;background:white'>This message may contain confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute, or copy this e-mail. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system.</span><span style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171'> </span><span lang=EN-US style='font-size:8.0pt;font-family:"Futura Lt BT";color:#767171;mso-ansi-language:EN-US'>Space Collective Architects do not guarantee that this email message is free of errors, virus, or any other interference</span><o:p></o:p></p></div><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=xmsonormal style='mso-outline-level:1'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt; <br><b>Sent:</b> Thursday, October 2, 2025 7:57 AM<br><b>To:</b> Kah Wai Leong &lt;<a href="mailto:Kah@spacecollective.com.au">Kah@spacecollective.com.au</a>&gt;; Bogdan Arama &lt;<a href="mailto:ba@ghcgroup.com.au">ba@ghcgroup.com.au</a>&gt;; Shane Scudder &lt;<a href="mailto:Shane@welink.com.au">Shane@welink.com.au</a>&gt;; Amy Chen &lt;<a href="mailto:amy@welink.com.au">amy@welink.com.au</a>&gt;; Mandy Leung &lt;<a href="mailto:Mandy@spacecollective.com.au">Mandy@spacecollective.com.au</a>&gt;<br><b>Subject:</b> Fwd: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates</span><o:p></o:p></p></div></div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>Team </span><o:p></o:p></p><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>Noticed on IFCs the Rear Basement Wall and West side infill is now shown as AFS 162 walls? Wasn’t this to be Shotcrete?</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>Details from Trustruct attached.</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>I will check with our Concretor and get a mark up of what was allowed at BP Stage.</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>Discuss later.</span><o:p></o:p></p></div><div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;mso-yfti-tbllook:1184;mso-padding-alt:0cm 0cm 0cm 0cm'><tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'><td valign=top style='padding:0cm 5.4pt 0cm 5.4pt'><div><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=636 style='width:477.0pt;border-collapse:collapse;mso-yfti-tbllook:1184;mso-padding-alt:0cm 0cm 0cm 0cm'><tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>Kind Regards,<o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'><b>Michael Cheeseman</b><o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'><span lang=EN-GB style='border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-GB'>Project Director</span><o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'><span lang=EN-GB style='border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-GB'>BP 14081</span><o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'><span lang=EN-GB style='border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-GB'>BC 101301</span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:1;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:2;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal>T:&nbsp;&nbsp;<u>08 9204 3388</u><o:p></o:p></p><p class=xmsonormal>M :&nbsp;<u>0408 135 325</u><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:3;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>W:&nbsp;<a href="https://www.welink.com.au/">Welink.com.au</a><o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'>A:&nbsp;<u>269 Vincent St, Leederville, WA 6007</u><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:4;height:1.0pt'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=15 valign=top style='width:11.1pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:5;height:1.0pt'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td width=15 valign=bottom style='width:11.1pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal align=center style='text-align:center;line-height:22.05pt'>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:6;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>This e-mail is private and confidential.<o:p></o:p></p><p class=xmsonormal style='line-height:22.05pt'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this&nbsp;<br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;<a href="mailto:info@welink.com.au">info@welink.com.au</a>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.<o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:22.05pt'>&nbsp;<o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal>&nbsp;<o:p></o:p></p></td></tr><tr style='mso-yfti-irow:7;mso-yfti-lastrow:yes'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=580 style='width:435.0pt;padding:0cm 0cm 0cm 0cm'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=19 style='width:14.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm'></td></tr></table></div><p class=xmsonormal><span style='font-family:"UICTFontTextStyleBody",serif'>&nbsp;</span><o:p></o:p></p></td></tr></table></div><div><p class=xmsonormal style='margin-bottom:12.0pt'><span lang=EN-US style='mso-ansi-language:EN-US'><br>Begin forwarded message:</span><o:p></o:p></p></div><blockquote style='margin-top:5.0pt;margin-bottom:5.0pt'><div><p class=xmsonormal style='margin-bottom:12.0pt;mso-outline-level:1'><b><span lang=EN-US style='mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='mso-ansi-language:EN-US'> Paresh Garara &lt;<a href="mailto:paresh.garara@trustruct.com.au">paresh.garara@trustruct.com.au</a>&gt;<br><b>Date:</b> 2 October 2025 at 07:44:56 AWST<br><b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Cc:</b> Archie Sharpe &lt;<a href="mailto:archie.sharpe@trustruct.com.au">archie.sharpe@trustruct.com.au</a>&gt;, Welink Commercial &lt;<a href="mailto:commercial@welink.com.au">commercial@welink.com.au</a>&gt;<br><b>Subject:</b> <b>RE: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates</b></span><o:p></o:p></p></div></blockquote><blockquote style='margin-top:5.0pt;margin-bottom:5.0pt'><div><p class=xmsonormal><span lang=EN-US style='font-family:"Tahoma",sans-serif;mso-ansi-language:EN-US'>﻿</span><span lang=EN-US style='mso-ansi-language:EN-US'> </span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>Morning Michael,</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>As discussed yesterday, when you get a moment - please can you confirm the following items:</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><ol style='margin-top:0cm' start=1 type=1><li class=xmsolistparagraph style='margin-left:0cm;mso-list:l5 level1 lfo7;tab-stops:list 36.0pt'><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Basement Level – are there any TSS panels next to the pile caps on GL-A and GL-1? Arch and Eng both specify 162 panel. However you mentioned shotcrete </span><span style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></li></ol><p class=xmsolistparagraph><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><ol style='margin-top:0cm' start=2 type=1><li class=xmsolistparagraph style='margin-left:0cm;mso-list:l3 level1 lfo8;tab-stops:list 36.0pt'><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Confirm wall type below on basement level:<br></span><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=844 height=648 id="x_Picture_x0020_8" src="cid:image026.png@01DC3448.97115F20"></span><span style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></li></ol><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><ol style='margin-top:0cm' start=3 type=1><li class=xmsolistparagraph style='margin-left:0cm;mso-list:l2 level1 lfo9;tab-stops:list 36.0pt'><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:EN-US'>Basement Level - Arch shows 162 wall here: Is this correct?</span><span style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></li></ol><p class=xmsolistparagraph><span lang=EN-US style='mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=752 height=588 id="x_Picture_x0020_7" src="cid:image027.png@01DC3448.97115F20"></span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><div><p class=xmsonormal style='background:white'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Kind Regards</span><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>,</span><o:p></o:p></p><p class=xmsonormal style='background:white'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Paresh Garara</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>| Business Development Manager</span><o:p></o:p></p><p class=xmsonormal style='background:white'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>Tru-Struct Structural Solutions Pty Ltd</span></b><o:p></o:p></p><p class=xmsonormal style='background:white'><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Unit 1/4 Focal Way, BAYSWATER WA 6053&nbsp;&nbsp;</span><b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:#201F1E;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>T:</span></b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:#201F1E;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;08 6477 0500&nbsp;&nbsp;<b>M:</b>&nbsp;0455 235 740&nbsp; </span><b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>W:</span></b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'><a href="https://urldefense.com/v3/__http:/www.trustruct.com.au/__;!!CTZzQ88MNok!KS5g96n2PcG9xcdZPapUMEWa9dTmGa2SW_1dzTZ3IT7ImRBYHzXySYiKO_3ZnRjkm_78sw$" target="_blank"><span style='font-size:10.0pt;font-family:inherit;color:blue'>www.trustruct.com.au</span></a></span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;color:black;mso-ansi-language:EN-US;mso-no-proof:yes'><img border=0 width=2362 height=477 id="x_Picture_x0020_6" src="cid:image028.jpg@01DC3448.97115F20"></span><o:p></o:p></p></div><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm;font-size:pt'><p class=xmsonormal style='mso-outline-level:1'><b><span lang=EN-GB style='font-size:12.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-GB'>From:</span></b><span lang=EN-GB style='font-size:12.0pt;font-family:"Calibri",sans-serif;mso-ansi-language:EN-GB'> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt; <br><b>Sent:</b> Thursday, 25 September 2025 2:05 PM<br><b>To:</b> Paresh Garara &lt;<a href="mailto:paresh.garara@trustruct.com.au">paresh.garara@trustruct.com.au</a>&gt;<br><b>Cc:</b> Archie Sharpe &lt;<a href="mailto:archie.sharpe@trustruct.com.au">archie.sharpe@trustruct.com.au</a>&gt;; Welink Commercial &lt;<a href="mailto:commercial@welink.com.au">commercial@welink.com.au</a>&gt;<br><b>Subject:</b> RE: 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates<br><b>Importance:</b> High</span><o:p></o:p></p></div></div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>Paresh,</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>Can you please assess the updated IFC Drawings and update where required thanks.</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>IFC Drawings - </span><b><span lang=EN-US style='font-size:10.0pt;font-family:"Lato",sans-serif;color:#444749;mso-ansi-language:EN-US'><a href="https://us02.procore.com/598134326094047/project/drawing_revisions_single_pdf_downloads/598134326072713/download?token=805fdb72be696b5e2277a71e4862aa697da91691d5ea7df404ec69226d876d47" target="_blank"><span style='color:#266CD3'>Drawings.pdf</span></a></span></b><o:p></o:p></p><div><p class=xmsonormal><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=636 style='width:477.25pt;border-collapse:collapse;mso-yfti-tbllook:1184;mso-padding-alt:0cm 0cm 0cm 0cm'><tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif'>Kind Regards,</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><b><span style='font-family:"Calibri",sans-serif'>Michael Cheeseman</span></b><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span lang=EN-GB style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#212121;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;background:white;mso-ansi-language:EN-GB'>Project Director</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><b><span lang=EN-GB style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#212121;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;background:white;mso-ansi-language:EN-GB'>BP 14081/BC 101301</span></b><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:1;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:2;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>T:&nbsp;&nbsp;08 9204 3388</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>E: <a href="mailto:michael@welink.com.au"><span style='color:blue'>michael@welink.com.au</span></a></span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>A: 269 Vincent St, Leederville, WA 6007</span><o:p></o:p></p><p class=xmsonormal><span style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black'>M: 0408 135 325</span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:3;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>W:</span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif'> </span><span style='font-family:"Calibri",sans-serif;color:#0038A8'><a href="https://www.welink.com.au/"><span style='font-size:12.0pt;line-height:105%;color:#0038A8'>Welink.com.au</span></a>; </span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#0038A8'><a href="https://www.meritor.com.au/"><span style='color:#0038A8'>Meritor.com.au</span></a></span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:4;height:1.0pt'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:black'>&nbsp;</span><o:p></o:p></p></td><td width=15 valign=top style='width:11.1pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:5;height:1.0pt'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=614 colspan=3 valign=top style='width:460.75pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:#1F497D;mso-no-proof:yes'><img border=0 width=370 height=77 id="x_Picture_x0020_5" src="cid:image006.png@01DC3448.97115F20"></span><o:p></o:p></p></td><td width=15 valign=bottom style='width:11.1pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal align=center style='text-align:center;line-height:105%'><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:6;height:1.0pt'><td width=587 colspan=2 valign=top style='width:440.2pt;padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-family:"Calibri",sans-serif;color:#1F497D;mso-no-proof:yes'><img border=0 width=259 height=100 id="x_Picture_x0020_4" src="cid:image023.png@01DC3448.97115F20"></span><span style='font-size:12.0pt;line-height:105%;font-family:"Calibri",sans-serif;mso-no-proof:yes'><img border=0 width=384 height=248 id="x_Picture_x0020_3" src="cid:image008.png@01DC3448.97115F20"></span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#1F497D'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>This e-mail is private and confidential.</span><o:p></o:p></p><p class=xmsonormal style='line-height:105%'><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>If you are not the intended recipient you are HEREBY WARNED not to copy, distribute, place any reliance upon or disseminate this <br>e-mail (including any attachments) without the consent of WELINK GROUP Pty. Ltd. Kindly advise us immediately at&nbsp;</span><span style='font-family:"Calibri",sans-serif'><a href="mailto:info@welink.com.au"><span style='font-size:8.0pt;line-height:105%;color:purple'>info@welink.com.au</span></a></span><span style='font-size:8.0pt;line-height:105%;font-family:"Calibri",sans-serif;color:#404040'>&nbsp;that it has reached the wrong destination and delete it from your system. All incoming and outgoing e-mail is scanned for computer viruses. Views expressed in this e-mail are not the views of WELINK GROUP Pty. Ltd. unless clearly indicated.</span><o:p></o:p></p></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal style='line-height:105%'><span style='font-size:10.0pt;line-height:105%;font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td><td width=34 colspan=2 style='width:25.5pt;padding:0cm 0cm 0cm 0cm;height:1.0pt'><p class=xmsonormal><span style='font-family:"Calibri",sans-serif'>&nbsp;</span><o:p></o:p></p></td></tr><tr style='mso-yfti-irow:7;mso-yfti-lastrow:yes'><td width=7 style='width:5.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=580 style='width:435.0pt;padding:0cm 0cm 0cm 0cm'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=19 style='width:14.25pt;padding:0cm 0cm 0cm 0cm'></td><td width=15 style='width:11.25pt;padding:0cm 0cm 0cm 0cm'></td></tr></table><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p></div><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><div><div style='border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=xmsonormal style='mso-outline-level:1'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'>From:</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;mso-ansi-language:EN-US'> Paresh Garara &lt;<a href="mailto:paresh.garara@trustruct.com.au">paresh.garara@trustruct.com.au</a>&gt; <br><b>Sent:</b> Monday, 31 March 2025 11:22 AM<br><b>To:</b> Michael Cheeseman &lt;<a href="mailto:michael@welink.com.au">michael@welink.com.au</a>&gt;<br><b>Cc:</b> Archie Sharpe &lt;<a href="mailto:archie.sharpe@trustruct.com.au">archie.sharpe@trustruct.com.au</a>&gt;<br><b>Subject:</b> 3953 - Hood St (Arco) - TSS Take Off Rev D and Supply Only Rates</span><o:p></o:p></p></div></div><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Good Morning&nbsp;<b>Michael,</b></span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>As per your recent communications, please find attached the&nbsp;‘Scope&nbsp;of&nbsp;Works’&nbsp;(Rev D) for the Permanent Formwork System, for<b>&nbsp;</b>the<b>&nbsp;Hood St&nbsp;</b>project.</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>It is most important to take note of the&nbsp;<i>notes and details</i>.</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>This Scope of Works is not guaranteed, it is our interpretation of the documents provided and is provided free of charge for you to use as a cross-check against your own take-offs. Please contact us immediately to discuss if there is any variation greater than +/- 3% between our quants and yours.<i>&nbsp;If we have included any walls that you don’t think should be in Permanent Formwork (or vice versa), please let us know and we can modify accordingly.</i></span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>This document is provided for discussion purposes only and must not be relied upon for costing. Tru-Struct will not take any responsibility for any financial losses incurred as a result of using this document for your costing. TSS also recommends that initial discussions are carried out with your contractors regarding install and finish, as per our standard details (attached within the scope of works) and Trade Co-Ordination Guide</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Our indicative Supply Only rates to&nbsp;<b>Welink&nbsp;</b>for the Permanent Formwork for this project are:</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>212 Wall System -&nbsp;</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>$210.00/m2 including drawings and delivery of panels, excluding GST (based on our terms and conditions as per attached).</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>262 Wall System -&nbsp;</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>$235.00/m2 including drawings and delivery of panels, excluding GST (based on our terms and conditions as per attached).</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Please take note of the Conditions of Quotation, Inclusions and Exclusions. These<b>&nbsp;</b>Supply Only Rates have been provided free of charge to assist your estimating team with pricing of the project and to apply against your own take-offs.</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Rates per m2 are&nbsp;<b>indicative&nbsp;</b>at the time the quote is done. Final rate will be determined prior to order, based around the international rates for fuel, steel and FC board at the time of manufacture of goods.</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>At the point of order, we would be looking to put in an <u>initial claim of $20/m2 + GST</u> based on the take off m2 – which will cover for preliminaries, initial procurement and shop drawings. </span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>As manufacturers, we invoice what we produce based on quantities calculated directly from the reviewed shop drawings.</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>We look forward to working with you on this project.</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Kind Regards</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Paresh Garara</span></b><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;| Business Development Manager</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><b><span lang=EN-US style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Tru-Struct Structural Solutions Pty Ltd</span></b><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>Unit 1/4 Focal Way, BAYSWATER WA 6053&nbsp;&nbsp;</span><b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:#201F1E;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>T:</span></b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:#201F1E;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;08 6477 0500&nbsp;&nbsp;<b>M:</b>&nbsp;0455 235 740&nbsp; </span><b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>W:</span></b><span lang=EN-US style='font-size:10.0pt;font-family:inherit;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'>&nbsp;</span><span lang=EN-US style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;padding:0cm;mso-ansi-language:EN-US'><a href="https://urldefense.com/v3/__http:/www.trustruct.com.au/__;!!CTZzQ88MNok!KS5g96n2PcG9xcdZPapUMEWa9dTmGa2SW_1dzTZ3IT7ImRBYHzXySYiKO_3ZnRjkm_78sw$" target="_blank"><span style='font-size:10.0pt;font-family:inherit;color:#0563C1'>www.trustruct.com.au</span></a></span><o:p></o:p></p><div><p class=xmsonormal><span lang=EN-US style='font-size:12.0pt;color:black;mso-ansi-language:EN-US'>&lt;image001.jpg&gt;</span><o:p></o:p></p></div><p class=xmsonormal style='background:white'><span style='color:black;mso-color-alt:windowtext'><a href="https://www.linkedin.com/company/trustruct-structural-solutions"><span lang=EN-US style='font-family:"Calibri",sans-serif;color:#0563C1;mso-ansi-language:EN-US;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=462 height=152 id="x_Picture_x0020_2" src="cid:image029.jpg@01DC3448.97115F20"></span></a></span><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>&nbsp; </span><span style='color:black;mso-color-alt:windowtext'><a href="https://trustruct.com.au/"><span lang=EN-US style='font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US;mso-no-proof:yes;text-decoration:none;text-underline:none'><img border=0 width=313 height=111 id="x_Picture_x0020_1" src="cid:image030.png@01DC3448.97115F20"></span></a></span><o:p></o:p></p><p class=xmsonormal style='background:white;vertical-align:baseline'><span lang=EN-US style='font-size:12.0pt;font-family:"Calibri",sans-serif;color:black;mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p><p class=xmsonormal><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;</span><o:p></o:p></p></div></blockquote></div></div></div></div></body></html>

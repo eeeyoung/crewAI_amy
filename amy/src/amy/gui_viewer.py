@@ -24,17 +24,22 @@ class FilterWorker(QThread):
     """
     filter_done = pyqtSignal(int, str)
 
-    def __init__(self, emails, triage_queue, parent=None):
+    def __init__(self, filter_queue, triage_queue, parent=None):
         super().__init__(parent)
-        self.emails = emails
+        self.filter_queue = filter_queue
         self.triage_queue = triage_queue
         self.running = True
 
     def run(self):
-        for idx, email in enumerate(self.emails):
-            if not self.running:
+        while self.running:
+            try:
+                item = self.filter_queue.get(timeout=1)
+            except queue.Empty:
+                continue
+            if item is None:
                 break
-
+            
+            idx, email = item
             try:
                 result = MessageFilterCrew().crew().kickoff(
                     inputs={"email_body": email["body"]}
@@ -230,32 +235,51 @@ class RegenerateWorker(QThread):
 class TriageWindow(QMainWindow):
     def __init__(self, raw_emails):
         super().__init__()
-        self.emails = raw_emails
-        self.current_index = 0
-
-        # Per-email state
+        self.all_unread = raw_emails
+        self.emails = []
         self.state = {}
-        for i in range(len(self.emails)):
-            self.state[i] = {
-                "filtered_body": "",
-                "filter_status": "filtering",     # filtering → done
-                "category": "",
-                "extra_info": "",
-                "category_status": "pending",      # pending → thinking → done
-                "reply_text": "",
-                "reply_status": "pending",          # pending → generating → done
-                "send_status": "unsent",            # unsent → sent
-            }
+        self.current_index = 0
+        self.filter_queue = queue.Queue()
+        self.triage_queue = queue.Queue()
+        self.reply_queue = queue.Queue()
 
         self.init_ui()
+        self.start_workers()
+
+        # Load first 3 emails (or less if fewer are available)
+        initial_count = min(3, len(self.all_unread))
+        for _ in range(initial_count):
+            self._load_next_from_backlog()
 
         if self.emails:
             self.load_email(0)
-            self.start_workers()
+
+    def _load_next_from_backlog(self):
+        if not self.all_unread:
+            return
+        
+        email = self.all_unread.pop(0)
+        idx = len(self.emails)
+        self.emails.append(email)
+        
+        self.state[idx] = {
+            "filtered_body": "",
+            "filter_status": "filtering",
+            "category": "",
+            "extra_info": "",
+            "category_status": "pending",
+            "reply_cc": email.get("cc", ""),
+            "reply_text": "",
+            "reply_status": "pending",
+            "send_status": "unsent",
+        }
+        
+        self.filter_queue.put((idx, email))
+        self.update_ui_state()
 
     def init_ui(self):
         self.setWindowTitle("Interactive Triage & Auto-Reply Workstation")
-        self.resize(1400, 800)
+        self.resize(1200, 800)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -267,6 +291,7 @@ class TriageWindow(QMainWindow):
         # --- LEFT PANEL (Original Email) ---
         left_panel = QFrame()
         left_panel.setFrameShape(QFrame.Shape.StyledPanel)
+        left_panel.setMaximumWidth(750)
         left_layout = QVBoxLayout(left_panel)
         left_layout.setContentsMargins(15, 15, 15, 15)
 
@@ -285,6 +310,10 @@ class TriageWindow(QMainWindow):
         # Sender
         self.lbl_orig_sender = QLabel("Sender: ")
         left_layout.addWidget(self.lbl_orig_sender)
+
+        # Original CC
+        self.lbl_orig_cc = QLabel("CC: ")
+        left_layout.addWidget(self.lbl_orig_cc)
 
         # Content area with overlay support
         left_layout.addWidget(QLabel("Content:"))
@@ -335,6 +364,11 @@ class TriageWindow(QMainWindow):
         right_layout.addWidget(QLabel("Receiver:"))
         self.le_reply_receiver = QLineEdit()
         right_layout.addWidget(self.le_reply_receiver)
+
+        # CC
+        right_layout.addWidget(QLabel("CC:"))
+        self.le_reply_cc = QLineEdit()
+        right_layout.addWidget(self.le_reply_cc)
 
         # Content
         right_layout.addWidget(QLabel("Content:"))
@@ -391,10 +425,7 @@ class TriageWindow(QMainWindow):
     # -------------------------------------------------------------------------
 
     def start_workers(self):
-        self.triage_queue = queue.Queue()
-        self.reply_queue = queue.Queue()
-
-        self.filter_worker = FilterWorker(self.emails, self.triage_queue)
+        self.filter_worker = FilterWorker(self.filter_queue, self.triage_queue)
         self.filter_worker.filter_done.connect(self.on_filter_done)
         self.filter_worker.start()
 
@@ -428,7 +459,20 @@ class TriageWindow(QMainWindow):
             self.update_ui_state()
 
     def on_reply_generated(self, idx, text):
-        self.state[idx]["reply_text"] = text
+        import os
+        # Only inject if it's the raw text from LLM (not already HTML or error)
+        if not text.startswith("Error generating"):
+            body_html = "".join(f"<p>{line}</p>" if line.strip() else "<br>" for line in text.split("\n"))
+            sig_path = os.path.abspath("knowledge/amy_signature.html")
+            signature_html = ""
+            if os.path.exists(sig_path):
+                with open(sig_path, "r", encoding="utf-8") as f:
+                    signature_html = f.read()
+            full_html = f'<div style="font-family: Calibri, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
+            self.state[idx]["reply_text"] = full_html
+        else:
+            self.state[idx]["reply_text"] = text
+            
         self.state[idx]["reply_status"] = "done"
 
         if idx == self.current_index:
@@ -445,7 +489,8 @@ class TriageWindow(QMainWindow):
         # Save current draft edits before switching
         cur = self.state[self.current_index]
         if cur["reply_status"] == "done" and cur["send_status"] != "sent":
-            cur["reply_text"] = self.txt_reply_content.toPlainText()
+            cur["reply_text"] = self.txt_reply_content.toHtml()
+            cur["reply_cc"] = self.le_reply_cc.text()
 
         self.current_index = idx
         email = self.emails[idx]
@@ -453,6 +498,7 @@ class TriageWindow(QMainWindow):
         # Left panel
         self.lbl_orig_subject.setText(f"Subject: {email['subject']}")
         self.lbl_orig_sender.setText(f"Sender: {email['sender']}")
+        self.lbl_orig_cc.setText(f"CC: {email.get('cc', '')}")
 
         # Show raw body initially; overlay will cover it if still filtering
         st = self.state[idx]
@@ -464,6 +510,9 @@ class TriageWindow(QMainWindow):
         # Right panel — static fields
         self.le_reply_subject.setText(f"RE: {email['subject']}")
         self.le_reply_receiver.setText(email["sender"])
+        
+        # Right panel - editable fields loaded from state or default to email CC
+        self.le_reply_cc.setText(st.get("reply_cc") or email.get("cc", ""))
 
         self.update_ui_state()
 
@@ -493,9 +542,10 @@ class TriageWindow(QMainWindow):
 
         # --- Reply content & controls ---
         if st["send_status"] == "sent":
-            self.txt_reply_content.setPlainText(st["reply_text"])
+            self.txt_reply_content.setHtml(st["reply_text"])
             self.txt_reply_content.setEnabled(False)
             self.le_reply_receiver.setEnabled(False)
+            self.le_reply_cc.setEnabled(False)
             self.le_reply_subject.setEnabled(False)
             self.btn_send.setText("Already Sent")
             self.btn_send.setStyleSheet(
@@ -504,9 +554,13 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
         elif st["reply_status"] == "done":
-            self.txt_reply_content.setPlainText(st["reply_text"])
+            if st["reply_text"].startswith("Error generating"):
+                self.txt_reply_content.setPlainText(st["reply_text"])
+            else:
+                self.txt_reply_content.setHtml(st["reply_text"])
             self.txt_reply_content.setEnabled(True)
             self.le_reply_receiver.setEnabled(True)
+            self.le_reply_cc.setEnabled(True)
             self.le_reply_subject.setEnabled(True)
             self.btn_send.setText("Confirm and Send")
             self.btn_send.setStyleSheet(
@@ -599,16 +653,22 @@ class TriageWindow(QMainWindow):
 
     def send_email(self):
         recipient = self.le_reply_receiver.text()
+        cc_list = self.le_reply_cc.text()
         subject = self.le_reply_subject.text()
-        body = self.txt_reply_content.toPlainText()
+        body = self.txt_reply_content.toHtml()
 
         tool = OutlookSendTool()
-        result = tool._run(recipient=recipient, subject=subject, body=body)
+        result = tool._run(recipient=recipient, subject=subject, body=body, cc=cc_list, is_html=True)
 
         if "successfully sent" in result.lower():
             QMessageBox.information(self, "Success", "Email sent successfully!")
             self.state[self.current_index]["send_status"] = "sent"
             self.state[self.current_index]["reply_text"] = body
+            
+            # Lazily load a new email from the backlog
+            if self.all_unread:
+                self._load_next_from_backlog()
+            
             self.update_ui_state()
 
             # Auto jump to next unsent

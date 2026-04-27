@@ -1,0 +1,54 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv=Content-Type content="text/html; charset=us-ascii"><meta name=Generator content="Microsoft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Calibri",sans-serif;
+	mso-ligatures:standardcontextual;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+span.me-email-text
+	{mso-style-name:me-email-text;}
+span.me-email-text-secondary
+	{mso-style-name:me-email-text-secondary;}
+span.EmailStyle20
+	{mso-style-type:personal-compose;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]--></head><body lang=EN-AU link="#0563C1" vlink="#954F72" style='word-wrap:break-word'><div class=WordSection1><p class=MsoNormal><span style='font-size:11.0pt'><o:p>&nbsp;</o:p></span></p><div><div style='margin-bottom:18.0pt;overflow:hidden'><p class=MsoNormal><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'>________________________________________________________________________________</span><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424;mso-ligatures:none'><o:p></o:p></span></p></div><div style='margin-bottom:9.0pt'><p class=MsoNormal><span class=me-email-text><b><span lang=EN-US style='font-size:18.0pt;font-family:"Segoe UI",sans-serif;color:#242424'>Microsoft Teams</span></b></span><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'> <a href="https://aka.ms/JoinTeamsMeeting?omkt=en-US"><span style='font-size:10.5pt;color:#5B5FC7'>Need help?</span></a> <o:p></o:p></span></p></div><div style='margin-bottom:4.5pt'><p class=MsoNormal><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'><a href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_YTZkZDU5MTEtYzc5Yy00Zjc2LTkzY2QtZTg2MDRmMGE2MGY4%40thread.v2/0?context=%7b%22Tid%22%3a%2268c35a58-c55a-402c-b474-ba00077e9217%22%2c%22Oid%22%3a%2210ad98d2-cc54-4ceb-98d0-0f571ba3a6eb%22%7d" target="_blank" title="Meeting join link"><b><span style='font-size:15.0pt;color:#5B5FC7'>Join the meeting now</span></b></a> <o:p></o:p></span></p></div><div style='margin-bottom:4.5pt'><p class=MsoNormal><span class=me-email-text-secondary><span lang=EN-US style='font-size:10.5pt;font-family:"Segoe UI",sans-serif;color:#616161'>Meeting ID: </span></span><span class=me-email-text><span lang=EN-US style='font-size:10.5pt;font-family:"Segoe UI",sans-serif;color:#242424'>484 175 448 059 2</span></span><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'> <o:p></o:p></span></p></div><div style='margin-bottom:18.0pt'><p class=MsoNormal><span class=me-email-text-secondary><span lang=EN-US style='font-size:10.5pt;font-family:"Segoe UI",sans-serif;color:#616161'>Passcode: </span></span><span class=me-email-text><span lang=EN-US style='font-size:10.5pt;font-family:"Segoe UI",sans-serif;color:#242424'>V8KM6RF2</span></span><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'> <o:p></o:p></span></p></div><div style='margin-bottom:18.0pt'><div class=MsoNormal align=center style='text-align:center'><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'><hr size=1 width="100%" align=center></span></div></div><div><p class=MsoNormal><span class=me-email-text-secondary><span lang=EN-US style='font-size:10.5pt;font-family:"Segoe UI",sans-serif;color:#616161'>For organizers: </span></span><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'><a href="https://teams.microsoft.com/meetingOptions/?organizerId=10ad98d2-cc54-4ceb-98d0-0f571ba3a6eb&amp;tenantId=68c35a58-c55a-402c-b474-ba00077e9217&amp;threadId=19_meeting_YTZkZDU5MTEtYzc5Yy00Zjc2LTkzY2QtZTg2MDRmMGE2MGY4@thread.v2&amp;messageId=0&amp;language=en-US" target="_blank"><span style='font-size:10.5pt;color:#5B5FC7'>Meeting options</span></a> <o:p></o:p></span></p></div><div style='margin-bottom:18.0pt;overflow:hidden'><p class=MsoNormal><span lang=EN-US style='font-family:"Segoe UI",sans-serif;color:#242424'>________________________________________________________________________________<o:p></o:p></span></p></div></div><p class=MsoNormal><span style='font-size:11.0pt'><o:p>&nbsp;</o:p></span></p></div></body></html>

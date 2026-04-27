@@ -7,6 +7,8 @@ requires-python = ">=3.10,<3.14"
 dependencies = [
     "beautifulsoup4>=4.13.5",
     "crewai[google-genai,tools]==1.14.2",
+    "google-generativeai>=0.8.6",
+    "libpff-python>=20231205",
     "pyqt6>=6.11.0",
     "pywin32>=308; sys_platform == 'win32'",
 ]
@@ -19,6 +21,7 @@ replay = "amy.main:replay"
 test = "amy.main:test"
 run_with_trigger = "amy.main:run_with_trigger"
 run_triage = "amy.main:run_triage"
+extract_style = "amy.main:extract_style"
 
 [build-system]
 requires = ["hatchling"]
