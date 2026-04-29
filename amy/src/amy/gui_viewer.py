@@ -566,6 +566,14 @@ class TriageWindow(QMainWindow):
         self.btn_send.clicked.connect(self.send_email)
         controls_layout.addWidget(self.btn_send)
 
+        self.btn_save_reply = QPushButton("💾 Save as Example")
+        self.btn_save_reply.setMinimumHeight(35)
+        self.btn_save_reply.setStyleSheet(
+            "background-color: #107C10; color: white; font-weight: bold; border-radius: 4px;"
+        )
+        self.btn_save_reply.clicked.connect(self.save_reply_feedback)
+        controls_layout.addWidget(self.btn_save_reply)
+
         right_layout.addLayout(controls_layout)
 
         # Add to splitter
@@ -750,6 +758,7 @@ class TriageWindow(QMainWindow):
             )
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
+            self.btn_save_reply.setEnabled(False)
         elif st["reply_status"] == "done":
             if st["reply_text"].startswith("Error generating"):
                 self.txt_reply_content.setPlainText(st["reply_text"])
@@ -765,11 +774,13 @@ class TriageWindow(QMainWindow):
             )
             self.btn_send.setEnabled(True)
             self.btn_regenerate.setEnabled(True)
+            self.btn_save_reply.setEnabled(True)
         elif st["reply_status"] == "generating":
             self.txt_reply_content.setPlainText("⏳ Generating reply...\nPlease wait.")
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
+            self.btn_save_reply.setEnabled(False)
         else:
             # pending — waiting for earlier stages
             if st["filter_status"] == "filtering":
@@ -780,6 +791,7 @@ class TriageWindow(QMainWindow):
                 self.txt_reply_content.setPlainText("⏳ Waiting...")
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
+            self.btn_save_reply.setEnabled(False)
             self.btn_regenerate.setEnabled(has_filter_error or has_triage_error)
 
         self.btn_prev.setEnabled(self.current_index > 0)
@@ -814,13 +826,34 @@ class TriageWindow(QMainWindow):
         with open("knowledge/workflow_examples.jsonl", "a", encoding="utf-8") as f:
             data = {
                 "email_subject": email["subject"],
-                "email_content": st["filtered_body"],
                 "category": st["category"],
                 "urgency": st["urgency"],
                 "extra_info": st["extra_info"],
                 "expected_workflow": text
             }
             f.write(json.dumps(data) + "\n")
+
+    def save_reply_feedback(self):
+        import json
+        import os
+        idx = self.current_index
+        st = self.state[idx]
+        email = self.emails[idx]
+        
+        reply_text = self.txt_reply_content.toPlainText() # use plain text to avoid pure HTML styling mess in prompt
+        
+        os.makedirs("knowledge", exist_ok=True)
+        with open("knowledge/reply_examples.jsonl", "a", encoding="utf-8") as f:
+            data = {
+                "email_subject": email["subject"],
+                "category": st["category"],
+                "urgency": st["urgency"],
+                "extra_info": st["extra_info"],
+                "expected_reply": reply_text
+            }
+            f.write(json.dumps(data) + "\n")
+        
+        QMessageBox.information(self, "Success", "Reply saved as training example!")
 
     def prev_email(self):
         self.load_email(self.current_index - 1)

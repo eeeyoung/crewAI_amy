@@ -139,8 +139,21 @@ class ReplyGeneratorCrew():
             with open(blueprint_path, "r", encoding="utf-8") as f:
                 style_injection = f"\n\nYOUR REQUIRED WRITING STYLE BLUEPRINT:\n{f.read()}"
         
+        # Dynamically load few-shot reply examples
+        examples_injection = ""
+        examples_path = "knowledge/reply_examples.jsonl"
+        if os.path.exists(examples_path):
+            try:
+                with open(examples_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    # Only inject the 5 most recent examples to save token costs
+                    recent_examples = "".join(lines[-5:])
+                    examples_injection = f"\n\nLEARN FROM THESE PAST EXAMPLES OF PERFECT REPLIES (Format: JSON Lines):\n{recent_examples}"
+            except Exception:
+                pass
+
         agent_config = self.agents_config['reply_assistant'].copy()
-        agent_config['backstory'] = agent_config.get('backstory', '') + style_injection
+        agent_config['backstory'] = agent_config.get('backstory', '') + style_injection + examples_injection
 
         return Agent(
             config=agent_config,
@@ -188,7 +201,10 @@ class WorkflowGeneratorCrew():
         if os.path.exists(examples_path):
             try:
                 with open(examples_path, "r", encoding="utf-8") as f:
-                    examples_injection = f"\n\nLEARN FROM THESE PAST EXAMPLES OF WORKFLOWS (Format: JSON Lines):\n{f.read()}"
+                    lines = f.readlines()
+                    # Only inject the 10 most recent examples to save token costs and prevent context bloat
+                    recent_examples = "".join(lines[-20:])
+                    examples_injection = f"\n\nLEARN FROM THESE PAST EXAMPLES OF WORKFLOWS (Format: JSON Lines):\n{recent_examples}"
             except Exception:
                 pass
         
