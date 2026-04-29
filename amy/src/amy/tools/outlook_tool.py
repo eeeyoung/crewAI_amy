@@ -5,13 +5,18 @@ from pydantic import Field
 
 
 def fetch_inbox_emails(count=10, max_body=4000, unread_only=False):
-    """Fetch the latest emails from Outlook Inbox directly via win32com.
-    Returns a list of dicts with Subject, Sender, ReceivedTime, Body.
+    """Fetch the latest emails from Outlook Inbox directly.
+    Returns a list of dicts with subject, sender, cc, received_time, body.
     This is a plain Python function, NOT a CrewAI tool.
     """
-    if platform.system() != "Windows":
-        raise RuntimeError("This function is only supported on Windows.")
+    if platform.system() == "Windows":
+        return _fetch_inbox_emails_windows(count, max_body, unread_only)
+    elif platform.system() == "Darwin":
+        return _fetch_inbox_emails_macos(count, max_body, unread_only)
+    else:
+        raise RuntimeError(f"This function is not supported on OS: {platform.system()}")
 
+def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False):
     import win32com.client
 
     outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
@@ -75,6 +80,91 @@ def fetch_inbox_emails(count=10, max_body=4000, unread_only=False):
             continue
 
     return emails
+
+def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False):
+    import subprocess
+    import json
+    
+    jxa_script = """
+    function run(argv) {
+        var count = parseInt(argv[0]) || 10;
+        var maxBody = parseInt(argv[1]) || 4000;
+        var unreadOnly = argv[2] === "true";
+
+        var Outlook = Application("Microsoft Outlook");
+        var msgs = [];
+        try {
+            var inboxes = Outlook.mailFolders.whose({name: "Inbox"})();
+            for (var i = 0; i < inboxes.length; i++) {
+                var inbox = inboxes[i];
+                var messages = inbox.messages();
+                for (var j = 0; j < messages.length; j++) {
+                    if (msgs.length >= count) break;
+                    var msg = messages[j];
+                    
+                    if (unreadOnly && msg.isRead && msg.isRead()) {
+                        continue;
+                    }
+                    
+                    var sender = msg.sender();
+                    var senderName = sender ? (sender.name || "Unknown") : "Unknown";
+                    var senderEmail = sender ? (sender.address || "Unknown") : "Unknown";
+                    
+                    var ccStr = "";
+                    try {
+                        var ccList = msg.ccRecipients();
+                        if (ccList) {
+                            var ccNames = [];
+                            for (var k = 0; k < ccList.length; k++) {
+                                var rec = ccList[k];
+                                if (rec && rec.emailAddress) {
+                                    var addr = rec.emailAddress();
+                                    ccNames.push((addr.name || "") + " <" + (addr.address || "") + ">");
+                                }
+                            }
+                            ccStr = ccNames.join("; ");
+                        }
+                    } catch (e) {}
+
+                    var body = msg.plainTextContent ? msg.plainTextContent() : "";
+                    if (body && body.length > maxBody) {
+                        body = body.substring(0, maxBody);
+                    }
+
+                    msgs.push({
+                        subject: msg.subject ? msg.subject() : "No Subject",
+                        sender: senderName + " <" + senderEmail + ">",
+                        cc: ccStr,
+                        received_time: msg.timeReceived ? msg.timeReceived().toString() : "Unknown Date",
+                        body: body
+                    });
+                }
+                if (msgs.length >= count) break;
+            }
+        } catch (e) {
+            msgs.push({error: e.toString()});
+        }
+        return JSON.stringify(msgs);
+    }
+    """
+    
+    try:
+        result = subprocess.run(
+            ["osascript", "-l", "JavaScript", "-e", jxa_script, str(count), str(max_body), str(unread_only).lower()],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        emails = json.loads(result.stdout.strip())
+        
+        if emails and "error" in emails[0]:
+            print(f"JXA script error: {emails[0]['error']}")
+            return []
+            
+        return emails
+    except Exception as e:
+        print(f"Error fetching emails on macOS: {e}")
+        return []
 class OutlookReadTool(BaseTool):
     name: str = "outlook_read_tool"
     description: str = "Reads the first email from the default Microsoft Outlook account."
@@ -153,87 +243,24 @@ class OutlookInboxBatchTool(BaseTool):
     description: str = "Reads the latest 10 emails from the Microsoft Outlook Inbox folder."
 
     def _run(self) -> str:
-        current_os = platform.system()
-        
-        if current_os == "Windows":
-            return self._run_windows()
-        else:
-            return f"This tool is currently only supported on Windows. Current OS: {current_os}"
-
-    def _run_windows(self) -> str:
+        import json
         try:
-            import win32com.client
-            import json
+            emails = fetch_inbox_emails(count=10, max_body=500, unread_only=False)
             
-            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-            inbox_folder = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
-            messages = inbox_folder.Items
-            messages.Sort("[ReceivedTime]", True)  # Sort by newest first
-            
-            extracted_emails = []
-            count = 0
-            
-            for message in messages:
-                if count >= 10:
-                    break
-                
-                try:
-                    # Skip items that are not standard MailItems
-                    if message.Class != 43:  # 43 = olMail
-                        continue
-                    
-                    sender_name = getattr(message, "SenderName", "Unknown")
-                    sender_email = getattr(message, "SenderEmailAddress", "Unknown")
-                    
-                    # If it's an internal Exchange address (starts with /O=), try to resolve the SMTP address
-                    if sender_email and sender_email.upper().startswith("/O="):
-                        try:
-                            sender = message.Sender
-                            if sender:
-                                exch_user = sender.GetExchangeUser()
-                                if exch_user:
-                                    sender_email = exch_user.PrimarySmtpAddress
-                        except Exception:
-                            pass # Fallback to original string if resolution fails
-
-                    # Resolve CC addresses
-                    cc_list = []
-                    try:
-                        for rec in message.Recipients:
-                            if rec.Type == 2:  # 2 = olCC
-                                rec_email = rec.Address
-                                if rec_email and rec_email.upper().startswith("/O="):
-                                    try:
-                                        rec_email = rec.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
-                                    except Exception:
-                                        try:
-                                            exch_user = rec.AddressEntry.GetExchangeUser()
-                                            if exch_user: rec_email = exch_user.PrimarySmtpAddress
-                                        except Exception:
-                                            pass
-                                cc_list.append(f"{rec.Name} <{rec_email}>")
-                        cc_str = "; ".join(cc_list)
-                    except Exception:
-                        cc_str = getattr(message, "CC", "")
-
-                    extracted_emails.append({
-                        "Subject": getattr(message, "Subject", "No Subject"),
-                        "Sender": f"{sender_name} <{sender_email}>",
-                        "CC": cc_str,
-                        "ReceivedTime": str(getattr(message, "ReceivedTime", "Unknown Date")),
-                        "BodySnippet": getattr(message, "Body", "")[:500]
-                    })
-                    count += 1
-                except Exception as msg_e:
-                    continue
-                    
-            if not extracted_emails:
+            if not emails:
                 return json.dumps({"error": "No messages found in Inbox."})
                 
+            extracted_emails = []
+            for email in emails:
+                extracted_emails.append({
+                    "Subject": email.get("subject", "No Subject"),
+                    "Sender": email.get("sender", "Unknown"),
+                    "CC": email.get("cc", ""),
+                    "ReceivedTime": email.get("received_time", "Unknown Date"),
+                    "BodySnippet": email.get("body", "")
+                })
+                
             return json.dumps(extracted_emails)
-            
-        except ImportError:
-            return json.dumps({"error": "pywin32 not installed."})
         except Exception as e:
             return json.dumps({"error": f"Error accessing Outlook Inbox: {str(e)}"})
 

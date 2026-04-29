@@ -1,0 +1,16 @@
+generate_workflow_task:
+  description: >
+    Review the following original email and its assigned triage details:
+
+    Original Email Subject: {email_subject}
+    Original Email Content: {email_content}
+    Assigned Category: {email_category}
+    Urgency: {email_urgency}
+    Extra Context: {email_context}
+
+    Generate a step-by-step workflow outlining what actions must be taken to fully resolve or process this email. 
+    Crucially, explicitly identify any other specialized AI agents that should be called to assist with this workflow (e.g., Schedule Agent, RFI Processing Agent, Invoice Parsing Agent, Document Control Agent). 
+    Keep the writing style as simple and actionable as possible.
+  expected_output: >
+    A simple, clear text string containing a bulleted or numbered step-by-step workflow of actions and required AI agents. Do not include introductory conversational filler.
+  agent: workflow_admin

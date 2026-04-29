@@ -1,15 +1,16 @@
 import sys
 import json
 import queue
+import os
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QTextEdit, QPushButton, QSplitter, QMessageBox, QFrame,
-    QStackedLayout
+    QStackedLayout, QDialog
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont
 
-from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew
+from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew
 from amy.tools.outlook_tool import OutlookSendTool
 
 
@@ -57,12 +58,13 @@ class FilterWorker(QThread):
 
 class TriageWorker(QThread):
     """Processes filtered emails one-by-one through the triage agent."""
-    category_ready = pyqtSignal(int, str, str)
+    category_ready = pyqtSignal(int, str, str, str)
 
-    def __init__(self, triage_queue, reply_queue, parent=None):
+    def __init__(self, triage_queue, reply_queue, workflow_queue, parent=None):
         super().__init__(parent)
         self.triage_queue = triage_queue
         self.reply_queue = reply_queue
+        self.workflow_queue = workflow_queue
         self.running = True
 
     def run(self):
@@ -83,6 +85,7 @@ class TriageWorker(QThread):
             }
 
             category = "Uncategorized"
+            urgency = ""
             extra_info = ""
 
             try:
@@ -96,16 +99,20 @@ class TriageWorker(QThread):
                         cleaned = cleaned.rsplit("```", 1)[0]
                     parsed = json.loads(cleaned.strip())
                     category = parsed.get("category", "Uncategorized")
+                    urgency = parsed.get("urgency", "")
                     extra_info = parsed.get("extra_info", "")
                 except (json.JSONDecodeError, AttributeError):
                     category = raw[:100]
+                    urgency = ""
                     extra_info = "Could not parse structured output"
             except Exception as e:
                 category = "Error"
+                urgency = ""
                 extra_info = str(e)
 
-            self.category_ready.emit(idx, category, extra_info)
-            self.reply_queue.put((idx, email, filtered_body, category, extra_info))
+            self.category_ready.emit(idx, category, urgency, extra_info)
+            self.reply_queue.put((idx, email, filtered_body, category, urgency, extra_info))
+            self.workflow_queue.put((idx, email, filtered_body, category, urgency, extra_info))
 
     def stop(self):
         self.running = False
@@ -130,12 +137,13 @@ class ReplyWorker(QThread):
             if item is None:
                 break
 
-            idx, email, filtered_body, category, extra_info = item
+            idx, email, filtered_body, category, urgency, extra_info = item
 
             inputs = {
                 "email_subject": email["subject"],
                 "email_content": filtered_body,
                 "email_category": category,
+                "email_urgency": urgency,
                 "email_context": extra_info,
             }
 
@@ -152,19 +160,61 @@ class ReplyWorker(QThread):
         self.reply_queue.put(None)
 
 
+class WorkflowWorker(QThread):
+    """Picks categorized emails from the queue and generates workflows one-by-one."""
+    workflow_generated = pyqtSignal(int, str)
+
+    def __init__(self, workflow_queue, parent=None):
+        super().__init__(parent)
+        self.workflow_queue = workflow_queue
+        self.running = True
+
+    def run(self):
+        while self.running:
+            try:
+                item = self.workflow_queue.get(timeout=1)
+            except queue.Empty:
+                continue
+            if item is None:
+                break
+
+            idx, email, filtered_body, category, urgency, extra_info = item
+
+            inputs = {
+                "email_subject": email["subject"],
+                "email_content": filtered_body,
+                "email_category": category,
+                "email_urgency": urgency,
+                "email_context": extra_info,
+            }
+
+            try:
+                result = WorkflowGeneratorCrew().crew().kickoff(inputs=inputs)
+                workflow_text = result.raw if hasattr(result, 'raw') else str(result)
+            except Exception as e:
+                workflow_text = f"Error generating workflow: {str(e)}"
+
+            self.workflow_generated.emit(idx, workflow_text)
+
+    def stop(self):
+        self.running = False
+        self.workflow_queue.put(None)
+
+
 class RegenerateWorker(QThread):
     """Re-runs filter, triage, or reply for a single email depending on which stage failed."""
     filter_done = pyqtSignal(int, str)
-    triage_done = pyqtSignal(int, str, str)
+    triage_done = pyqtSignal(int, str, str, str)
     reply_done = pyqtSignal(int, str)
 
-    def __init__(self, idx, email, mode, filtered_body="", category="", extra_info="", parent=None):
+    def __init__(self, idx, email, mode, filtered_body="", category="", urgency="", extra_info="", parent=None):
         super().__init__(parent)
         self.idx = idx
         self.email = email
         self.mode = mode  # "filter", "triage", or "reply"
         self.filtered_body = filtered_body
         self.category = category
+        self.urgency = urgency
         self.extra_info = extra_info
 
     def run(self):
@@ -204,20 +254,24 @@ class RegenerateWorker(QThread):
                     cleaned = cleaned.rsplit("```", 1)[0]
                 parsed = json.loads(cleaned.strip())
                 self.category = parsed.get("category", "Uncategorized")
+                self.urgency = parsed.get("urgency", "")
                 self.extra_info = parsed.get("extra_info", "")
             except (json.JSONDecodeError, AttributeError):
                 self.category = raw[:100]
+                self.urgency = ""
                 self.extra_info = "Could not parse structured output"
         except Exception as e:
             self.category = "Error"
+            self.urgency = ""
             self.extra_info = str(e)
-        self.triage_done.emit(self.idx, self.category, self.extra_info)
+        self.triage_done.emit(self.idx, self.category, self.urgency, self.extra_info)
 
     def _run_reply(self):
         inputs = {
             "email_subject": self.email["subject"],
             "email_content": self.filtered_body,
             "email_category": self.category,
+            "email_urgency": self.urgency,
             "email_context": self.extra_info,
         }
         try:
@@ -226,6 +280,62 @@ class RegenerateWorker(QThread):
         except Exception as e:
             draft_text = f"Error generating reply: {str(e)}"
         self.reply_done.emit(self.idx, draft_text)
+
+
+# =============================================================================
+# Workflow Dialog
+# =============================================================================
+
+class WorkflowDialog(QDialog):
+    def __init__(self, idx, email, st, parent=None):
+        super().__init__(parent)
+        self.idx = idx
+        self.email = email
+        self.st = st
+        self.parent_window = parent
+        
+        self.setWindowTitle("Task Allocation Workflow")
+        self.resize(800, 600)
+        
+        layout = QVBoxLayout(self)
+        
+        lbl_info = QLabel(f"<b>Workflow for:</b> {email['subject']}<br><b>Category:</b> {st['category']}")
+        lbl_info.setStyleSheet("font-size: 14px; margin-bottom: 10px;")
+        layout.addWidget(lbl_info)
+        
+        self.txt_workflow = QTextEdit()
+        if st["workflow_status"] == "generating" or st["workflow_status"] == "pending":
+            self.txt_workflow.setPlainText("⏳ Thinking...")
+            self.txt_workflow.setEnabled(False)
+        else:
+            self.txt_workflow.setPlainText(st["workflow_text"])
+        layout.addWidget(self.txt_workflow)
+        
+        btn_layout = QHBoxLayout()
+        self.btn_regen = QPushButton("🔄 Regenerate")
+        self.btn_update = QPushButton("💾 Update Answer")
+        self.btn_proceed = QPushButton("▶️ Proceed")
+        
+        btn_layout.addWidget(self.btn_regen)
+        btn_layout.addWidget(self.btn_update)
+        btn_layout.addWidget(self.btn_proceed)
+        layout.addLayout(btn_layout)
+        
+        self.btn_regen.clicked.connect(self.on_regenerate)
+        self.btn_update.clicked.connect(self.on_update)
+        self.btn_proceed.clicked.connect(self.accept)
+        
+    def on_regenerate(self):
+        if self.parent_window:
+            self.parent_window.regenerate_workflow(self.idx)
+        self.txt_workflow.setPlainText("⏳ Thinking...")
+        self.txt_workflow.setEnabled(False)
+        
+    def on_update(self):
+        updated_text = self.txt_workflow.toPlainText()
+        if self.parent_window:
+            self.parent_window.save_workflow_feedback(self.idx, updated_text)
+        QMessageBox.information(self, "Success", "Workflow feedback saved for training!")
 
 
 # =============================================================================
@@ -242,6 +352,7 @@ class TriageWindow(QMainWindow):
         self.filter_queue = queue.Queue()
         self.triage_queue = queue.Queue()
         self.reply_queue = queue.Queue()
+        self.workflow_queue = queue.Queue()
 
         self.init_ui()
         self.start_workers()
@@ -266,11 +377,14 @@ class TriageWindow(QMainWindow):
             "filtered_body": "",
             "filter_status": "filtering",
             "category": "",
+            "urgency": "",
             "extra_info": "",
             "category_status": "pending",
             "reply_cc": email.get("cc", ""),
             "reply_text": "",
             "reply_status": "pending",
+            "workflow_text": "",
+            "workflow_status": "pending",
             "send_status": "unsent",
         }
         
@@ -280,6 +394,30 @@ class TriageWindow(QMainWindow):
     def init_ui(self):
         self.setWindowTitle("Interactive Triage & Auto-Reply Workstation")
         self.resize(1200, 800)
+        
+        self.setStyleSheet("""
+            QMainWindow { background-color: #FFFDE7; }
+            QWidget { font-family: 'Segoe UI', Arial, sans-serif; color: #3E3E3E; }
+            QSplitter::handle { background-color: #E6DEB1; }
+            QFrame { background-color: #FFFFFF; border-radius: 8px; border: 1px solid #E6DEB1; }
+            QLabel { border: none; background-color: transparent; }
+            QLineEdit, QTextEdit { 
+                background-color: #FFFFFF; 
+                border: 1px solid #E6DEB1; 
+                border-radius: 4px; 
+                padding: 4px; 
+            }
+            QPushButton {
+                background-color: #FFF3CD;
+                border: 1px solid #E6DEB1;
+                border-radius: 4px;
+                padding: 6px;
+                font-weight: bold;
+                color: #3E3E3E;
+            }
+            QPushButton:hover { background-color: #FFE8A1; }
+            QPushButton:disabled { color: #A8A8A8; background-color: #FFF9E6; }
+        """)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -325,13 +463,13 @@ class TriageWindow(QMainWindow):
 
         self.txt_orig_content = QTextEdit()
         self.txt_orig_content.setReadOnly(True)
-        self.txt_orig_content.setStyleSheet("background-color: #f5f5f5; color: #1a1a1a;")
+        self.txt_orig_content.setStyleSheet("background-color: #FCFBF4; color: #3E3E3E;")
 
         self.filter_overlay = QLabel("🔍 Thinking and filtering...")
         self.filter_overlay.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.filter_overlay.setStyleSheet(
-            "background-color: rgba(50, 50, 50, 180); "
-            "color: white; font-size: 20px; font-weight: bold;"
+            "background-color: rgba(255, 250, 205, 180); "
+            "color: #3E3E3E; font-size: 20px; font-weight: bold;"
         )
 
         content_stack.addWidget(self.txt_orig_content)
@@ -354,11 +492,26 @@ class TriageWindow(QMainWindow):
         self.le_reply_subject = QLineEdit()
         right_layout.addWidget(self.le_reply_subject)
 
-        # Category
+        # Triage Info (Category, Urgency, Extra Info)
         self.lbl_category = QLabel("Category: ⏳ Waiting...")
-        self.lbl_category.setStyleSheet("color: #005A9E; font-weight: bold;")
+        self.lbl_category.setStyleSheet("color: #174EA6; background-color: #E8F0FE; padding: 6px; border-radius: 4px; font-weight: bold;")
         self.lbl_category.setWordWrap(True)
         right_layout.addWidget(self.lbl_category)
+
+        self.lbl_urgency = QLabel("Urgency: ⏳ Waiting...")
+        self.lbl_urgency.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-weight: bold;")
+        self.lbl_urgency.setWordWrap(True)
+        right_layout.addWidget(self.lbl_urgency)
+
+        self.lbl_extra_info = QLabel("Extra Info: ⏳ Waiting...")
+        self.lbl_extra_info.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-style: italic;")
+        self.lbl_extra_info.setWordWrap(True)
+        right_layout.addWidget(self.lbl_extra_info)
+
+        self.btn_workflow = QPushButton("📝 View/Edit Workflow")
+        self.btn_workflow.clicked.connect(self.open_workflow_dialog)
+        self.btn_workflow.setStyleSheet("margin-top: 10px; margin-bottom: 10px;")
+        right_layout.addWidget(self.btn_workflow)
 
         # Receiver
         right_layout.addWidget(QLabel("Receiver:"))
@@ -429,13 +582,17 @@ class TriageWindow(QMainWindow):
         self.filter_worker.filter_done.connect(self.on_filter_done)
         self.filter_worker.start()
 
-        self.triage_worker = TriageWorker(self.triage_queue, self.reply_queue)
+        self.triage_worker = TriageWorker(self.triage_queue, self.reply_queue, self.workflow_queue)
         self.triage_worker.category_ready.connect(self.on_category_ready)
         self.triage_worker.start()
 
         self.reply_worker = ReplyWorker(self.reply_queue)
         self.reply_worker.reply_generated.connect(self.on_reply_generated)
         self.reply_worker.start()
+
+        self.workflow_worker = WorkflowWorker(self.workflow_queue)
+        self.workflow_worker.workflow_generated.connect(self.on_workflow_generated)
+        self.workflow_worker.start()
 
     # -------------------------------------------------------------------------
     # Signal Handlers
@@ -449,12 +606,19 @@ class TriageWindow(QMainWindow):
         if idx == self.current_index:
             self.update_ui_state()
 
-    def on_category_ready(self, idx, category, extra_info):
+    def on_category_ready(self, idx, category, urgency, extra_info):
         self.state[idx]["category"] = category
+        self.state[idx]["urgency"] = urgency
         self.state[idx]["extra_info"] = extra_info
         self.state[idx]["category_status"] = "done"
         self.state[idx]["reply_status"] = "generating"
 
+        if idx == self.current_index:
+            self.update_ui_state()
+
+    def on_workflow_generated(self, idx, text):
+        self.state[idx]["workflow_text"] = text
+        self.state[idx]["workflow_status"] = "done"
         if idx == self.current_index:
             self.update_ui_state()
 
@@ -527,13 +691,46 @@ class TriageWindow(QMainWindow):
             self.filter_overlay.setVisible(False)
             self.txt_orig_content.setPlainText(st["filtered_body"])
 
-        # --- Category label ---
+        # --- Triage labels ---
         if st["category_status"] == "pending":
             self.lbl_category.setText("Category: ⏳ Waiting for filter...")
+            self.lbl_urgency.setText("Urgency: ⏳ Waiting for filter...")
+            self.lbl_urgency.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-weight: bold;")
+            self.lbl_extra_info.setText("Extra Info: ⏳ Waiting for filter...")
         elif st["category_status"] == "thinking":
             self.lbl_category.setText("Category: ⏳ Thinking...")
+            self.lbl_urgency.setText("Urgency: ⏳ Thinking...")
+            self.lbl_urgency.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-weight: bold;")
+            self.lbl_extra_info.setText("Extra Info: ⏳ Thinking...")
         else:
-            self.lbl_category.setText(f"Category: {st['category']} | {st['extra_info']}")
+            self.lbl_category.setText(f"Category: {st['category']}")
+            
+            # Dynamic Urgency Color
+            urgency_text = st['urgency'].strip().upper()
+            if any(w in urgency_text for w in ['HIGH', 'URGENT', 'ASAP', 'IMMEDIATE', 'CRITICAL']):
+                u_color, u_bg = "#B31412", "#FCE8E6" # Red
+            elif any(w in urgency_text for w in ['LOW', 'NORMAL', 'ROUTINE', 'STANDARD']):
+                u_color, u_bg = "#0D652D", "#E6F4EA" # Green
+            elif any(w in urgency_text for w in ['MEDIUM', 'MODERATE']):
+                u_color, u_bg = "#E65100", "#FFF3E0" # Orange
+            else:
+                u_color, u_bg = "#3C4043", "#F8F9FA" # Default Grey
+                
+            self.lbl_urgency.setText(f"Urgency: {st['urgency']}")
+            self.lbl_urgency.setStyleSheet(f"color: {u_color}; background-color: {u_bg}; padding: 6px; border-radius: 4px; font-weight: bold;")
+            
+            self.lbl_extra_info.setText(f"Extra Info: {st['extra_info']}")
+
+        # --- Workflow Button State ---
+        if st["category_status"] == "done":
+            self.btn_workflow.setEnabled(True)
+            if st["workflow_status"] == "generating":
+                self.btn_workflow.setText("⏳ Generating Workflow...")
+            else:
+                self.btn_workflow.setText("📝 View/Edit Workflow")
+        else:
+            self.btn_workflow.setEnabled(False)
+            self.btn_workflow.setText("📝 View/Edit Workflow")
 
         # --- Determine error state for regenerate ---
         has_filter_error = st["filtered_body"].startswith("Error filtering:")
@@ -592,6 +789,39 @@ class TriageWindow(QMainWindow):
     # Actions
     # -------------------------------------------------------------------------
 
+    def open_workflow_dialog(self):
+        idx = self.current_index
+        dialog = WorkflowDialog(idx, self.emails[idx], self.state[idx], parent=self)
+        dialog.exec()
+
+    def regenerate_workflow(self, idx):
+        self.state[idx]["workflow_status"] = "generating"
+        self.state[idx]["workflow_text"] = ""
+        st = self.state[idx]
+        email = self.emails[idx]
+        self.workflow_queue.put((idx, email, st["filtered_body"], st["category"], st["urgency"], st["extra_info"]))
+        if idx == self.current_index:
+            self.update_ui_state()
+
+    def save_workflow_feedback(self, idx, text):
+        import json
+        import os
+        self.state[idx]["workflow_text"] = text
+        email = self.emails[idx]
+        st = self.state[idx]
+        
+        os.makedirs("knowledge", exist_ok=True)
+        with open("knowledge/workflow_examples.jsonl", "a", encoding="utf-8") as f:
+            data = {
+                "email_subject": email["subject"],
+                "email_content": st["filtered_body"],
+                "category": st["category"],
+                "urgency": st["urgency"],
+                "extra_info": st["extra_info"],
+                "expected_workflow": text
+            }
+            f.write(json.dumps(data) + "\n")
+
     def prev_email(self):
         self.load_email(self.current_index - 1)
 
@@ -646,7 +876,7 @@ class TriageWindow(QMainWindow):
             self._regen_worker = RegenerateWorker(
                 idx, email, mode="reply",
                 filtered_body=st["filtered_body"],
-                category=st["category"], extra_info=st["extra_info"]
+                category=st["category"], urgency=st["urgency"], extra_info=st["extra_info"]
             )
             self._regen_worker.reply_done.connect(self.on_reply_generated)
             self._regen_worker.start()

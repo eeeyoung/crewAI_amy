@@ -6,6 +6,23 @@ from pydantic import BaseModel
 
 from amy.tools.outlook_tool import OutlookSendTool
 
+# Toggle provider here: 'gem' for Gemini, 'ds' for DeepSeek
+ACTIVE_PROVIDER = os.environ.get("AI_PROVIDER", "gem").lower()
+
+def get_llm(role="fast"):
+    """
+    Returns the appropriate LLM based on ACTIVE_PROVIDER.
+    'role' can be 'fast' (for standard tasks) or 'smart' (for complex reasoning).
+    """
+    if ACTIVE_PROVIDER == "ds":
+        api_key = os.environ.get("DEEPSEEK_API_KEY")
+        if role == "smart":
+            return LLM(model="deepseek/deepseek-reasoner", api_key=api_key)
+        return LLM(model="deepseek/deepseek-chat", api_key=api_key)
+    else:
+        if role == "smart":
+            return LLM(model="gemini/gemini-2.5-pro")
+        return LLM(model="gemini/gemini-2.5-flash")
 
 class StyleBlueprint(BaseModel):
     sentence_structure: str
@@ -24,7 +41,7 @@ class StyleLearnerCrew():
     def style_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config['style_analyst'],
-            llm=LLM(model="gemini/gemini-2.5-pro"),
+            llm=get_llm("smart"),
             verbose=True,
             tools=[DirectoryReadTool(directory="knowledge/historical_emails")]
         )
@@ -57,7 +74,7 @@ class MessageFilterCrew():
     def message_filter(self) -> Agent:
         return Agent(
             config=self.agents_config['message_filter'],
-            llm=LLM(model="gemini/gemini-2.5-flash"),
+            llm=get_llm("fast"),
             verbose=True
         )
 
@@ -87,7 +104,7 @@ class TriageSingleCrew():
     def triage_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config['triage_analyst'],
-            llm=LLM(model="gemini/gemini-2.5-flash"),
+            llm=get_llm("fast"),
             verbose=True
         )
 
@@ -127,7 +144,7 @@ class ReplyGeneratorCrew():
 
         return Agent(
             config=agent_config,
-            llm=LLM(model="gemini/gemini-2.5-flash"),
+            llm=get_llm("fast"),
             verbose=True,
             tools=[OutlookSendTool(), FileReadTool()]
         )
@@ -146,11 +163,56 @@ class ReplyGeneratorCrew():
             process=Process.sequential,
             verbose=True,
             memory=True,
-            memory_llm=LLM(model="gemini/gemini-2.5-flash"),
+            memory_llm=get_llm("fast"),
             embedder={
                 "provider": "google-generativeai",
                 "config": {
+                    "api_key": os.environ.get("GEMINI_API_KEY"),
                     "model": "models/embedding-001"
                 }
             }
+        )
+
+
+@CrewBase
+class WorkflowGeneratorCrew():
+    """Crew for generating task workflows based on triaged emails."""
+    agents_config = 'config/workflow_agents.yaml'
+    tasks_config = 'config/workflow_tasks.yaml'
+
+    @agent
+    def workflow_admin(self) -> Agent:
+        # Dynamically load workflow examples if they exist
+        examples_injection = ""
+        examples_path = "knowledge/workflow_examples.jsonl"
+        if os.path.exists(examples_path):
+            try:
+                with open(examples_path, "r", encoding="utf-8") as f:
+                    examples_injection = f"\n\nLEARN FROM THESE PAST EXAMPLES OF WORKFLOWS (Format: JSON Lines):\n{f.read()}"
+            except Exception:
+                pass
+        
+        agent_config = self.agents_config['workflow_admin'].copy()
+        agent_config['backstory'] = agent_config.get('backstory', '') + examples_injection
+
+        return Agent(
+            config=agent_config,
+            llm=get_llm("fast"),
+            verbose=True
+        )
+
+    @task
+    def generate_workflow_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['generate_workflow_task'],
+        )
+
+    @crew
+    def crew(self) -> Crew:
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.sequential,
+            verbose=True,
+            memory=False
         )
