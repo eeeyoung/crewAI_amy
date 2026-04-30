@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
     QStackedLayout, QDialog
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
 from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew
 from amy.tools.outlook_tool import OutlookSendTool, mark_email_as_read, mark_email_as_unread
@@ -312,9 +312,9 @@ class WorkflowDialog(QDialog):
         layout.addWidget(self.txt_workflow)
         
         btn_layout = QHBoxLayout()
-        self.btn_regen = QPushButton("🔄 Regenerate")
-        self.btn_update = QPushButton("💾 Update Answer")
-        self.btn_proceed = QPushButton("▶️ Proceed")
+        self.btn_regen = QPushButton("🔄 Regenerate (R)")
+        self.btn_update = QPushButton("💾 Update Answer (4)")
+        self.btn_proceed = QPushButton("▶️ Proceed (1)")
         
         btn_layout.addWidget(self.btn_regen)
         btn_layout.addWidget(self.btn_update)
@@ -324,6 +324,11 @@ class WorkflowDialog(QDialog):
         self.btn_regen.clicked.connect(self.on_regenerate)
         self.btn_update.clicked.connect(self.on_update)
         self.btn_proceed.clicked.connect(self.accept)
+
+        # Shortcuts for workflow dialog
+        QShortcut(QKeySequence("R"), self).activated.connect(self.on_regenerate)
+        QShortcut(QKeySequence("4"), self).activated.connect(self.on_update)
+        QShortcut(QKeySequence("1"), self).activated.connect(self.accept)
         
     def on_regenerate(self):
         if self.parent_window:
@@ -446,6 +451,11 @@ class TriageWindow(QMainWindow):
         self.lbl_orig_subject.setStyleSheet("font-weight: bold;")
         left_layout.addWidget(self.lbl_orig_subject)
 
+        # Received Time
+        self.lbl_orig_time = QLabel("Received: ")
+        self.lbl_orig_time.setStyleSheet("color: #7A7A7A; font-size: 11px; font-style: italic;")
+        left_layout.addWidget(self.lbl_orig_time)
+
         # Sender
         self.lbl_orig_sender = QLabel("Sender: ")
         left_layout.addWidget(self.lbl_orig_sender)
@@ -509,7 +519,7 @@ class TriageWindow(QMainWindow):
         self.lbl_extra_info.setWordWrap(True)
         right_layout.addWidget(self.lbl_extra_info)
 
-        self.btn_workflow = QPushButton("📝 View/Edit Workflow")
+        self.btn_workflow = QPushButton("📝 View/Edit Workflow (W)")
         self.btn_workflow.clicked.connect(self.open_workflow_dialog)
         self.btn_workflow.setStyleSheet("margin-top: 10px; margin-bottom: 10px;")
         right_layout.addWidget(self.btn_workflow)
@@ -532,7 +542,7 @@ class TriageWindow(QMainWindow):
         # --- BOTTOM CONTROLS ---
         controls_layout = QHBoxLayout()
 
-        self.btn_prev = QPushButton("< Prev")
+        self.btn_prev = QPushButton("< Prev (A)")
         self.btn_prev.setMinimumWidth(100)
         self.btn_prev.clicked.connect(self.prev_email)
         controls_layout.addWidget(self.btn_prev)
@@ -542,14 +552,14 @@ class TriageWindow(QMainWindow):
         self.lbl_counter.setMinimumWidth(100)
         controls_layout.addWidget(self.lbl_counter)
 
-        self.btn_next = QPushButton("Next >")
+        self.btn_next = QPushButton("Next > (D)")
         self.btn_next.setMinimumWidth(100)
         self.btn_next.clicked.connect(self.next_email)
         controls_layout.addWidget(self.btn_next)
 
         controls_layout.addStretch()
 
-        self.btn_regenerate = QPushButton("🔄 Regenerate")
+        self.btn_regenerate = QPushButton("🔄 Regenerate (R)")
         self.btn_regenerate.setMinimumWidth(130)
         self.btn_regenerate.setMinimumHeight(35)
         self.btn_regenerate.setStyleSheet(
@@ -558,11 +568,11 @@ class TriageWindow(QMainWindow):
         self.btn_regenerate.clicked.connect(self.regenerate_current)
         controls_layout.addWidget(self.btn_regenerate)
 
-        self.btn_send = QPushButton("Send && Mark as Read")
+        self.btn_send = QPushButton("Send && Mark as Read (1)")
         self.btn_send.setMinimumWidth(150)
         self.btn_send.setMinimumHeight(35)
         self.btn_send.setStyleSheet(
-            "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px;"
+            "background-color: #0078D4; color: white; font-weight: bold; font-size: 10px; border-radius: 4px;"
         )
         self.btn_send.clicked.connect(self.send_email)
         controls_layout.addWidget(self.btn_send)
@@ -573,7 +583,7 @@ class TriageWindow(QMainWindow):
         skip_layout.setContentsMargins(0, 0, 0, 0)
         skip_layout.setSpacing(2)
 
-        self.btn_skip_read = QPushButton("Skip with READ")
+        self.btn_skip_read = QPushButton("Skip with READ (2)")
         self.btn_skip_read.setMinimumHeight(16)
         self.btn_skip_read.setStyleSheet(
             "background-color: #6B8E23; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
@@ -581,7 +591,7 @@ class TriageWindow(QMainWindow):
         self.btn_skip_read.clicked.connect(self.skip_read)
         skip_layout.addWidget(self.btn_skip_read)
 
-        self.btn_skip_unread = QPushButton("Skip with UNREAD")
+        self.btn_skip_unread = QPushButton("Skip with UNREAD (3)")
         self.btn_skip_unread.setMinimumHeight(16)
         self.btn_skip_unread.setStyleSheet(
             "background-color: #8B4513; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
@@ -591,13 +601,23 @@ class TriageWindow(QMainWindow):
 
         controls_layout.addWidget(skip_container)
 
-        self.btn_save_reply = QPushButton("💾 Save as Example")
+        self.btn_save_reply = QPushButton("💾 Save as Example (4)")
         self.btn_save_reply.setMinimumHeight(35)
         self.btn_save_reply.setStyleSheet(
             "background-color: #107C10; color: white; font-weight: bold; border-radius: 4px;"
         )
         self.btn_save_reply.clicked.connect(self.save_reply_feedback)
         controls_layout.addWidget(self.btn_save_reply)
+
+        # --- Keyboard Shortcuts ---
+        QShortcut(QKeySequence("A"), self).activated.connect(self.prev_email)
+        QShortcut(QKeySequence("D"), self).activated.connect(self.next_email)
+        QShortcut(QKeySequence("R"), self).activated.connect(self.regenerate_current)
+        QShortcut(QKeySequence("W"), self).activated.connect(self.open_workflow_dialog)
+        QShortcut(QKeySequence("1"), self).activated.connect(self.send_email)
+        QShortcut(QKeySequence("2"), self).activated.connect(self.skip_read)
+        QShortcut(QKeySequence("3"), self).activated.connect(self.skip_unread)
+        QShortcut(QKeySequence("4"), self).activated.connect(self.save_reply_feedback)
 
         right_layout.addLayout(controls_layout)
 
@@ -694,9 +714,9 @@ class TriageWindow(QMainWindow):
 
         # Left panel
         self.lbl_orig_subject.setText(f"Subject: {email['subject']}")
+        self.lbl_orig_time.setText(f"Received: {email.get('received_time', 'Unknown')}")
         self.lbl_orig_sender.setText(f"Sender: {email['sender']}")
         self.lbl_orig_cc.setText(f"CC: {email.get('cc', '')}")
-
         # Show raw body initially; overlay will cover it if still filtering
         st = self.state[idx]
         if st["filter_status"] == "done":
@@ -760,10 +780,10 @@ class TriageWindow(QMainWindow):
             if st["workflow_status"] == "generating":
                 self.btn_workflow.setText("⏳ Generating Workflow...")
             else:
-                self.btn_workflow.setText("📝 View/Edit Workflow")
+                self.btn_workflow.setText("📝 View/Edit Workflow (W)")
         else:
             self.btn_workflow.setEnabled(False)
-            self.btn_workflow.setText("📝 View/Edit Workflow")
+            self.btn_workflow.setText("📝 View/Edit Workflow (W)")
 
         # --- Determine error state for regenerate ---
         has_filter_error = st["filtered_body"].startswith("Error filtering:")
@@ -810,7 +830,7 @@ class TriageWindow(QMainWindow):
             self.le_reply_receiver.setEnabled(True)
             self.le_reply_cc.setEnabled(True)
             self.le_reply_subject.setEnabled(True)
-            self.btn_send.setText("Send && Mark as Read")
+            self.btn_send.setText("Send && Mark as Read (1)")
             self.btn_send.setStyleSheet(
                 "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px;"
             )

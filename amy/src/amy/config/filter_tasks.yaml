@@ -13,10 +13,30 @@ filter_email_task:
     - Sender name, position, and company for each message in the thread
     - Any project-relevant information (dates, reference numbers, etc.)
 
+    CRITICAL — MULTI-PARTY THREAD FORMATTING:
+    If the email contains multiple dialogue turns (e.g. forwarded messages, reply chains,
+    or conversations between more than one party), you MUST restructure the output into
+    clearly separated sections. Use this exact format for each dialogue turn:
+
+    ═══════════════════════════════════════
+    FROM: [Sender Name, Position, Company]
+    TO: [Recipient Name(s)]
+    DATE: [Date/time if visible in the original]
+    ═══════════════════════════════════════
+    [Cleaned message content here]
+
+    Order the sections chronologically (oldest message first, newest message last).
+    If a message is addressed to multiple recipients or CC'd parties, list them all
+    under the TO field. If the date or recipient is not discernible, write "Not specified".
+
+    If the email is a single message (not a thread), simply return the cleaned text
+    without the section headers.
+
     Raw email body:
     {email_body}
 
-    Return ONLY the cleaned text. Do not add any commentary or preamble.
+    Return ONLY the cleaned, restructured text. Do not add any commentary or preamble.
   expected_output: >
     The cleaned email body text with only valuable dialogue and sender identities preserved.
+    Multi-party threads must be separated into clearly labelled chronological sections.
   agent: message_filter
