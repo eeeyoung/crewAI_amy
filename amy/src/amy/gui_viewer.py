@@ -11,7 +11,7 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont
 
 from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew
-from amy.tools.outlook_tool import OutlookSendTool
+from amy.tools.outlook_tool import OutlookSendTool, mark_email_as_read, mark_email_as_unread
 
 
 # =============================================================================
@@ -358,7 +358,7 @@ class TriageWindow(QMainWindow):
         self.start_workers()
 
         # Load first 3 emails (or less if fewer are available)
-        initial_count = min(3, len(self.all_unread))
+        initial_count = min(5, len(self.all_unread))
         for _ in range(initial_count):
             self._load_next_from_backlog()
 
@@ -557,7 +557,7 @@ class TriageWindow(QMainWindow):
         self.btn_regenerate.clicked.connect(self.regenerate_current)
         controls_layout.addWidget(self.btn_regenerate)
 
-        self.btn_send = QPushButton("Confirm and Send")
+        self.btn_send = QPushButton("Send & Mark as Read")
         self.btn_send.setMinimumWidth(150)
         self.btn_send.setMinimumHeight(35)
         self.btn_send.setStyleSheet(
@@ -565,6 +565,30 @@ class TriageWindow(QMainWindow):
         )
         self.btn_send.clicked.connect(self.send_email)
         controls_layout.addWidget(self.btn_send)
+
+        # Stacked Skip buttons (occupy the space of one button)
+        skip_container = QWidget()
+        skip_layout = QVBoxLayout(skip_container)
+        skip_layout.setContentsMargins(0, 0, 0, 0)
+        skip_layout.setSpacing(2)
+
+        self.btn_skip_read = QPushButton("Skip with READ")
+        self.btn_skip_read.setMinimumHeight(16)
+        self.btn_skip_read.setStyleSheet(
+            "background-color: #6B8E23; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
+        )
+        self.btn_skip_read.clicked.connect(self.skip_read)
+        skip_layout.addWidget(self.btn_skip_read)
+
+        self.btn_skip_unread = QPushButton("Skip with UNREAD")
+        self.btn_skip_unread.setMinimumHeight(16)
+        self.btn_skip_unread.setStyleSheet(
+            "background-color: #8B4513; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
+        )
+        self.btn_skip_unread.clicked.connect(self.skip_unread)
+        skip_layout.addWidget(self.btn_skip_unread)
+
+        controls_layout.addWidget(skip_container)
 
         self.btn_save_reply = QPushButton("💾 Save as Example")
         self.btn_save_reply.setMinimumHeight(35)
@@ -746,7 +770,22 @@ class TriageWindow(QMainWindow):
         has_reply_error = st["reply_text"].startswith("Error generating reply:")
 
         # --- Reply content & controls ---
-        if st["send_status"] == "sent":
+        if st["send_status"] == "skipped":
+            self.txt_reply_content.setPlainText("⏭️ Skipped")
+            self.txt_reply_content.setEnabled(False)
+            self.le_reply_receiver.setEnabled(False)
+            self.le_reply_cc.setEnabled(False)
+            self.le_reply_subject.setEnabled(False)
+            self.btn_send.setText("Skipped")
+            self.btn_send.setStyleSheet(
+                "background-color: #6B8E23; color: white; font-weight: bold; border-radius: 4px;"
+            )
+            self.btn_send.setEnabled(False)
+            self.btn_regenerate.setEnabled(False)
+            self.btn_save_reply.setEnabled(False)
+            self.btn_skip_read.setEnabled(False)
+            self.btn_skip_unread.setEnabled(False)
+        elif st["send_status"] == "sent":
             self.txt_reply_content.setHtml(st["reply_text"])
             self.txt_reply_content.setEnabled(False)
             self.le_reply_receiver.setEnabled(False)
@@ -759,6 +798,8 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
+            self.btn_skip_read.setEnabled(False)
+            self.btn_skip_unread.setEnabled(False)
         elif st["reply_status"] == "done":
             if st["reply_text"].startswith("Error generating"):
                 self.txt_reply_content.setPlainText(st["reply_text"])
@@ -768,19 +809,23 @@ class TriageWindow(QMainWindow):
             self.le_reply_receiver.setEnabled(True)
             self.le_reply_cc.setEnabled(True)
             self.le_reply_subject.setEnabled(True)
-            self.btn_send.setText("Confirm and Send")
+            self.btn_send.setText("Send & Mark as Read")
             self.btn_send.setStyleSheet(
                 "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px;"
             )
             self.btn_send.setEnabled(True)
             self.btn_regenerate.setEnabled(True)
             self.btn_save_reply.setEnabled(True)
+            self.btn_skip_read.setEnabled(True)
+            self.btn_skip_unread.setEnabled(True)
         elif st["reply_status"] == "generating":
             self.txt_reply_content.setPlainText("⏳ Generating reply...\nPlease wait.")
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
+            self.btn_skip_read.setEnabled(True)
+            self.btn_skip_unread.setEnabled(True)
         else:
             # pending — waiting for earlier stages
             if st["filter_status"] == "filtering":
@@ -793,6 +838,8 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
             self.btn_regenerate.setEnabled(has_filter_error or has_triage_error)
+            self.btn_skip_read.setEnabled(True)
+            self.btn_skip_unread.setEnabled(True)
 
         self.btn_prev.setEnabled(self.current_index > 0)
         self.btn_next.setEnabled(self.current_index < len(self.emails) - 1)
@@ -924,7 +971,12 @@ class TriageWindow(QMainWindow):
         result = tool._run(recipient=recipient, subject=subject, body=body, cc=cc_list, is_html=True)
 
         if "successfully sent" in result.lower():
-            QMessageBox.information(self, "Success", "Email sent successfully!")
+            # Mark the original email as read in Outlook
+            entry_id = self.emails[self.current_index].get("entry_id", "")
+            if entry_id:
+                mark_email_as_read(entry_id)
+
+            QMessageBox.information(self, "Success", "Email sent and marked as read!")
             self.state[self.current_index]["send_status"] = "sent"
             self.state[self.current_index]["reply_text"] = body
             
@@ -941,6 +993,36 @@ class TriageWindow(QMainWindow):
                     break
         else:
             QMessageBox.warning(self, "Error", f"Failed to send email:\n{result}")
+
+    def _skip_current(self, mark_read: bool):
+        """Skip the current email, optionally marking it as read in Outlook."""
+        idx = self.current_index
+        entry_id = self.emails[idx].get("entry_id", "")
+
+        if mark_read and entry_id:
+            mark_email_as_read(entry_id)
+
+        self.state[idx]["send_status"] = "skipped"
+
+        # Lazily load a new email from the backlog
+        if self.all_unread:
+            self._load_next_from_backlog()
+
+        self.update_ui_state()
+
+        # Auto jump to next unskipped/unsent email
+        for i in range(idx + 1, len(self.emails)):
+            if self.state[i]["send_status"] not in ("sent", "skipped"):
+                self.load_email(i)
+                return
+        # If nothing ahead, stay on current
+        self.update_ui_state()
+
+    def skip_read(self):
+        self._skip_current(mark_read=True)
+
+    def skip_unread(self):
+        self._skip_current(mark_read=False)
 
     def closeEvent(self, event):
         for worker_name in ('filter_worker', 'triage_worker', 'reply_worker'):

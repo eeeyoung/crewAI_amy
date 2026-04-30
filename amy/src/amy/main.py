@@ -13,7 +13,7 @@ def run_triage():
     from amy.tools.outlook_tool import fetch_inbox_emails
 
     print("Fetching up to 50 unread emails from Outlook Inbox...")
-    raw_emails = fetch_inbox_emails(count=50, max_body=10000, unread_only=True)
+    raw_emails = fetch_inbox_emails(count=50, max_body=30000, unread_only=True)
 
     if not raw_emails:
         print("No emails found in Inbox. Exiting.")

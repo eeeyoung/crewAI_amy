@@ -69,6 +69,7 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False):
                 cc_str = getattr(message, "CC", "")
 
             emails.append({
+                "entry_id": getattr(message, "EntryID", ""),
                 "subject": getattr(message, "Subject", "No Subject"),
                 "sender": f"{sender_name} <{sender_email}>",
                 "cc": cc_str,
@@ -165,6 +166,38 @@ def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False):
     except Exception as e:
         print(f"Error fetching emails on macOS: {e}")
         return []
+def mark_email_as_read(entry_id: str) -> bool:
+    """Mark an Outlook email as read by its EntryID. Returns True on success."""
+    if platform.system() != "Windows":
+        return False
+    try:
+        import win32com.client
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        msg = outlook.GetItemFromID(entry_id)
+        msg.UnRead = False
+        msg.Save()
+        return True
+    except Exception as e:
+        print(f"Error marking email as read: {e}")
+        return False
+
+
+def mark_email_as_unread(entry_id: str) -> bool:
+    """Mark an Outlook email as unread by its EntryID. Returns True on success."""
+    if platform.system() != "Windows":
+        return False
+    try:
+        import win32com.client
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        msg = outlook.GetItemFromID(entry_id)
+        msg.UnRead = True
+        msg.Save()
+        return True
+    except Exception as e:
+        print(f"Error marking email as unread: {e}")
+        return False
+
+
 class OutlookReadTool(BaseTool):
     name: str = "outlook_read_tool"
     description: str = "Reads the first email from the default Microsoft Outlook account."
