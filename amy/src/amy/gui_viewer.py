@@ -398,7 +398,8 @@ class TriageWindow(QMainWindow):
         self.setStyleSheet("""
             QMainWindow { background-color: #FFFDE7; }
             QWidget { font-family: 'Segoe UI', Arial, sans-serif; color: #3E3E3E; }
-            QSplitter::handle { background-color: #E6DEB1; }
+            QSplitter { background-color: transparent; border: none; }
+            QSplitter::handle { background-color: #FFFDE7; }
             QFrame { background-color: #FFFFFF; border-radius: 8px; border: 1px solid #E6DEB1; }
             QLabel { border: none; background-color: transparent; }
             QLineEdit, QTextEdit { 
@@ -557,7 +558,7 @@ class TriageWindow(QMainWindow):
         self.btn_regenerate.clicked.connect(self.regenerate_current)
         controls_layout.addWidget(self.btn_regenerate)
 
-        self.btn_send = QPushButton("Send & Mark as Read")
+        self.btn_send = QPushButton("Send && Mark as Read")
         self.btn_send.setMinimumWidth(150)
         self.btn_send.setMinimumHeight(35)
         self.btn_send.setStyleSheet(
@@ -809,7 +810,7 @@ class TriageWindow(QMainWindow):
             self.le_reply_receiver.setEnabled(True)
             self.le_reply_cc.setEnabled(True)
             self.le_reply_subject.setEnabled(True)
-            self.btn_send.setText("Send & Mark as Read")
+            self.btn_send.setText("Send && Mark as Read")
             self.btn_send.setStyleSheet(
                 "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px;"
             )
