@@ -144,7 +144,6 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "crewai", extra = ["google-genai", "tools"] },
     { name = "google-generativeai" },
-    { name = "libpff-python" },
     { name = "pyqt6" },
     { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
@@ -154,7 +153,6 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.5" },
     { name = "crewai", extras = ["google-genai", "tools"], specifier = "==1.14.2" },
     { name = "google-generativeai", specifier = ">=0.8.6" },
-    { name = "libpff-python", specifier = ">=20231205" },
     { name = "pyqt6", specifier = ">=6.11.0" },
     { name = "pywin32", marker = "sys_platform == 'win32'", specifier = ">=308" },
 ]
@@ -1415,17 +1413,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/43/d1/9085ad17abd98f3a180d7860df3190b2d76f99f533c76d7c7494cec4139d/lancedb-0.30.0-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:05c66f40f7d4f6f24208e786c40f84b87b1b8e55505305849dd3fed3b78431a3", size = 43877660, upload-time = "2026-03-16T23:11:00.837Z" },
     { url = "https://files.pythonhosted.org/packages/ea/69/504ee25c57c3f23c80276b5b7b5e4c0f98a5197a7e9e51d3c50500d2b53a/lancedb-0.30.0-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:bdcd27d98554ed11b6f345b14d1307b0e2332d5654767e9ee2e23d9b2d6513d1", size = 46932144, upload-time = "2026-03-16T23:15:00.474Z" },
     { url = "https://files.pythonhosted.org/packages/2c/85/d5550f22023e672af1945394f7a06a578fcab2980ecc6666acef3428a771/lancedb-0.30.0-cp39-abi3-win_amd64.whl", hash = "sha256:4751ff0446b90be4d4dccfe05f6c105f403a05f3b8531ab99eedc1c656aca950", size = 51121310, upload-time = "2026-03-16T23:43:23.89Z" },
-]
-
-[[package]]
-name = "libpff-python"
-version = "20231205"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0b/a3/826777491832478f5e1555a16bc9de794ef0264eac53d213340dddae5bd4/libpff-python-20231205.tar.gz", hash = "sha256:06c218be51321b16dc3b835185ee1cd2fa5c2a1ca856e0390c1d6e4ddf329250", size = 2141621, upload-time = "2023-12-05T15:42:22.945Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/35/6e/16c7128857abf585bf1b719b65ca33b35ce1ce23897b8cd401a0320efac3/libpff_python-20231205-cp310-cp310-macosx_12_0_x86_64.whl", hash = "sha256:3c296ba12e1ca03571d34e0609331d90cc7a4289605f04a45e29394a5c2973f3", size = 679703, upload-time = "2023-12-06T18:40:23.805Z" },
-    { url = "https://files.pythonhosted.org/packages/ca/5c/082bf783bf26395e64c402c92c0f28d3677b888f8f82b9a1a1262939da47/libpff_python-20231205-cp311-cp311-macosx_12_0_x86_64.whl", hash = "sha256:2dfa98dacb5f5a754b5a9f97aba2faf45fe4349632cf2921f4b683140354b037", size = 679728, upload-time = "2023-12-06T18:51:42.06Z" },
-    { url = "https://files.pythonhosted.org/packages/72/65/cd71e93d23c4caa1b0079e9ead9715b3bda12189c10cc48096d29fca62b7/libpff_python-20231205-cp312-cp312-macosx_12_0_x86_64.whl", hash = "sha256:aee688ca5063abd35a067cf36d949e0b3623ce3a61135e3dad76068c3b647635", size = 679693, upload-time = "2023-12-06T19:03:20.731Z" },
 ]
 
 [[package]]
