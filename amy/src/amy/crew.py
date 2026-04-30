@@ -181,7 +181,7 @@ class ReplyGeneratorCrew():
                 "provider": "google-generativeai",
                 "config": {
                     "api_key": os.environ.get("GEMINI_API_KEY"),
-                    "model": "models/embedding-001"
+                    "model": "gemini-embedding-001"
                 }
             }
         )
