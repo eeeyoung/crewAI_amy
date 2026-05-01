@@ -1,5 +1,6 @@
 import subprocess
 import platform
+import os
 from crewai.tools import BaseTool
 from pydantic import Field
 
@@ -196,6 +197,72 @@ def mark_email_as_unread(entry_id: str) -> bool:
     except Exception as e:
         print(f"Error marking email as unread: {e}")
         return False
+
+
+def fetch_attachments_for_email(entry_id: str) -> list:
+    """Return a list of attachment metadata dicts for the email identified by entry_id.
+    Each dict has keys: index (1-based), filename, size (bytes).
+    Inline/embedded images (those referenced via cid: in the HTML body) are excluded.
+    Returns an empty list on failure or unsupported OS.
+    """
+    if platform.system() != "Windows":
+        return []
+    try:
+        import win32com.client
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        msg = outlook.GetItemFromID(entry_id)
+
+        # Get the HTML body so we can check if a CID is actually used inline
+        html_body = getattr(msg, "HTMLBody", "") or ""
+        html_body_lower = html_body.lower()
+
+        PR_ATTACH_CONTENT_ID = "http://schemas.microsoft.com/mapi/proptag/0x3712001F"
+
+        attachments = []
+        for i in range(1, msg.Attachments.Count + 1):
+            att = msg.Attachments.Item(i)
+
+            # Check if this attachment is referenced inline in the HTML body
+            try:
+                content_id = att.PropertyAccessor.GetProperty(PR_ATTACH_CONTENT_ID)
+                if content_id and str(content_id).strip():
+                    cid = str(content_id).strip()
+                    # Only skip if the CID is actually referenced in the body
+                    if f"cid:{cid}".lower() in html_body_lower:
+                        continue
+            except Exception:
+                pass  # property not set → not inline
+
+            attachments.append({
+                "index": i,
+                "filename": att.FileName,
+                "size": att.Size,
+            })
+        return attachments
+    except Exception as e:
+        print(f"Error fetching attachments: {e}")
+        return []
+
+
+def save_attachment(entry_id: str, attachment_index: int, save_dir: str) -> str:
+    """Save a single attachment to save_dir. Returns the full saved path on success,
+    or an error string starting with 'Error:' on failure.
+    attachment_index is 1-based (matching Outlook COM).
+    """
+    if platform.system() != "Windows":
+        return "Error: Attachment download is only supported on Windows."
+    try:
+        import win32com.client
+        if not os.path.isdir(save_dir):
+            os.makedirs(save_dir, exist_ok=True)
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        msg = outlook.GetItemFromID(entry_id)
+        att = msg.Attachments.Item(attachment_index)
+        save_path = os.path.join(save_dir, att.FileName)
+        att.SaveAsFile(save_path)
+        return save_path
+    except Exception as e:
+        return f"Error: {e}"
 
 
 class OutlookReadTool(BaseTool):

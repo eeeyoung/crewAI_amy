@@ -2,16 +2,20 @@ import sys
 import json
 import queue
 import os
+import threading
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QTextEdit, QPushButton, QSplitter, QMessageBox, QFrame,
-    QStackedLayout, QDialog
+    QStackedLayout, QDialog, QFileDialog, QScrollArea
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
 from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew
-from amy.tools.outlook_tool import OutlookSendTool, mark_email_as_read, mark_email_as_unread
+from amy.tools.outlook_tool import (
+    OutlookSendTool, mark_email_as_read, mark_email_as_unread,
+    fetch_attachments_for_email, save_attachment,
+)
 
 
 # =============================================================================
@@ -25,10 +29,11 @@ class FilterWorker(QThread):
     """
     filter_done = pyqtSignal(int, str)
 
-    def __init__(self, filter_queue, triage_queue, parent=None):
+    def __init__(self, filter_queue, triage_queue, skipped_indices, parent=None):
         super().__init__(parent)
         self.filter_queue = filter_queue
         self.triage_queue = triage_queue
+        self.skipped_indices = skipped_indices
         self.running = True
 
     def run(self):
@@ -41,6 +46,8 @@ class FilterWorker(QThread):
                 break
             
             idx, email = item
+            if idx in self.skipped_indices:
+                continue
             try:
                 result = MessageFilterCrew().crew().kickoff(
                     inputs={"email_body": email["body"]}
@@ -49,6 +56,8 @@ class FilterWorker(QThread):
             except Exception as e:
                 cleaned = f"Error filtering: {str(e)}"
 
+            if idx in self.skipped_indices:
+                continue
             self.filter_done.emit(idx, cleaned)
             self.triage_queue.put((idx, email, cleaned))
 
@@ -60,11 +69,12 @@ class TriageWorker(QThread):
     """Processes filtered emails one-by-one through the triage agent."""
     category_ready = pyqtSignal(int, str, str, str)
 
-    def __init__(self, triage_queue, reply_queue, workflow_queue, parent=None):
+    def __init__(self, triage_queue, reply_queue, workflow_queue, skipped_indices, parent=None):
         super().__init__(parent)
         self.triage_queue = triage_queue
         self.reply_queue = reply_queue
         self.workflow_queue = workflow_queue
+        self.skipped_indices = skipped_indices
         self.running = True
 
     def run(self):
@@ -77,6 +87,8 @@ class TriageWorker(QThread):
                 break
 
             idx, email, filtered_body = item
+            if idx in self.skipped_indices:
+                continue
 
             inputs = {
                 "email_subject": email["subject"],
@@ -110,6 +122,8 @@ class TriageWorker(QThread):
                 urgency = ""
                 extra_info = str(e)
 
+            if idx in self.skipped_indices:
+                continue
             self.category_ready.emit(idx, category, urgency, extra_info)
             self.reply_queue.put((idx, email, filtered_body, category, urgency, extra_info))
             self.workflow_queue.put((idx, email, filtered_body, category, urgency, extra_info))
@@ -123,9 +137,10 @@ class ReplyWorker(QThread):
     """Picks categorized emails from the queue and generates drafts one-by-one."""
     reply_generated = pyqtSignal(int, str)
 
-    def __init__(self, reply_queue, parent=None):
+    def __init__(self, reply_queue, skipped_indices, parent=None):
         super().__init__(parent)
         self.reply_queue = reply_queue
+        self.skipped_indices = skipped_indices
         self.running = True
 
     def run(self):
@@ -138,6 +153,8 @@ class ReplyWorker(QThread):
                 break
 
             idx, email, filtered_body, category, urgency, extra_info = item
+            if idx in self.skipped_indices:
+                continue
 
             inputs = {
                 "email_subject": email["subject"],
@@ -153,6 +170,8 @@ class ReplyWorker(QThread):
             except Exception as e:
                 draft_text = f"Error generating reply: {str(e)}"
 
+            if idx in self.skipped_indices:
+                continue
             self.reply_generated.emit(idx, draft_text)
 
     def stop(self):
@@ -164,9 +183,10 @@ class WorkflowWorker(QThread):
     """Picks categorized emails from the queue and generates workflows one-by-one."""
     workflow_generated = pyqtSignal(int, str)
 
-    def __init__(self, workflow_queue, parent=None):
+    def __init__(self, workflow_queue, skipped_indices, parent=None):
         super().__init__(parent)
         self.workflow_queue = workflow_queue
+        self.skipped_indices = skipped_indices
         self.running = True
 
     def run(self):
@@ -179,6 +199,8 @@ class WorkflowWorker(QThread):
                 break
 
             idx, email, filtered_body, category, urgency, extra_info = item
+            if idx in self.skipped_indices:
+                continue
 
             inputs = {
                 "email_subject": email["subject"],
@@ -194,6 +216,8 @@ class WorkflowWorker(QThread):
             except Exception as e:
                 workflow_text = f"Error generating workflow: {str(e)}"
 
+            if idx in self.skipped_indices:
+                continue
             self.workflow_generated.emit(idx, workflow_text)
 
     def stop(self):
@@ -344,6 +368,145 @@ class WorkflowDialog(QDialog):
 
 
 # =============================================================================
+# Attachment Dialog
+# =============================================================================
+
+class AttachmentDialog(QDialog):
+    """Lists attachments for the current email with Download / Download & Preview."""
+
+    def __init__(self, entry_id, subject, download_dir, parent=None):
+        super().__init__(parent)
+        self.entry_id = entry_id
+        self.download_dir = download_dir
+        self.parent_window = parent
+
+        self.setWindowTitle(f"Attachments — {subject}")
+        self.resize(800, 420)
+
+        root_layout = QVBoxLayout(self)
+
+        # --- Download directory selector ---
+        dir_row = QHBoxLayout()
+        dir_row.addWidget(QLabel("Download to:"))
+        self.le_dir = QLineEdit(self.download_dir)
+        self.le_dir.setReadOnly(True)
+        dir_row.addWidget(self.le_dir, stretch=1)
+        btn_browse = QPushButton("📁 Browse")
+        btn_browse.clicked.connect(self._browse_dir)
+        dir_row.addWidget(btn_browse)
+        root_layout.addLayout(dir_row)
+
+        # --- Scrollable attachment list ---
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        self.list_widget = QWidget()
+        self.list_layout = QVBoxLayout(self.list_widget)
+        self.list_layout.setContentsMargins(4, 4, 4, 4)
+        self.list_layout.setSpacing(6)
+        scroll.setWidget(self.list_widget)
+        root_layout.addWidget(scroll)
+
+        # Populate
+        self._populate()
+
+    # ---- helpers ----
+
+    def _browse_dir(self):
+        chosen = QFileDialog.getExistingDirectory(self, "Select download folder", self.download_dir)
+        if chosen:
+            self.download_dir = chosen
+            self.le_dir.setText(chosen)
+            # Propagate back to the main window so it persists for the session
+            if self.parent_window and hasattr(self.parent_window, "download_dir"):
+                self.parent_window.download_dir = chosen
+
+    def _populate(self):
+        if not self.entry_id:
+            lbl = QLabel("⚠️ No Entry ID — cannot read attachments.")
+            lbl.setStyleSheet("color: #B31412; font-weight: bold; padding: 12px;")
+            self.list_layout.addWidget(lbl)
+            return
+
+        attachments = fetch_attachments_for_email(self.entry_id)
+
+        if not attachments:
+            lbl = QLabel("📭 This email has no attachments.")
+            lbl.setStyleSheet("color: #555; font-style: italic; padding: 12px;")
+            self.list_layout.addWidget(lbl)
+            return
+
+        for att in attachments:
+            row = QFrame()
+            row.setStyleSheet(
+                "QFrame { background-color: #FAFAF0; border: 1px solid #E6DEB1; border-radius: 6px; padding: 6px; }"
+            )
+            row_layout = QHBoxLayout(row)
+            row_layout.setContentsMargins(8, 4, 8, 4)
+
+            # File info
+            size_kb = att['size'] / 1024
+            if size_kb >= 1024:
+                size_str = f"{size_kb / 1024:.1f} MB"
+            else:
+                size_str = f"{size_kb:.1f} KB"
+            info_lbl = QLabel(f"📎 <b>{att['filename']}</b>  <span style='color:#888'>({size_str})</span>")
+            info_lbl.setTextFormat(Qt.TextFormat.RichText)
+            row_layout.addWidget(info_lbl, stretch=1)
+
+            # Download button
+            btn_dl = QPushButton("⬇️ Download")
+            btn_dl.setMinimumWidth(100)
+            btn_dl.setStyleSheet(
+                "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px; padding: 4px 10px;"
+            )
+            btn_dl.clicked.connect(lambda checked, a=att: self._download(a))
+            row_layout.addWidget(btn_dl)
+
+            # Download & Preview button
+            btn_dlp = QPushButton("👁️ Download & Preview")
+            btn_dlp.setMinimumWidth(150)
+            btn_dlp.setStyleSheet(
+                "background-color: #107C10; color: white; font-weight: bold; border-radius: 4px; padding: 4px 10px;"
+            )
+            btn_dlp.clicked.connect(lambda checked, a=att: self._download_and_preview(a))
+            row_layout.addWidget(btn_dlp)
+
+            self.list_layout.addWidget(row)
+
+        self.list_layout.addStretch()
+
+    def _download(self, att_meta):
+        save_dir = self.le_dir.text().strip()
+        if not save_dir:
+            QMessageBox.warning(self, "No directory", "Please select a download directory first.")
+            return
+        result = save_attachment(self.entry_id, att_meta["index"], save_dir)
+        if result.startswith("Error:"):
+            QMessageBox.warning(self, "Download failed", result)
+        else:
+            QMessageBox.information(self, "Downloaded", f"Saved to:\n{result}")
+
+    def _download_and_preview(self, att_meta):
+        save_dir = self.le_dir.text().strip()
+        if not save_dir:
+            QMessageBox.warning(self, "No directory", "Please select a download directory first.")
+            return
+        result = save_attachment(self.entry_id, att_meta["index"], save_dir)
+        if result.startswith("Error:"):
+            QMessageBox.warning(self, "Download failed", result)
+            return
+        # Open with system default "Open with" dialog (Windows)
+        try:
+            os.startfile(result)  # type: ignore[attr-defined]   # Windows only
+        except AttributeError:
+            # Fallback for non-Windows (shouldn't happen given save_attachment guard)
+            import subprocess as _sp
+            _sp.Popen(["xdg-open", result])
+        except OSError as e:
+            QMessageBox.warning(self, "Cannot open file", f"Failed to open:\n{e}")
+
+
+# =============================================================================
 # Main Window
 # =============================================================================
 
@@ -358,6 +521,8 @@ class TriageWindow(QMainWindow):
         self.triage_queue = queue.Queue()
         self.reply_queue = queue.Queue()
         self.workflow_queue = queue.Queue()
+        self.skipped_indices = set()
+        self.download_dir = os.path.abspath(".")  # default to program root
 
         self.init_ui()
         self.start_workers()
@@ -391,6 +556,7 @@ class TriageWindow(QMainWindow):
             "workflow_text": "",
             "workflow_status": "pending",
             "send_status": "unsent",
+            "attachment_count": None,  # lazily fetched
         }
         
         self.filter_queue.put((idx, email))
@@ -487,6 +653,15 @@ class TriageWindow(QMainWindow):
         content_stack.addWidget(self.filter_overlay)
 
         left_layout.addWidget(self.content_container)
+
+        # Attachment button
+        self.btn_attachment = QPushButton("📎 Attachments (Q)")
+        self.btn_attachment.setMinimumHeight(30)
+        self.btn_attachment.setStyleSheet(
+            "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;"
+        )
+        self.btn_attachment.clicked.connect(self.open_attachment_dialog)
+        left_layout.addWidget(self.btn_attachment)
 
         # --- RIGHT PANEL (Draft Reply) ---
         right_panel = QFrame()
@@ -618,6 +793,7 @@ class TriageWindow(QMainWindow):
         QShortcut(QKeySequence("2"), self).activated.connect(self.skip_read)
         QShortcut(QKeySequence("3"), self).activated.connect(self.skip_unread)
         QShortcut(QKeySequence("4"), self).activated.connect(self.save_reply_feedback)
+        QShortcut(QKeySequence("Q"), self).activated.connect(self.open_attachment_dialog)
 
         right_layout.addLayout(controls_layout)
 
@@ -631,19 +807,19 @@ class TriageWindow(QMainWindow):
     # -------------------------------------------------------------------------
 
     def start_workers(self):
-        self.filter_worker = FilterWorker(self.filter_queue, self.triage_queue)
+        self.filter_worker = FilterWorker(self.filter_queue, self.triage_queue, self.skipped_indices)
         self.filter_worker.filter_done.connect(self.on_filter_done)
         self.filter_worker.start()
 
-        self.triage_worker = TriageWorker(self.triage_queue, self.reply_queue, self.workflow_queue)
+        self.triage_worker = TriageWorker(self.triage_queue, self.reply_queue, self.workflow_queue, self.skipped_indices)
         self.triage_worker.category_ready.connect(self.on_category_ready)
         self.triage_worker.start()
 
-        self.reply_worker = ReplyWorker(self.reply_queue)
+        self.reply_worker = ReplyWorker(self.reply_queue, self.skipped_indices)
         self.reply_worker.reply_generated.connect(self.on_reply_generated)
         self.reply_worker.start()
 
-        self.workflow_worker = WorkflowWorker(self.workflow_queue)
+        self.workflow_worker = WorkflowWorker(self.workflow_queue, self.skipped_indices)
         self.workflow_worker.workflow_generated.connect(self.on_workflow_generated)
         self.workflow_worker.start()
 
@@ -652,6 +828,8 @@ class TriageWindow(QMainWindow):
     # -------------------------------------------------------------------------
 
     def on_filter_done(self, idx, cleaned_body):
+        if idx in self.skipped_indices:
+            return
         self.state[idx]["filtered_body"] = cleaned_body
         self.state[idx]["filter_status"] = "done"
         self.state[idx]["category_status"] = "thinking"
@@ -660,6 +838,8 @@ class TriageWindow(QMainWindow):
             self.update_ui_state()
 
     def on_category_ready(self, idx, category, urgency, extra_info):
+        if idx in self.skipped_indices:
+            return
         self.state[idx]["category"] = category
         self.state[idx]["urgency"] = urgency
         self.state[idx]["extra_info"] = extra_info
@@ -670,12 +850,16 @@ class TriageWindow(QMainWindow):
             self.update_ui_state()
 
     def on_workflow_generated(self, idx, text):
+        if idx in self.skipped_indices:
+            return
         self.state[idx]["workflow_text"] = text
         self.state[idx]["workflow_status"] = "done"
         if idx == self.current_index:
             self.update_ui_state()
 
     def on_reply_generated(self, idx, text):
+        if idx in self.skipped_indices:
+            return
         import os
         # Only inject if it's the raw text from LLM (not already HTML or error)
         if not text.startswith("Error generating"):
@@ -737,6 +921,25 @@ class TriageWindow(QMainWindow):
         self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}")
         st = self.state[self.current_index]
 
+        # --- Attachment count on button ---
+        if st["attachment_count"] is None:
+            entry_id = self.emails[self.current_index].get("entry_id", "")
+            if entry_id:
+                st["attachment_count"] = len(fetch_attachments_for_email(entry_id))
+            else:
+                st["attachment_count"] = 0
+        att_n = st["attachment_count"]
+        if att_n > 0:
+            self.btn_attachment.setText(f"📎 Attachments ({att_n}) (Q)")
+            self.btn_attachment.setStyleSheet(
+                "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;"
+            )
+        else:
+            self.btn_attachment.setText("📎 Attachments (Q)")
+            self.btn_attachment.setStyleSheet(
+                "background-color: #9E9E9E; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;"
+            )
+
         # --- Left panel: filter overlay ---
         if st["filter_status"] == "filtering":
             self.filter_overlay.setVisible(True)
@@ -745,7 +948,12 @@ class TriageWindow(QMainWindow):
             self.txt_orig_content.setPlainText(st["filtered_body"])
 
         # --- Triage labels ---
-        if st["category_status"] == "pending":
+        if st["category_status"] == "skipped":
+            self.lbl_category.setText("Category: ⏭️ Skipped")
+            self.lbl_urgency.setText("Urgency: ⏭️ Skipped")
+            self.lbl_urgency.setStyleSheet("color: #8B4513; background-color: #FFF3E0; padding: 6px; border-radius: 4px; font-weight: bold;")
+            self.lbl_extra_info.setText("Extra Info: ⏭️ Skipped")
+        elif st["category_status"] == "pending":
             self.lbl_category.setText("Category: ⏳ Waiting for filter...")
             self.lbl_urgency.setText("Urgency: ⏳ Waiting for filter...")
             self.lbl_urgency.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-weight: bold;")
@@ -868,6 +1076,17 @@ class TriageWindow(QMainWindow):
     # -------------------------------------------------------------------------
     # Actions
     # -------------------------------------------------------------------------
+
+    def open_attachment_dialog(self):
+        idx = self.current_index
+        email = self.emails[idx]
+        dialog = AttachmentDialog(
+            entry_id=email.get("entry_id", ""),
+            subject=email.get("subject", ""),
+            download_dir=self.download_dir,
+            parent=self,
+        )
+        dialog.exec()
 
     def open_workflow_dialog(self):
         idx = self.current_index
@@ -1016,14 +1235,31 @@ class TriageWindow(QMainWindow):
             QMessageBox.warning(self, "Error", f"Failed to send email:\n{result}")
 
     def _skip_current(self, mark_read: bool):
-        """Skip the current email, optionally marking it as read in Outlook."""
+        """Skip the current email, optionally marking it as read in Outlook.
+        Immediately marks all agent sections as skipped and prevents workers
+        from processing this index further."""
         idx = self.current_index
         entry_id = self.emails[idx].get("entry_id", "")
 
         if mark_read and entry_id:
             mark_email_as_read(entry_id)
 
-        self.state[idx]["send_status"] = "skipped"
+        # Add to skipped set so workers abandon any in-flight work
+        self.skipped_indices.add(idx)
+
+        # Mark all agent sections as skipped
+        st = self.state[idx]
+        st["send_status"] = "skipped"
+        st["filter_status"] = "skipped"
+        st["category_status"] = "skipped"
+        st["reply_status"] = "skipped"
+        st["workflow_status"] = "skipped"
+        st["filtered_body"] = st["filtered_body"] or "⏭️ Skipped"
+        st["category"] = st["category"] or "⏭️ Skipped"
+        st["urgency"] = st["urgency"] or "⏭️ Skipped"
+        st["extra_info"] = st["extra_info"] or "⏭️ Skipped"
+        st["reply_text"] = "⏭️ Skipped"
+        st["workflow_text"] = st["workflow_text"] or "⏭️ Skipped"
 
         # Lazily load a new email from the backlog
         if self.all_unread:
