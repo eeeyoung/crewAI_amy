@@ -76,9 +76,6 @@ def train():
 if __name__ == "__main__":
     run()
 
-
-# To do:
-# 1. Left panel - make the email more readable when there is multiple dialogues (1st message and its sender, 2nd message and its sender, etc.)
-# 2. Time flag
-# 3. Shortcut for each button
-# 4. Fetch attachments (Preview first)
+# To do :
+# 1. Filter agent - some times it cannot detect the last dialogue
+# 2. A shared memory system, stored information extracted from the email when user requested (by interact with GUI). This can help Reply Agent use the share memory to reply emails which requires technical aspects.
