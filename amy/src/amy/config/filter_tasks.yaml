@@ -1,42 +1,56 @@
-filter_email_task:
+strip_boilerplate_task:
   description: >
-    Clean the following raw email body by removing:
-    - Email signatures beyond name, position, and company
-    - Confidentiality/legal disclaimers
-    - Social media follow links and icons
-    - Image placeholders and tracking URLs
-    - 'Please consider the environment' notices
-    - Any other auto-generated boilerplate
+    Clean the following raw email body by removing ALL of these:
+    - Email signatures beyond the bare minimum (name, position, company)
+    - Confidentiality and legal disclaimers
+    - Social media follow links and icons (Facebook, Instagram, LinkedIn, etc.)
+    - Image placeholders, tracking URLs, and embedded image references
+    - "Please consider the environment before printing" and similar notices
+    - Auto-generated IT notices and mail server messages
+    - Email client promotional footers (e.g., "Sent from my iPhone", "Get Outlook for iOS")
 
     KEEP:
-    - All actual dialogue/conversation messages
-    - Sender name, position, and company for each message in the thread
-    - Any project-relevant information (dates, reference numbers, etc.)
-
-    CRITICAL — MULTI-PARTY THREAD FORMATTING:
-    If the email contains multiple dialogue turns (e.g. forwarded messages, reply chains,
-    or conversations between more than one party), you MUST restructure the output into
-    clearly separated sections. Use this exact format for each dialogue turn:
-
-    ═══════════════════════════════════════
-    FROM: [Sender Name, Position, Company]
-    TO: [Recipient Name(s)]
-    DATE: [Date/time if visible in the original]
-    ═══════════════════════════════════════
-    [Cleaned message content here]
-
-    Order the sections chronologically (oldest message first, newest message last).
-    If a message is addressed to multiple recipients or CC'd parties, list them all
-    under the TO field. If the date or recipient is not discernible, write "Not specified".
-
-    If the email is a single message (not a thread), simply return the cleaned text
-    without the section headers.
+    - ALL actual dialogue and conversation messages (every word written by a human)
+    - Sender name, position/title, and company affiliation
+    - Recipient names and dates/times from the email headers
+    - Project reference numbers, contract numbers, drawing numbers
+    - Any other project-relevant information
 
     Raw email body:
     {email_body}
 
-    Return ONLY the cleaned, restructured text. Do not add any commentary or preamble.
+    Return ONLY the cleaned text. Do not add commentary, preamble, or section headers.
   expected_output: >
-    The cleaned email body text with only valuable dialogue and sender identities preserved.
-    Multi-party threads must be separated into clearly labelled chronological sections.
-  agent: message_filter
+    The cleaned email body containing only human-written dialogue and essential sender identity
+    information. No boilerplate, no disclaimers, no auto-generated content.
+  agent: boilerplate_stripper
+
+restructure_thread_task:
+  description: >
+    Review the cleaned email text provided to you. Your job is to restructure it for clarity.
+
+    If the email contains multiple dialogue turns (forwarded messages, reply chains, or
+    conversations between multiple parties), restructure the output into clearly separated
+    sections. Use this EXACT format for each dialogue turn:
+
+    ═══════════════════════════════════════
+    FROM: [Sender Name, Position, Company]
+    TO: [Recipient Name(s)]
+    DATE: [Date/time if visible]
+    ═══════════════════════════════════════
+    [Message content here]
+
+    Order the sections in reverse chronological order (newest message first, oldest
+    message last) — the same order Outlook displays the thread.
+
+    If a message is addressed to multiple recipients or CC'd parties, list them all
+    under the TO field. If the date or recipient is not discernible, write "Not specified".
+
+    If the email is a SINGLE message (not a thread), return the cleaned text exactly as
+    received — do NOT add section headers to a single message.
+
+    Return ONLY the restructured text. Do not add any commentary or preamble.
+  expected_output: >
+    The restructured email thread with clearly labelled sections for each dialogue turn,
+    newest message first. Single messages pass through unchanged.
+  agent: thread_structurer

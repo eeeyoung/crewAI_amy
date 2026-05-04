@@ -10,6 +10,9 @@ def run_triage():
     Fetch emails directly, then launch the interactive GUI.
     Triage and reply generation happen in background threads inside the GUI.
     """
+    from amy.fact_store import init_db
+    init_db()
+
     from amy.tools.outlook_tool import fetch_inbox_emails
 
     print("Fetching up to 50 unread emails from Outlook Inbox...")
@@ -65,7 +68,8 @@ def train():
                 "email_subject": "Test Inquiry",
                 "email_content": "Hi Amy, what is the status of the concrete pour?",
                 "email_category": "RFI",
-                "email_context": "Checking on schedule."
+                "email_context": "Checking on schedule.",
+                "relevant_facts": "No relevant stored facts found."
             }
         )
         print("\nTraining complete. Saved to my_style_training.pkl")
@@ -73,9 +77,24 @@ def train():
         print(f"\nError during training: {e}")
 
 
+def view_facts():
+    """Print all facts in the knowledge store."""
+    from amy.fact_store import init_db, list_all_facts
+    init_db()
+    facts = list_all_facts()
+    if not facts:
+        print("No facts stored yet. Use 'Save Key Facts' in the GUI to add some.")
+        return
+    print(f"\n{'='*80}")
+    print(f"  Fact Store — {len(facts)} entries")
+    print(f"{'='*80}\n")
+    for f in facts:
+        print(f"  [{f['project']}] {f['topic']}")
+        print(f"  {f['detail']}")
+        if f.get("source_subject"):
+            print(f"  Source: {f['source_subject']}")
+        print()
+
+
 if __name__ == "__main__":
     run()
-
-# To do :
-# 1. Filter agent - some times it cannot detect the last dialogue
-# 2. A shared memory system, stored information extracted from the email when user requested (by interact with GUI). This can help Reply Agent use the share memory to reply emails which requires technical aspects.

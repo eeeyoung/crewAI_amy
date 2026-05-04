@@ -11,7 +11,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
-from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew
+from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
+from amy.fact_store import init_db, search_facts, save_facts
 from amy.tools.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
     fetch_attachments_for_email, save_attachment,
@@ -156,12 +157,21 @@ class ReplyWorker(QThread):
             if idx in self.skipped_indices:
                 continue
 
+            facts = search_facts(email["subject"], filtered_body, category)
+            facts_text = ""
+            if facts:
+                facts_text = "\n".join(
+                    f"- [{f['project']}] {f['topic']}: {f['detail']}"
+                    for f in facts
+                )
+
             inputs = {
                 "email_subject": email["subject"],
                 "email_content": filtered_body,
                 "email_category": category,
                 "email_urgency": urgency,
                 "email_context": extra_info,
+                "relevant_facts": facts_text or "No relevant stored facts found.",
             }
 
             try:
@@ -291,12 +301,21 @@ class RegenerateWorker(QThread):
         self.triage_done.emit(self.idx, self.category, self.urgency, self.extra_info)
 
     def _run_reply(self):
+        facts = search_facts(self.email["subject"], self.filtered_body, self.category)
+        facts_text = ""
+        if facts:
+            facts_text = "\n".join(
+                f"- [{f['project']}] {f['topic']}: {f['detail']}"
+                for f in facts
+            )
+
         inputs = {
             "email_subject": self.email["subject"],
             "email_content": self.filtered_body,
             "email_category": self.category,
             "email_urgency": self.urgency,
             "email_context": self.extra_info,
+            "relevant_facts": facts_text or "No relevant stored facts found.",
         }
         try:
             result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
@@ -776,13 +795,29 @@ class TriageWindow(QMainWindow):
 
         controls_layout.addWidget(skip_container)
 
+        # Stacked Save buttons
+        save_container = QWidget()
+        save_layout = QVBoxLayout(save_container)
+        save_layout.setContentsMargins(0, 0, 0, 0)
+        save_layout.setSpacing(2)
+
         self.btn_save_reply = QPushButton("💾 Save as Example (4)")
-        self.btn_save_reply.setMinimumHeight(35)
+        self.btn_save_reply.setMinimumHeight(16)
         self.btn_save_reply.setStyleSheet(
-            "background-color: #107C10; color: white; font-weight: bold; border-radius: 4px;"
+            "background-color: #107C10; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
         )
         self.btn_save_reply.clicked.connect(self.save_reply_feedback)
-        controls_layout.addWidget(self.btn_save_reply)
+        save_layout.addWidget(self.btn_save_reply)
+
+        self.btn_save_facts = QPushButton("📋 Save Key Facts (5)")
+        self.btn_save_facts.setMinimumHeight(16)
+        self.btn_save_facts.setStyleSheet(
+            "background-color: #0F5B8C; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
+        )
+        self.btn_save_facts.clicked.connect(self.save_key_facts)
+        save_layout.addWidget(self.btn_save_facts)
+
+        controls_layout.addWidget(save_container)
 
         # --- Keyboard Shortcuts ---
         QShortcut(QKeySequence("A"), self).activated.connect(self.prev_email)
@@ -793,6 +828,7 @@ class TriageWindow(QMainWindow):
         QShortcut(QKeySequence("2"), self).activated.connect(self.skip_read)
         QShortcut(QKeySequence("3"), self).activated.connect(self.skip_unread)
         QShortcut(QKeySequence("4"), self).activated.connect(self.save_reply_feedback)
+        QShortcut(QKeySequence("5"), self).activated.connect(self.save_key_facts)
         QShortcut(QKeySequence("Q"), self).activated.connect(self.open_attachment_dialog)
 
         right_layout.addLayout(controls_layout)
@@ -1012,6 +1048,7 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
+            self.btn_save_facts.setEnabled(False)
             self.btn_skip_read.setEnabled(False)
             self.btn_skip_unread.setEnabled(False)
         elif st["send_status"] == "sent":
@@ -1027,6 +1064,7 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
+            self.btn_save_facts.setEnabled(True)
             self.btn_skip_read.setEnabled(False)
             self.btn_skip_unread.setEnabled(False)
         elif st["reply_status"] == "done":
@@ -1045,6 +1083,7 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(True)
             self.btn_regenerate.setEnabled(True)
             self.btn_save_reply.setEnabled(True)
+            self.btn_save_facts.setEnabled(True)
             self.btn_skip_read.setEnabled(True)
             self.btn_skip_unread.setEnabled(True)
         elif st["reply_status"] == "generating":
@@ -1053,6 +1092,7 @@ class TriageWindow(QMainWindow):
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
+            self.btn_save_facts.setEnabled(False)
             self.btn_skip_read.setEnabled(True)
             self.btn_skip_unread.setEnabled(True)
         else:
@@ -1066,12 +1106,18 @@ class TriageWindow(QMainWindow):
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
+            self.btn_save_facts.setEnabled(False)
             self.btn_regenerate.setEnabled(has_filter_error or has_triage_error)
             self.btn_skip_read.setEnabled(True)
             self.btn_skip_unread.setEnabled(True)
 
         self.btn_prev.setEnabled(self.current_index > 0)
         self.btn_next.setEnabled(self.current_index < len(self.emails) - 1)
+
+        # Save Key Facts is available as soon as the email is filtered
+        self.btn_save_facts.setEnabled(
+            st.get("filter_status") == "done" and st.get("send_status") != "skipped"
+        )
 
     # -------------------------------------------------------------------------
     # Actions
@@ -1141,6 +1187,53 @@ class TriageWindow(QMainWindow):
             f.write(json.dumps(data) + "\n")
         
         QMessageBox.information(self, "Success", "Reply saved as training example!")
+
+    def save_key_facts(self):
+        import json
+        idx = self.current_index
+        st = self.state[idx]
+        email = self.emails[idx]
+
+        # Visual feedback — show extraction in progress
+        self.btn_save_facts.setText("⏳ Extracting Facts...")
+        self.btn_save_facts.setEnabled(False)
+        QApplication.processEvents()
+
+        inputs = {
+            "email_subject": email["subject"],
+            "email_content": st["filtered_body"] or email["body"],
+            "email_category": st["category"],
+            "email_context": st["extra_info"],
+        }
+
+        try:
+            result = FactExtractorCrew().crew().kickoff(inputs=inputs)
+            raw = result.raw if hasattr(result, 'raw') else str(result)
+            cleaned = raw.strip()
+            if cleaned.startswith("```"):
+                cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+            facts = json.loads(cleaned)
+            if not isinstance(facts, list):
+                facts = []
+        except Exception as e:
+            self.btn_save_facts.setText("📋 Save Key Facts (5)")
+            self.btn_save_facts.setEnabled(True)
+            QMessageBox.warning(self, "Extraction Failed", f"Could not extract facts:\n{e}")
+            return
+
+        # Restore button
+        self.btn_save_facts.setText("📋 Save Key Facts (5)")
+        self.btn_save_facts.setEnabled(True)
+
+        if not facts:
+            QMessageBox.information(self, "No Facts", "No critical facts found in this email.")
+            return
+
+        save_facts(facts, email["subject"], email["sender"])
+        QMessageBox.information(
+            self, "Facts Saved",
+            f"{len(facts)} fact(s) saved to the project knowledge base."
+        )
 
     def prev_email(self):
         self.load_email(self.current_index - 1)

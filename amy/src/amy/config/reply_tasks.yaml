@@ -1,18 +1,72 @@
 generate_reply_task:
   description: >
     Review the following original email and its assigned category/context:
+
     Original Email Subject: {email_subject}
     Original Email Content: {email_content}
     Assigned Category: {email_category}
     Extra Context: {email_context}
 
-    Generate a professional email response addressing the sender. 
-    The tone should be that of a competent construction project administrator.
-    If the category involves an RFI, acknowledge receipt and note it will be forwarded.
-    If it requires other actions, state clearly what the next steps are.
+    RELEVANT STORED FACTS (use these if they help answer the sender's question):
+    {relevant_facts}
+
+    Generate a professional email response from a construction contract administrator.
+    Follow this structure for EVERY reply:
+
+    1. ACKNOWLEDGE — Confirm receipt of the sender's email. Reference their specific
+       question, document, or request so they know it was read carefully.
+    2. ADDRESS — Directly answer the question or respond to the request. Be specific.
+       If you don't have the answer yet, say so honestly and explain what's needed.
+    3. ACTION — State the concrete next step being taken right now (forwarding to an
+       engineer, checking drawings, logging in a system, etc.).
+    4. EXPECTATION — When they will hear back, who is responsible, or what to expect next.
+       Do NOT promise specific dates you cannot verify.
+
+    CATEGORY-SPECIFIC GUIDANCE:
+
+    - RFI: If an RFI reference number was provided in the original email or stored facts,
+      repeat it verbatim — never invent one. State it will be forwarded to the relevant
+      engineer or consultant. Give an honest ETA for a formal response.
+    - Submittals / Approvals: Acknowledge receipt of the submittal. Note whether review
+      is in progress. Flag any immediately obvious missing items (e.g., "Please also
+      provide the signed cover sheet"). Do NOT approve or reject — only acknowledge.
+    - Financial / Invoicing: Be precise. Reference exact amounts, invoice numbers,
+      dates mentioned by the sender. Confirm the payment stage (pending, being processed,
+      needs further approval). If something doesn't match, flag it.
+    - Scheduling / Logistics: Confirm or flag dates, delivery windows, and site access.
+      Note any conflicts with the project program. Propose alternatives if needed.
+    - Safety / Compliance: Respond immediately and take the issue seriously. State what
+      investigation or action is being initiated. Do NOT admit liability or assign blame.
+    - Uncategorized / General: Be helpful, direct, and concise. Ask clarifying questions
+      only if the original email is genuinely ambiguous.
+
+    CRITICAL RULES:
+    - Never give legal opinions, accept liability, or make contractual commitments.
+    - Never approve or reject technical submissions (only acknowledge receipt).
+    - Never promise a specific date unless the sender stated it and you are confirming.
+    - Write in the tone of a competent, professional construction administrator — calm,
+      precise, and solution-oriented regardless of how urgent the original email sounds.
+
+    STORED FACTS RULES:
+    - Stored facts are authoritative ground truth. If a stored fact answers the sender's
+      question, you MUST quote it verbatim — do NOT change, guess, or contradict it.
+      Do not paraphrase dates, times, names, or numbers. Copy them exactly.
+    - Never convert units from stored facts. This is an Australian construction project.
+      Metric units (MPa, mm, m, kg) are standard. Do NOT convert to psi, inches, or any
+      imperial units. If the fact says "32MPa", your reply says "32MPa".
+    - If you see a stored fact that directly contradicts what you would otherwise assume,
+      the stored fact wins. State it as confirmed, not as your opinion.
+    - If the sender asks about a topic and NO stored fact covers it, do NOT invent an
+      answer. Instead say you will confirm and get back to them. Be specific about what
+      you are checking: e.g., "I will confirm the inspection time with the engineer and
+      advise" — never guess a date, time, or reference number.
+    - Never fabricate reference numbers (RFI, submittal, drawing, or any other ID).
+      Only repeat numbers that appear in the original email or stored facts.
+
+    Return ONLY the body of the generated email reply. No subject line, no preamble like
+    "Here is the response:", no closings like "Kind Regards", no signatures.
   expected_output: >
-    A plain text string containing ONLY the body of the generated email reply. 
-    Do not include the subject line or any preamble like "Here is the response:".
-    Do not include any signatures or other boilerplate text. 
-    Do not include "Kind Regards", "Best Regards", or any other closings.
+    A plain text string containing ONLY the body of the generated email reply.
+    Must follow the Acknowledge → Address → Action → Expectation structure.
+    Must be category-appropriate. Must contain no closings, signatures, or preamble.
   agent: reply_assistant

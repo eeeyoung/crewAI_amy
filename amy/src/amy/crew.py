@@ -1,10 +1,10 @@
 import os
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import DirectoryReadTool, FileReadTool
+from crewai_tools import DirectoryReadTool
 from pydantic import BaseModel
 
-from amy.tools.outlook_tool import OutlookSendTool
+from amy.fact_store import search_facts
 
 # Toggle provider here: 'gem' for Gemini, 'ds' for DeepSeek
 ACTIVE_PROVIDER = os.environ.get("AI_PROVIDER", "gem").lower()
@@ -66,22 +66,37 @@ class StyleLearnerCrew():
 
 @CrewBase
 class MessageFilterCrew():
-    """Crew for cleaning a single email body — stripping signatures and boilerplate."""
+    """Crew for cleaning a single email body — strips boilerplate, then restructures threads."""
     agents_config = 'config/filter_agents.yaml'
     tasks_config = 'config/filter_tasks.yaml'
 
     @agent
-    def message_filter(self) -> Agent:
+    def boilerplate_stripper(self) -> Agent:
         return Agent(
-            config=self.agents_config['message_filter'],
+            config=self.agents_config['boilerplate_stripper'],
+            llm=get_llm("fast"),
+            verbose=True
+        )
+
+    @agent
+    def thread_structurer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['thread_structurer'],
             llm=get_llm("fast"),
             verbose=True
         )
 
     @task
-    def filter_email_task(self) -> Task:
+    def strip_boilerplate_task(self) -> Task:
         return Task(
-            config=self.tasks_config['filter_email_task'],
+            config=self.tasks_config['strip_boilerplate_task'],
+        )
+
+    @task
+    def restructure_thread_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['restructure_thread_task'],
+            context=[self.strip_boilerplate_task()],
         )
 
     @crew
@@ -158,8 +173,7 @@ class ReplyGeneratorCrew():
         return Agent(
             config=agent_config,
             llm=get_llm("fast"),
-            verbose=True,
-            tools=[OutlookSendTool(), FileReadTool()]
+            verbose=True
         )
 
     @task
@@ -175,15 +189,6 @@ class ReplyGeneratorCrew():
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            memory=True,
-            memory_llm=get_llm("fast"),
-            embedder={
-                "provider": "google-generativeai",
-                "config": {
-                    "api_key": os.environ.get("GEMINI_API_KEY"),
-                    "model": "gemini-embedding-001"
-                }
-            }
         )
 
 
@@ -231,4 +236,34 @@ class WorkflowGeneratorCrew():
             process=Process.sequential,
             verbose=True,
             memory=False
+        )
+
+
+@CrewBase
+class FactExtractorCrew():
+    """Crew for extracting critical project facts from processed emails."""
+    agents_config = 'config/fact_extractor_agents.yaml'
+    tasks_config = 'config/fact_extractor_tasks.yaml'
+
+    @agent
+    def fact_extractor(self) -> Agent:
+        return Agent(
+            config=self.agents_config['fact_extractor'],
+            llm=get_llm("fast"),
+            verbose=True
+        )
+
+    @task
+    def extract_facts_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['extract_facts_task'],
+        )
+
+    @crew
+    def crew(self) -> Crew:
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.sequential,
+            verbose=True,
         )

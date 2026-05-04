@@ -1,0 +1,26 @@
+extract_facts_task:
+  description: >
+    Read the following email and extract critical, durable facts that may be needed
+    to answer future inquiries. Include:
+
+    - Project names and reference numbers (e.g., "ARCO 2224 Hood Street", "RFI-042")
+    - Key dates and milestones (e.g., "concrete pour scheduled March 15")
+    - Decisions and commitments (e.g., "client approved change order #3")
+    - Specifications and technical details (e.g., "Level 2 uses 32MPa concrete")
+    - Contact information changes or role assignments
+
+    For each fact, provide:
+    - project: The project name or identifier (e.g., "ARCO", "Econolodge")
+    - topic: A short category label (e.g., "concrete pour", "RFI", "deadline", "spec", "contact")
+    - detail: The specific fact in one short, clear sentence
+
+    Email Subject: {email_subject}
+    Email Content: {email_content}
+    Category: {email_category}
+    Extra Context: {email_context}
+
+    Return ONLY a JSON array. If there are no critical facts to save, return an empty array [].
+    Example: [{{"project": "ARCO", "topic": "concrete pour", "detail": "Level 2 slab pour scheduled March 15"}}]
+  expected_output: >
+    A JSON array of fact objects, each with project, topic, and detail keys.
+  agent: fact_extractor
