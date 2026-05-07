@@ -96,5 +96,14 @@ def view_facts():
         print()
 
 
+def test():
+    """Run the test suite via pytest."""
+    import pytest
+    import sys
+    args = ["tests/", "-v"]
+    args.extend(sys.argv[1:])
+    sys.exit(pytest.main(args))
+
+
 if __name__ == "__main__":
     run()
