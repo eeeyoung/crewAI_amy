@@ -793,10 +793,13 @@ def _strip_signature(text: str) -> str:
 class TriageWindow(QMainWindow):
     def __init__(self, raw_emails):
         super().__init__()
-        self.all_unread = raw_emails
+        # Session blocklist: EntryIDs that were already processed (sent, skipped).
+        # Never re-fetch these during this session even if still unread in Outlook.
+        self.processed_entry_ids: set[str] = set()
         self.emails = []
         self.state = {}
         self.current_index = 0
+        self.email_index_counter = 0
         self.filter_queue = queue.Queue()
         self.triage_queue = queue.Queue()
         self.reply_queue = queue.Queue()
@@ -808,22 +811,28 @@ class TriageWindow(QMainWindow):
         self.init_ui()
         self.start_workers()
 
-        # Load first 3 emails (or less if fewer are available)
-        initial_count = min(5, len(self.all_unread))
-        for _ in range(initial_count):
-            self._load_next_from_backlog()
+        # Pre-populate the blocklist with the initial batch so _fetch_and_queue_next
+        # skips them on the first dynamic fetch calls.
+        for email in raw_emails:
+            eid = email.get("entry_id", "")
+            if eid:
+                self.processed_entry_ids.add(eid)
+
+        # Queue the initial batch directly (no Outlook fetch needed — already in hand)
+        for email in raw_emails:
+            idx = self._append_email(email)
+            self.filter_queue.put((idx, email))
 
         if self.emails:
             self.load_email(0)
+        self.update_ui_state()
 
-    def _load_next_from_backlog(self):
-        if not self.all_unread:
-            return
-        
-        email = self.all_unread.pop(0)
-        idx = len(self.emails)
+    def _append_email(self, email: dict) -> int:
+        """Append an email dict to self.emails, create state, return index."""
+        idx = self.email_index_counter
+        self.email_index_counter += 1
         self.emails.append(email)
-        
+
         self.state[idx] = {
             "filtered_body": "",
             "filter_status": "filtering",
@@ -837,11 +846,25 @@ class TriageWindow(QMainWindow):
             "workflow_text": "",
             "workflow_status": "pending",
             "send_status": "unsent",
-            "attachment_count": None,  # lazily fetched
+            "attachment_count": None,
         }
-        
-        self.filter_queue.put((idx, email))
-        self.update_ui_state()
+        return idx
+
+    def _fetch_and_queue_next(self):
+        """Dynamically fetch 1 unread email from Outlook, excluding processed EntryIDs."""
+        from amy.tools.outlook_tool import fetch_inbox_emails
+        new_emails = fetch_inbox_emails(
+            count=1, max_body=30000, unread_only=True,
+            exclude_entry_ids=self.processed_entry_ids
+        )
+        if new_emails:
+            email = new_emails[0]
+            eid = email.get("entry_id", "")
+            if eid:
+                self.processed_entry_ids.add(eid)
+            idx = self._append_email(email)
+            self.filter_queue.put((idx, email))
+            self.update_ui_state()
 
     def init_ui(self):
         self.setWindowTitle("Interactive Triage & Auto-Reply Workstation")
@@ -1671,11 +1694,12 @@ class TriageWindow(QMainWindow):
             QMessageBox.information(self, "Success", "Email sent and marked as read!")
             self.state[self.current_index]["send_status"] = "sent"
             self.state[self.current_index]["reply_text"] = body
-            
-            # Lazily load a new email from the backlog
-            if self.all_unread:
-                self._load_next_from_backlog()
-            
+
+            # Block this EntryID and fetch a fresh replacement from Outlook
+            if entry_id:
+                self.processed_entry_ids.add(entry_id)
+            self._fetch_and_queue_next()
+
             self.update_ui_state()
 
             # Auto jump to next unsent
@@ -1713,9 +1737,10 @@ class TriageWindow(QMainWindow):
         st["reply_text"] = "⏭️ Skipped"
         st["workflow_text"] = st["workflow_text"] or "⏭️ Skipped"
 
-        # Lazily load a new email from the backlog
-        if self.all_unread:
-            self._load_next_from_backlog()
+        # Block this EntryID for the session and fetch a fresh replacement
+        if entry_id:
+            self.processed_entry_ids.add(entry_id)
+        self._fetch_and_queue_next()
 
         self.update_ui_state()
 

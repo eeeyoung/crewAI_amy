@@ -5,20 +5,27 @@ from crewai.tools import BaseTool
 from pydantic import Field
 
 
-def fetch_inbox_emails(count=10, max_body=4000, unread_only=False):
+def fetch_inbox_emails(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
     """Fetch the latest emails from Outlook Inbox directly.
     Returns a list of dicts with subject, sender, cc, received_time, body.
+    Skips emails whose EntryID is in exclude_entry_ids (session blocklist).
+    Only returns emails from the "Focused" inbox (skips "Other" tab).
     This is a plain Python function, NOT a CrewAI tool.
     """
+    if exclude_entry_ids is None:
+        exclude_entry_ids = set()
     if platform.system() == "Windows":
-        return _fetch_inbox_emails_windows(count, max_body, unread_only)
+        return _fetch_inbox_emails_windows(count, max_body, unread_only, exclude_entry_ids)
     elif platform.system() == "Darwin":
-        return _fetch_inbox_emails_macos(count, max_body, unread_only)
+        return _fetch_inbox_emails_macos(count, max_body, unread_only, exclude_entry_ids)
     else:
         raise RuntimeError(f"This function is not supported on OS: {platform.system()}")
 
-def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False):
+def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
     import win32com.client
+
+    if exclude_entry_ids is None:
+        exclude_entry_ids = set()
 
     outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
     inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
@@ -36,6 +43,22 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False):
         try:
             if message.Class != 43:  # 43 = olMail
                 continue
+
+            # Skip if EntryID is in the session blocklist
+            entry_id = getattr(message, "EntryID", "")
+            if entry_id and entry_id in exclude_entry_ids:
+                continue
+
+            # Skip emails from the "Other" tab (Focused Inbox only)
+            try:
+                is_focused = message.PropertyAccessor.GetProperty(
+                    "http://schemas.microsoft.com/mapi/proptag/0x10820003"
+                )
+                if is_focused == 0:  # 0 = Other, 1 = Focused
+                    continue
+            except Exception:
+                pass  # Property not available; include the email
+
             sender_name = getattr(message, "SenderName", "Unknown")
             sender_email = getattr(message, "SenderEmailAddress", "Unknown")
             if sender_email and sender_email.upper().startswith("/O="):
@@ -70,7 +93,7 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False):
                 cc_str = getattr(message, "CC", "")
 
             emails.append({
-                "entry_id": getattr(message, "EntryID", ""),
+                "entry_id": entry_id,
                 "subject": getattr(message, "Subject", "No Subject"),
                 "sender": f"{sender_name} <{sender_email}>",
                 "cc": cc_str,
@@ -83,7 +106,7 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False):
 
     return emails
 
-def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False):
+def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
     import subprocess
     import json
     
