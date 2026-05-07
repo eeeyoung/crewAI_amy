@@ -29,6 +29,17 @@ restructure_thread_task:
   description: >
     Review the cleaned email text provided to you. Your job is to restructure it for clarity.
 
+    IMPORTANT — LATEST MESSAGE IDENTIFICATION:
+    The metadata provided below identifies the LATEST (newest) message in the thread.
+    This latest message is the actual email that was just received. It appears FIRST
+    in the body but will NOT have inline "From:" or "Sent:" headers in the body text
+    — those headers belong to the email envelope, not the body. You MUST use the
+    provided metadata to construct the section header for this latest message.
+
+    Email Subject: {email_subject}
+    Latest Sender: {email_sender}
+    Latest Received: {email_received_time}
+
     If the email contains multiple dialogue turns (forwarded messages, reply chains, or
     conversations between multiple parties), restructure the output into clearly separated
     sections. Use this EXACT format for each dialogue turn:
@@ -40,11 +51,14 @@ restructure_thread_task:
     ═══════════════════════════════════════
     [Message content here]
 
+    For the LATEST message, use the metadata above for FROM and DATE. For TO, look in
+    the email body for recipient clues, or write "Not specified" if not discernible.
+
+    For older messages further down the thread, extract FROM, TO, and DATE from their
+    inline headers (these will appear as "From:", "Sent:", "To:" lines in the body).
+
     Order the sections in reverse chronological order (newest message first, oldest
     message last) — the same order Outlook displays the thread.
-
-    If a message is addressed to multiple recipients or CC'd parties, list them all
-    under the TO field. If the date or recipient is not discernible, write "Not specified".
 
     If the email is a SINGLE message (not a thread), return the cleaned text exactly as
     received — do NOT add section headers to a single message.
