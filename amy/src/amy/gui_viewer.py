@@ -2,20 +2,21 @@ import sys
 import json
 import queue
 import os
+import re
 import threading
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QTextEdit, QPushButton, QSplitter, QMessageBox, QFrame,
-    QStackedLayout, QDialog, QFileDialog, QScrollArea
+    QStackedLayout, QDialog, QFileDialog, QScrollArea, QCompleter
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QStringListModel, QSortFilterProxyModel, QRegularExpression
 from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
 from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
 from amy.fact_store import init_db, search_facts, save_facts
 from amy.tools.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
-    fetch_attachments_for_email, save_attachment,
+    fetch_attachments_for_email, save_attachment, fetch_outlook_contacts,
 )
 
 
@@ -51,7 +52,12 @@ class FilterWorker(QThread):
                 continue
             try:
                 result = MessageFilterCrew().crew().kickoff(
-                    inputs={"email_body": email["body"]}
+                    inputs={
+                        "email_body": email["body"],
+                        "email_subject": email["subject"],
+                        "email_sender": email["sender"],
+                        "email_received_time": email.get("received_time", "Unknown"),
+                    }
                 )
                 cleaned = result.raw if hasattr(result, 'raw') else str(result)
             except Exception as e:
@@ -172,6 +178,10 @@ class ReplyWorker(QThread):
                 "email_urgency": urgency,
                 "email_context": extra_info,
                 "relevant_facts": facts_text or "No relevant stored facts found.",
+                "email_sender": email["sender"],
+                "email_cc": email.get("cc", ""),
+                "amy_name": os.environ.get("AMY_NAME", "Amy Chen"),
+                "amy_email": os.environ.get("AMY_EMAIL", "amy@welink.com.au"),
             }
 
             try:
@@ -233,6 +243,21 @@ class WorkflowWorker(QThread):
     def stop(self):
         self.running = False
         self.workflow_queue.put(None)
+
+
+class ContactFetchWorker(QThread):
+    """Fetches Outlook contacts (GAL + Contacts folder) on a background thread."""
+    contacts_loaded = pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def run(self):
+        contacts = fetch_outlook_contacts()
+        self.contacts_loaded.emit(contacts)
+
+    def stop(self):
+        pass
 
 
 class RegenerateWorker(QThread):
@@ -316,6 +341,10 @@ class RegenerateWorker(QThread):
             "email_urgency": self.urgency,
             "email_context": self.extra_info,
             "relevant_facts": facts_text or "No relevant stored facts found.",
+            "email_sender": self.email["sender"],
+            "email_cc": self.email.get("cc", ""),
+            "amy_name": os.environ.get("AMY_NAME", "Amy Chen"),
+            "amy_email": os.environ.get("AMY_EMAIL", "amy@welink.com.au"),
         }
         try:
             result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
@@ -323,6 +352,27 @@ class RegenerateWorker(QThread):
         except Exception as e:
             draft_text = f"Error generating reply: {str(e)}"
         self.reply_done.emit(self.idx, draft_text)
+
+
+class GrammarPolishWorker(QThread):
+    """Polishes grammar of a reply draft in the background."""
+    polish_done = pyqtSignal(int, str)
+
+    def __init__(self, idx, draft_text, parent=None):
+        super().__init__(parent)
+        self.idx = idx
+        self.draft_text = draft_text
+
+    def run(self):
+        from amy.crew import GrammarPolisherCrew
+        try:
+            result = GrammarPolisherCrew().crew().kickoff(
+                inputs={"draft_text": self.draft_text}
+            )
+            polished = result.raw if hasattr(result, 'raw') else str(result)
+        except Exception as e:
+            polished = f"Error polishing grammar: {str(e)}"
+        self.polish_done.emit(self.idx, polished)
 
 
 # =============================================================================
@@ -526,6 +576,217 @@ class AttachmentDialog(QDialog):
 
 
 # =============================================================================
+# Contact Autocomplete Widgets
+# =============================================================================
+
+class _ContactFilterProxy(QSortFilterProxyModel):
+    """Proxy that does case-insensitive substring matching against filter string."""
+
+    def filterAcceptsRow(self, source_row, parent):
+        if not self.filterRegularExpression().isValid():
+            return True
+        idx = self.sourceModel().index(source_row, self.filterKeyColumn(), parent)
+        data = self.sourceModel().data(idx)
+        if data is None:
+            return False
+        return self.filterRegularExpression().match(str(data)).hasMatch()
+
+
+class ContactAutocomplete(QLineEdit):
+    """A QLineEdit with QCompleter dropdown that filters against a contact list.
+
+    Shows matching contacts after 2+ characters typed. Enter auto-fills the
+    highlighted suggestion. Free-text entries are accepted as valid input.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._model = QStringListModel(self)
+        self._proxy = _ContactFilterProxy(self)
+        self._proxy.setSourceModel(self._model)
+        self._proxy.setFilterKeyColumn(0)
+
+        self._completer = QCompleter(self)
+        self._completer.setModel(self._proxy)
+        self._completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self._completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self._completer.popup().setMinimumWidth(350)
+        self._completer.activated.connect(self._on_completion_activated)
+
+        self.setCompleter(self._completer)
+        self.textChanged.connect(self._on_text_changed)
+
+    def _on_text_changed(self, text):
+        t = text.strip()
+        if len(t) >= 2:
+            self._proxy.setFilterRegularExpression(
+                QRegularExpression(re.escape(t), QRegularExpression.PatternOption.CaseInsensitiveOption)
+            )
+        else:
+            self._completer.popup().hide()
+
+    def _on_completion_activated(self, text):
+        self.setText(text)
+
+    def set_contacts(self, contacts: list[dict]):
+        display_strings = [f"{c['name']} <{c['email']}>" for c in contacts]
+        self._model.setStringList(display_strings)
+
+    def get_text(self) -> str:
+        return self.text().strip()
+
+
+class CcRecipientRow(QWidget):
+    """A single CC recipient row: autocomplete field + '-' remove button."""
+    removed = pyqtSignal(QWidget)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+
+        self.le_cc = ContactAutocomplete(self)
+        layout.addWidget(self.le_cc, stretch=1)
+
+        self.btn_clear = QPushButton("×", self)
+        self.btn_clear.setFixedWidth(30)
+        self.btn_clear.setFixedHeight(30)
+        self.btn_clear.setToolTip("Clear this recipient")
+        self.btn_clear.setStyleSheet(
+            "background-color: #888888; color: white; font-weight: bold; "
+            "border-radius: 4px; padding: 0px; font-size: 14px;"
+        )
+        self.btn_clear.clicked.connect(lambda: self.le_cc.setText(""))
+        layout.addWidget(self.btn_clear)
+
+        self.btn_remove = QPushButton("-", self)
+        self.btn_remove.setFixedWidth(30)
+        self.btn_remove.setFixedHeight(30)
+        self.btn_remove.setToolTip("Remove this row")
+        self.btn_remove.setStyleSheet(
+            "background-color: #D83B01; color: white; font-weight: bold; "
+            "border-radius: 4px; padding: 0px; font-size: 14px;"
+        )
+        self.btn_remove.clicked.connect(lambda: self.removed.emit(self))
+        layout.addWidget(self.btn_remove)
+
+    def set_text(self, text: str):
+        self.le_cc.setText(text.strip())
+
+    def get_text(self) -> str:
+        return self.le_cc.get_text()
+
+    def set_contacts(self, contacts: list[dict]):
+        self.le_cc.set_contacts(contacts)
+
+    def setEnabled(self, enabled: bool):
+        self.le_cc.setEnabled(enabled)
+        self.btn_clear.setEnabled(enabled)
+        self.btn_remove.setEnabled(enabled)
+
+
+class CcSection(QWidget):
+    """Container for CC recipient rows with '+' add button and layout management."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._rows: list[CcRecipientRow] = []
+        self._contacts: list[dict] = []
+
+        self._outer_layout = QVBoxLayout(self)
+        self._outer_layout.setContentsMargins(0, 0, 0, 0)
+        self._outer_layout.setSpacing(4)
+
+        self._rows_layout = QVBoxLayout()
+        self._rows_layout.setContentsMargins(0, 0, 0, 0)
+        self._rows_layout.setSpacing(2)
+        self._outer_layout.addLayout(self._rows_layout)
+
+        self.btn_add = QPushButton("+ Add CC", self)
+        self.btn_add.setFixedHeight(30)
+        self.btn_add.setStyleSheet(
+            "background-color: #107C10; color: white; font-weight: bold; "
+            "border-radius: 4px; padding: 2px 10px; font-size: 12px;"
+        )
+        self.btn_add.clicked.connect(self.add_row)
+        self._outer_layout.addWidget(self.btn_add)
+
+    def set_contacts(self, contacts: list[dict]):
+        self._contacts = contacts
+        for row in self._rows:
+            row.set_contacts(contacts)
+
+    def add_row(self, initial_text: str = ""):
+        row = CcRecipientRow(self)
+        row.set_contacts(self._contacts)
+        if initial_text:
+            row.set_text(initial_text)
+        row.removed.connect(self._remove_row)
+        self._rows_layout.addWidget(row)
+        self._rows.append(row)
+
+    def _remove_row(self, row: CcRecipientRow):
+        if row in self._rows:
+            self._rows.remove(row)
+            self._rows_layout.removeWidget(row)
+            row.deleteLater()
+
+    def clear_rows(self):
+        for row in list(self._rows):
+            self._rows_layout.removeWidget(row)
+            row.deleteLater()
+        self._rows.clear()
+
+    def set_from_cc_string(self, cc_str: str):
+        self.clear_rows()
+        if not cc_str or not cc_str.strip():
+            return
+        parts = [p.strip() for p in cc_str.split(";") if p.strip()]
+        for part in parts:
+            self.add_row(initial_text=part)
+
+    def get_cc_string(self) -> str:
+        entries = [row.get_text() for row in self._rows if row.get_text()]
+        return "; ".join(entries)
+
+    def get_rows(self) -> list:
+        return self._rows
+
+    def setEnabled(self, enabled: bool):
+        for row in self._rows:
+            row.setEnabled(enabled)
+        self.btn_add.setEnabled(enabled)
+
+
+# =============================================================================
+# Helpers
+# =============================================================================
+
+SIGNATURE_MARKERS = [
+    "kind regards", "kind regards,", "best regards", "best regards,",
+    "sincerely", "sincerely,", "yours sincerely", "yours sincerely,",
+    "yours faithfully", "yours faithfully,", "warm regards", "warm regards,",
+    "cheers", "cheers,", "thanks", "thanks,", "thank you", "thank you,",
+    "regards", "regards,",
+]
+
+
+def _strip_signature(text: str) -> str:
+    """Strip signature block and closing phrases from the end of an email body.
+
+    Looks for lines that consist solely of a closing phrase (like 'Kind regards,')
+    and truncates the text from that point.
+    """
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        stripped = line.strip().lower().rstrip(",")
+        if stripped in SIGNATURE_MARKERS or stripped.rstrip(",") in SIGNATURE_MARKERS:
+            return "\n".join(lines[:i]).strip()
+    return text.strip()
+
+
+# =============================================================================
 # Main Window
 # =============================================================================
 
@@ -542,6 +803,7 @@ class TriageWindow(QMainWindow):
         self.workflow_queue = queue.Queue()
         self.skipped_indices = set()
         self.download_dir = os.path.abspath(".")  # default to program root
+        self.contacts_cache: list[dict] = []
 
         self.init_ui()
         self.start_workers()
@@ -587,7 +849,7 @@ class TriageWindow(QMainWindow):
         
         self.setStyleSheet("""
             QMainWindow { background-color: #FFFDE7; }
-            QWidget { font-family: 'Segoe UI', Arial, sans-serif; color: #3E3E3E; }
+            QWidget { font-family: Arial, sans-serif; color: #3E3E3E; }
             QSplitter { background-color: transparent; border: none; }
             QSplitter::handle { background-color: #FFFDE7; }
             QFrame { background-color: #FFFFFF; border-radius: 8px; border: 1px solid #E6DEB1; }
@@ -624,7 +886,7 @@ class TriageWindow(QMainWindow):
         left_layout = QVBoxLayout(left_panel)
         left_layout.setContentsMargins(15, 15, 15, 15)
 
-        header_font = QFont("Segoe UI", 12, QFont.Weight.Bold)
+        header_font = QFont("Arial", 12, QFont.Weight.Bold)
 
         lbl_orig = QLabel("Original Email")
         lbl_orig.setFont(header_font)
@@ -720,18 +982,34 @@ class TriageWindow(QMainWindow):
 
         # Receiver
         right_layout.addWidget(QLabel("Receiver:"))
-        self.le_reply_receiver = QLineEdit()
-        right_layout.addWidget(self.le_reply_receiver)
+        receiver_row = QWidget()
+        receiver_layout = QHBoxLayout(receiver_row)
+        receiver_layout.setContentsMargins(0, 0, 0, 0)
+        receiver_layout.setSpacing(4)
+        self.le_reply_receiver = ContactAutocomplete()
+        receiver_layout.addWidget(self.le_reply_receiver, stretch=1)
+        self.btn_clear_receiver = QPushButton("×")
+        self.btn_clear_receiver.setFixedWidth(30)
+        self.btn_clear_receiver.setFixedHeight(30)
+        self.btn_clear_receiver.setToolTip("Clear receiver")
+        self.btn_clear_receiver.setStyleSheet(
+            "background-color: #888888; color: white; font-weight: bold; "
+            "border-radius: 4px; padding: 0px; font-size: 14px;"
+        )
+        self.btn_clear_receiver.clicked.connect(lambda: self.le_reply_receiver.setText(""))
+        receiver_layout.addWidget(self.btn_clear_receiver)
+        right_layout.addWidget(receiver_row)
 
         # CC
         right_layout.addWidget(QLabel("CC:"))
-        self.le_reply_cc = QLineEdit()
-        right_layout.addWidget(self.le_reply_cc)
+        self.cc_section = CcSection()
+        right_layout.addWidget(self.cc_section)
 
         # Content
         right_layout.addWidget(QLabel("Content:"))
         self.txt_reply_content = QTextEdit()
-        right_layout.addWidget(self.txt_reply_content)
+        self.txt_reply_content.setMinimumHeight(200)
+        right_layout.addWidget(self.txt_reply_content, stretch=1)
 
         # --- BOTTOM CONTROLS ---
         controls_layout = QHBoxLayout()
@@ -761,6 +1039,15 @@ class TriageWindow(QMainWindow):
         )
         self.btn_regenerate.clicked.connect(self.regenerate_current)
         controls_layout.addWidget(self.btn_regenerate)
+
+        self.btn_grammar = QPushButton("Grammar Polish (G)")
+        self.btn_grammar.setMinimumWidth(130)
+        self.btn_grammar.setMinimumHeight(35)
+        self.btn_grammar.setStyleSheet(
+            "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px;"
+        )
+        self.btn_grammar.clicked.connect(self.grammar_polish)
+        controls_layout.addWidget(self.btn_grammar)
 
         self.btn_send = QPushButton("Send && Mark as Read (1)")
         self.btn_send.setMinimumWidth(150)
@@ -829,6 +1116,7 @@ class TriageWindow(QMainWindow):
         QShortcut(QKeySequence("3"), self).activated.connect(self.skip_unread)
         QShortcut(QKeySequence("4"), self).activated.connect(self.save_reply_feedback)
         QShortcut(QKeySequence("5"), self).activated.connect(self.save_key_facts)
+        QShortcut(QKeySequence("G"), self).activated.connect(self.grammar_polish)
         QShortcut(QKeySequence("Q"), self).activated.connect(self.open_attachment_dialog)
 
         right_layout.addLayout(controls_layout)
@@ -837,6 +1125,10 @@ class TriageWindow(QMainWindow):
         splitter.addWidget(left_panel)
         splitter.addWidget(right_panel)
         splitter.setSizes([600, 800])
+        splitter.setCollapsible(0, False)
+        splitter.setCollapsible(1, False)
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 4)
 
     # -------------------------------------------------------------------------
     # Workers
@@ -858,6 +1150,10 @@ class TriageWindow(QMainWindow):
         self.workflow_worker = WorkflowWorker(self.workflow_queue, self.skipped_indices)
         self.workflow_worker.workflow_generated.connect(self.on_workflow_generated)
         self.workflow_worker.start()
+
+        self.contact_worker = ContactFetchWorker()
+        self.contact_worker.contacts_loaded.connect(self.on_contacts_loaded)
+        self.contact_worker.start()
 
     # -------------------------------------------------------------------------
     # Signal Handlers
@@ -905,7 +1201,7 @@ class TriageWindow(QMainWindow):
             if os.path.exists(sig_path):
                 with open(sig_path, "r", encoding="utf-8") as f:
                     signature_html = f.read()
-            full_html = f'<div style="font-family: Calibri, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
+            full_html = f'<div style="font-family: Arial, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
             self.state[idx]["reply_text"] = full_html
         else:
             self.state[idx]["reply_text"] = text
@@ -914,6 +1210,37 @@ class TriageWindow(QMainWindow):
 
         if idx == self.current_index:
             self.update_ui_state()
+
+    def on_contacts_loaded(self, contacts: list[dict]):
+        """Store fetched contacts and propagate to all autocomplete widgets."""
+        self.contacts_cache = contacts
+        self.le_reply_receiver.set_contacts(contacts)
+        self.cc_section.set_contacts(contacts)
+
+    def on_grammar_polished(self, idx, polished_text):
+        if idx != self.current_index:
+            return
+
+        self.btn_grammar.setText("Grammar Polish (G)")
+        self.btn_grammar.setEnabled(True)
+
+        if polished_text.startswith("Error polishing"):
+            QMessageBox.warning(self, "Grammar Polish Failed", polished_text)
+            return
+
+        body_html = "".join(
+            f"<p>{line}</p>" if line.strip() else "<br>"
+            for line in polished_text.split("\n")
+        )
+        sig_path = os.path.abspath("knowledge/amy_signature.html")
+        signature_html = ""
+        if os.path.exists(sig_path):
+            with open(sig_path, "r", encoding="utf-8") as f:
+                signature_html = f.read()
+        full_html = f'<div style="font-family: Arial, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
+
+        self.state[idx]["reply_text"] = full_html
+        self.txt_reply_content.setHtml(full_html)
 
     # -------------------------------------------------------------------------
     # UI Updates
@@ -927,7 +1254,7 @@ class TriageWindow(QMainWindow):
         cur = self.state[self.current_index]
         if cur["reply_status"] == "done" and cur["send_status"] != "sent":
             cur["reply_text"] = self.txt_reply_content.toHtml()
-            cur["reply_cc"] = self.le_reply_cc.text()
+            cur["reply_cc"] = self.cc_section.get_cc_string()
 
         self.current_index = idx
         email = self.emails[idx]
@@ -949,7 +1276,8 @@ class TriageWindow(QMainWindow):
         self.le_reply_receiver.setText(email["sender"])
         
         # Right panel - editable fields loaded from state or default to email CC
-        self.le_reply_cc.setText(st.get("reply_cc") or email.get("cc", ""))
+        cc_str = st.get("reply_cc") or email.get("cc", "")
+        self.cc_section.set_from_cc_string(cc_str)
 
         self.update_ui_state()
 
@@ -1039,7 +1367,8 @@ class TriageWindow(QMainWindow):
             self.txt_reply_content.setPlainText("⏭️ Skipped")
             self.txt_reply_content.setEnabled(False)
             self.le_reply_receiver.setEnabled(False)
-            self.le_reply_cc.setEnabled(False)
+            self.btn_clear_receiver.setEnabled(False)
+            self.cc_section.setEnabled(False)
             self.le_reply_subject.setEnabled(False)
             self.btn_send.setText("Skipped")
             self.btn_send.setStyleSheet(
@@ -1047,6 +1376,7 @@ class TriageWindow(QMainWindow):
             )
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
+            self.btn_grammar.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
             self.btn_save_facts.setEnabled(False)
             self.btn_skip_read.setEnabled(False)
@@ -1055,7 +1385,8 @@ class TriageWindow(QMainWindow):
             self.txt_reply_content.setHtml(st["reply_text"])
             self.txt_reply_content.setEnabled(False)
             self.le_reply_receiver.setEnabled(False)
-            self.le_reply_cc.setEnabled(False)
+            self.btn_clear_receiver.setEnabled(False)
+            self.cc_section.setEnabled(False)
             self.le_reply_subject.setEnabled(False)
             self.btn_send.setText("Already Sent")
             self.btn_send.setStyleSheet(
@@ -1063,6 +1394,7 @@ class TriageWindow(QMainWindow):
             )
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
+            self.btn_grammar.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
             self.btn_save_facts.setEnabled(True)
             self.btn_skip_read.setEnabled(False)
@@ -1074,7 +1406,8 @@ class TriageWindow(QMainWindow):
                 self.txt_reply_content.setHtml(st["reply_text"])
             self.txt_reply_content.setEnabled(True)
             self.le_reply_receiver.setEnabled(True)
-            self.le_reply_cc.setEnabled(True)
+            self.btn_clear_receiver.setEnabled(True)
+            self.cc_section.setEnabled(True)
             self.le_reply_subject.setEnabled(True)
             self.btn_send.setText("Send && Mark as Read (1)")
             self.btn_send.setStyleSheet(
@@ -1082,6 +1415,7 @@ class TriageWindow(QMainWindow):
             )
             self.btn_send.setEnabled(True)
             self.btn_regenerate.setEnabled(True)
+            self.btn_grammar.setEnabled(True)
             self.btn_save_reply.setEnabled(True)
             self.btn_save_facts.setEnabled(True)
             self.btn_skip_read.setEnabled(True)
@@ -1091,6 +1425,7 @@ class TriageWindow(QMainWindow):
             self.txt_reply_content.setEnabled(False)
             self.btn_send.setEnabled(False)
             self.btn_regenerate.setEnabled(False)
+            self.btn_grammar.setEnabled(False)
             self.btn_save_reply.setEnabled(False)
             self.btn_save_facts.setEnabled(False)
             self.btn_skip_read.setEnabled(True)
@@ -1108,6 +1443,7 @@ class TriageWindow(QMainWindow):
             self.btn_save_reply.setEnabled(False)
             self.btn_save_facts.setEnabled(False)
             self.btn_regenerate.setEnabled(has_filter_error or has_triage_error)
+            self.btn_grammar.setEnabled(False)
             self.btn_skip_read.setEnabled(True)
             self.btn_skip_unread.setEnabled(True)
 
@@ -1294,9 +1630,32 @@ class TriageWindow(QMainWindow):
             self._regen_worker.reply_done.connect(self.on_reply_generated)
             self._regen_worker.start()
 
+    def grammar_polish(self):
+        idx = self.current_index
+        st = self.state[idx]
+
+        if st["reply_status"] != "done":
+            return
+
+        draft_text = self.txt_reply_content.toPlainText()
+        if not draft_text.strip():
+            return
+
+        body_only = _strip_signature(draft_text)
+        if not body_only.strip():
+            return
+
+        self.btn_grammar.setText("Polishing...")
+        self.btn_grammar.setEnabled(False)
+        QApplication.processEvents()
+
+        self._grammar_worker = GrammarPolishWorker(idx, body_only)
+        self._grammar_worker.polish_done.connect(self.on_grammar_polished)
+        self._grammar_worker.start()
+
     def send_email(self):
         recipient = self.le_reply_receiver.text()
-        cc_list = self.le_reply_cc.text()
+        cc_list = self.cc_section.get_cc_string()
         subject = self.le_reply_subject.text()
         body = self.txt_reply_content.toHtml()
 
@@ -1375,7 +1734,7 @@ class TriageWindow(QMainWindow):
         self._skip_current(mark_read=False)
 
     def closeEvent(self, event):
-        for worker_name in ('filter_worker', 'triage_worker', 'reply_worker'):
+        for worker_name in ('filter_worker', 'triage_worker', 'reply_worker', 'contact_worker'):
             worker = getattr(self, worker_name, None)
             if worker:
                 worker.stop()
