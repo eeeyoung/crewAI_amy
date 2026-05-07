@@ -1,0 +1,27 @@
+polish_grammar_task:
+  description: >
+    Polish the grammar of the following email draft. Fix only:
+    - Spelling errors
+    - Grammar mistakes (subject-verb agreement, tense consistency, etc.)
+    - Punctuation errors
+    - Minor syntax issues (run-on sentences, fragments)
+
+    DO NOT change:
+    - The tone or voice of the email
+    - The content, facts, or meaning
+    - The structure (Acknowledge → Address → Action → Expectation)
+    - Word choice or vocabulary (unless a word is clearly misused)
+    - Greetings, closings, or signatures
+
+    CRITICAL: Do NOT add any closing phrases (such as "Kind regards", "Best regards",
+    "Sincerely", "Thanks", "Cheers") or signatures. The provided text is the body
+    ONLY — your output must also be body ONLY.
+
+    Email Draft to Polish:
+    {draft_text}
+
+    Return ONLY the polished email text. No preamble, no "Here is the polished version:",
+    no explanations of changes made.
+  expected_output: >
+    The polished email draft with grammar corrections only. No explanations, no preamble.
+  agent: grammar_polisher

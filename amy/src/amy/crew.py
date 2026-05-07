@@ -167,8 +167,19 @@ class ReplyGeneratorCrew():
             except Exception:
                 pass
 
+        amy_name = os.environ.get("AMY_NAME", "Amy Chen")
+        amy_email = os.environ.get("AMY_EMAIL", "amy@welink.com.au")
+        identity_injection = (
+            f"\n\nYOUR IDENTITY: You are {amy_name} ({amy_email}), "
+            f"a construction contract administrator. You ALWAYS write as "
+            f"yourself — never as anyone else. If an email was only CC'd to "
+            f"you (not sent directly to you), write a brief acknowledgment "
+            f"and state you will follow up if needed. Never impersonate the "
+            f"primary recipient or sign with someone else's name."
+        )
+
         agent_config = self.agents_config['reply_assistant'].copy()
-        agent_config['backstory'] = agent_config.get('backstory', '') + style_injection + examples_injection
+        agent_config['backstory'] = agent_config.get('backstory', '') + style_injection + examples_injection + identity_injection
 
         return Agent(
             config=agent_config,
@@ -257,6 +268,36 @@ class FactExtractorCrew():
     def extract_facts_task(self) -> Task:
         return Task(
             config=self.tasks_config['extract_facts_task'],
+        )
+
+    @crew
+    def crew(self) -> Crew:
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.sequential,
+            verbose=True,
+        )
+
+
+@CrewBase
+class GrammarPolisherCrew():
+    """Crew for polishing email grammar without changing tone or content."""
+    agents_config = 'config/grammar_polisher_agents.yaml'
+    tasks_config = 'config/grammar_polisher_tasks.yaml'
+
+    @agent
+    def grammar_polisher(self) -> Agent:
+        return Agent(
+            config=self.agents_config['grammar_polisher'],
+            llm=get_llm("fast"),
+            verbose=True
+        )
+
+    @task
+    def polish_grammar_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['polish_grammar_task'],
         )
 
     @crew
