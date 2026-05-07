@@ -11,7 +11,8 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(git push *)"
     ]
   }
 }
