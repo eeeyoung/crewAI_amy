@@ -20,11 +20,17 @@ uv run extract_style
 
 # Train ReplyGeneratorCrew (arg: number of iterations)
 uv run train 3
+
+# View all facts stored in the project knowledge base
+uv run view_facts
+
+# Run the test suite
+uv run pytest
 ```
 
 ## Architecture
 
-The system is a **5-agent pipeline** with a PyQt6 GUI orchestrating everything:
+The system is a **6-agent pipeline** with a PyQt6 GUI orchestrating everything:
 
 ### Pipeline Stages (in order)
 
@@ -32,10 +38,24 @@ The system is a **5-agent pipeline** with a PyQt6 GUI orchestrating everything:
 2. **TriageSingleCrew** — Classifies each email by construction domain (RFI, Submittal, Financial, Safety, Scheduling, etc.) and urgency. Returns JSON: `{category, urgency, extra_info}`.
 3. **ReplyGeneratorCrew** — Generates a professional email reply in Amy Chen's writing style. Has CrewAI memory enabled with Google Generative AI embeddings. Dynamically injects `knowledge/style_blueprint.md` and recent few-shot examples from `knowledge/reply_examples.jsonl` into the agent's backstory.
 4. **WorkflowGeneratorCrew** — Generates a step-by-step task workflow for handling the email, identifying other specialized AI agents to activate.
+5. **FactExtractorCrew** — On user request ("Save Key Facts"), extracts durable project facts (project names, reference numbers, dates, decisions, specs) from an email and stores them in an FTS5 full-text search database. This knowledge is then injected into future reply generation via `search_facts()`.
+
+### Source File Map (`src/amy/`)
+
+| File | Purpose |
+|------|---------|
+| `main.py` | Entry points: `run`, `train`, `extract_style`, `view_facts`, `test` |
+| `crew.py` | All 6 CrewAI crew definitions + `get_llm()` provider routing |
+| `gui_viewer.py` | PyQt6 GUI — TriageWindow, background workers (FilterWorker, TriageWorker, ReplyWorker, WorkflowWorker, RegenerateWorker), dialogs |
+| `fact_store.py` | SQLite FTS5 knowledge base for project facts: `init_db()`, `save_facts()`, `search_facts()`, `list_all_facts()` |
+| `tools/outlook_tool.py` | Outlook COM integration: fetch emails, send replies with inline images, mark read/unread, attachment management |
+| `tools/outlook_reply_tool.py` | Legacy reply tool |
+| `tools/check_email_body.py` | Email body validation utility |
+| `tools/custom_tool.py` | CrewAI custom tool base |
 
 ### GUI (`src/amy/gui_viewer.py`)
 
-PyQt6 window with left panel (original email + filtered view overlay) and right panel (draft reply, category/urgency labels, workflow dialog). Uses background `QThread` workers processing emails through the pipeline concurrently via queues. Keyboard shortcuts: `A`/`D` (prev/next), `R` (regenerate), `W` (workflow), `1` (send), `2`/`3` (skip read/unread), `4` (save as example), `Q` (attachments).
+PyQt6 window with left panel (original email + filtered view overlay) and right panel (draft reply, category/urgency labels, workflow dialog). Uses background `QThread` workers processing emails through the pipeline concurrently via queues. Keyboard shortcuts: `A`/`D` (prev/next), `R` (regenerate), `W` (workflow), `1` (send), `2`/`3` (skip read/unread), `4` (save as example), `5` (save key facts), `Q` (attachments).
 
 ### LLM Provider Toggle
 
@@ -61,10 +81,11 @@ Windows-only (COM via `win32com.client`). Key functions:
 - `historical_emails/` — Historical emails used by StyleLearnerCrew
 - `amy_signature.html` — HTML email signature with logo/images
 - `logo_meritor_welink.png`, `logo_hia_awards.png`, `icon_instagram.png`, `icon_facebook.png` — Signature/email images
+- `fact_store.db` — SQLite FTS5 database storing extracted project facts (created automatically on first run)
 
 ### Key Configuration
 
-- Agents/tasks defined as YAML in `src/amy/config/` (filter, triage, reply, workflow, style_learner)
+- Agents/tasks defined as YAML in `src/amy/config/` (filter, triage, reply, workflow, fact_extractor, style_learner)
 - `agents.yaml` and `tasks.yaml` are **legacy/abandoned** — the active pipeline uses the per-crew config files
 - `pyproject.toml` has `[tool.crewai] type = "crew"` which tells the CLI this is a crew project
 - `.env` contains API keys and model selection — never commit changes to it
