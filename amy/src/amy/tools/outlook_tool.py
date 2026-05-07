@@ -199,6 +199,66 @@ def mark_email_as_unread(entry_id: str) -> bool:
         return False
 
 
+def fetch_outlook_contacts() -> list[dict]:
+    """Fetch contacts from the Global Address List and Contacts folder.
+
+    Returns a list of dicts with 'name' and 'email' keys.
+    Deduplicated by email (case-insensitive).
+    Returns an empty list on failure or non-Windows platforms.
+    """
+    if platform.system() != "Windows":
+        return []
+
+    import win32com.client
+    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    seen: dict[str, dict] = {}
+
+    # Source 1 — Global Address List
+    try:
+        gal = outlook.GetGlobalAddressList()
+        if gal and gal.AddressEntries:
+            count = min(gal.AddressEntries.Count, 2000)
+            for i in range(1, count + 1):
+                try:
+                    entry = gal.AddressEntries.Item(i)
+                    name = getattr(entry, "Name", "") or ""
+                    email = ""
+                    try:
+                        exch = entry.GetExchangeUser()
+                        if exch:
+                            email = exch.PrimarySmtpAddress or ""
+                    except Exception:
+                        pass
+                    if not email:
+                        addr = getattr(entry, "Address", "") or ""
+                        if addr and not addr.upper().startswith("/O="):
+                            email = addr
+                    if name and email and email.lower() not in seen:
+                        seen[email.lower()] = {"name": name, "email": email}
+                except Exception:
+                    continue
+    except Exception:
+        pass
+
+    # Source 2 — Contacts folder (olFolderContacts = 10)
+    try:
+        contacts_folder = outlook.GetDefaultFolder(10)
+        for item in contacts_folder.Items:
+            try:
+                full_name = getattr(item, "FullName", "") or ""
+                for attr in ("Email1Address", "Email2Address", "Email3Address"):
+                    email = getattr(item, attr, "") or ""
+                    if email and email.lower() not in seen:
+                        seen[email.lower()] = {"name": full_name, "email": email}
+            except Exception:
+                continue
+    except Exception:
+        pass
+
+    results = sorted(seen.values(), key=lambda c: c["name"].lower())
+    return results
+
+
 def fetch_attachments_for_email(entry_id: str) -> list:
     """Return a list of attachment metadata dicts for the email identified by entry_id.
     Each dict has keys: index (1-based), filename, size (bytes).
