@@ -18,11 +18,16 @@ from amy.tools.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
     fetch_attachments_for_email, save_attachment, fetch_outlook_contacts,
 )
+from amy.mail_lister import MailListerDialog
 
 
 # =============================================================================
 # Background Workers
 # =============================================================================
+
+# Shared semaphore: only one LLM call across all workers at a time,
+# preventing concurrent API calls from overwhelming the GUI thread.
+_llm_semaphore = threading.Semaphore(1)
 
 class FilterWorker(QThread):
     """Filters emails one-by-one, stripping signatures and boilerplate.
@@ -51,14 +56,15 @@ class FilterWorker(QThread):
             if idx in self.skipped_indices:
                 continue
             try:
-                result = MessageFilterCrew().crew().kickoff(
-                    inputs={
-                        "email_body": email["body"],
-                        "email_subject": email["subject"],
-                        "email_sender": email["sender"],
-                        "email_received_time": email.get("received_time", "Unknown"),
-                    }
-                )
+                with _llm_semaphore:
+                    result = MessageFilterCrew().crew().kickoff(
+                        inputs={
+                            "email_body": email["body"],
+                            "email_subject": email["subject"],
+                            "email_sender": email["sender"],
+                            "email_received_time": email.get("received_time", "Unknown"),
+                        }
+                    )
                 cleaned = result.raw if hasattr(result, 'raw') else str(result)
             except Exception as e:
                 cleaned = f"Error filtering: {str(e)}"
@@ -108,7 +114,8 @@ class TriageWorker(QThread):
             extra_info = ""
 
             try:
-                result = TriageSingleCrew().crew().kickoff(inputs=inputs)
+                with _llm_semaphore:
+                    result = TriageSingleCrew().crew().kickoff(inputs=inputs)
                 raw = result.raw if hasattr(result, 'raw') else str(result)
 
                 try:
@@ -185,7 +192,8 @@ class ReplyWorker(QThread):
             }
 
             try:
-                result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
+                with _llm_semaphore:
+                    result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
                 draft_text = result.raw if hasattr(result, 'raw') else str(result)
             except Exception as e:
                 draft_text = f"Error generating reply: {str(e)}"
@@ -231,7 +239,8 @@ class WorkflowWorker(QThread):
             }
 
             try:
-                result = WorkflowGeneratorCrew().crew().kickoff(inputs=inputs)
+                with _llm_semaphore:
+                    result = WorkflowGeneratorCrew().crew().kickoff(inputs=inputs)
                 workflow_text = result.raw if hasattr(result, 'raw') else str(result)
             except Exception as e:
                 workflow_text = f"Error generating workflow: {str(e)}"
@@ -289,9 +298,10 @@ class RegenerateWorker(QThread):
 
     def _run_filter(self):
         try:
-            result = MessageFilterCrew().crew().kickoff(
-                inputs={"email_body": self.email["body"]}
-            )
+            with _llm_semaphore:
+                result = MessageFilterCrew().crew().kickoff(
+                    inputs={"email_body": self.email["body"]}
+                )
             self.filtered_body = result.raw if hasattr(result, 'raw') else str(result)
         except Exception as e:
             self.filtered_body = f"Error filtering: {str(e)}"
@@ -304,7 +314,8 @@ class RegenerateWorker(QThread):
             "email_content": self.filtered_body,
         }
         try:
-            result = TriageSingleCrew().crew().kickoff(inputs=inputs)
+            with _llm_semaphore:
+                result = TriageSingleCrew().crew().kickoff(inputs=inputs)
             raw = result.raw if hasattr(result, 'raw') else str(result)
             try:
                 cleaned = raw.strip()
@@ -347,7 +358,8 @@ class RegenerateWorker(QThread):
             "amy_email": os.environ.get("AMY_EMAIL", "amy@welink.com.au"),
         }
         try:
-            result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
+            with _llm_semaphore:
+                result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
             draft_text = result.raw if hasattr(result, 'raw') else str(result)
         except Exception as e:
             draft_text = f"Error generating reply: {str(e)}"
@@ -366,9 +378,10 @@ class GrammarPolishWorker(QThread):
     def run(self):
         from amy.crew import GrammarPolisherCrew
         try:
-            result = GrammarPolisherCrew().crew().kickoff(
-                inputs={"draft_text": self.draft_text}
-            )
+            with _llm_semaphore:
+                result = GrammarPolisherCrew().crew().kickoff(
+                    inputs={"draft_text": self.draft_text}
+                )
             polished = result.raw if hasattr(result, 'raw') else str(result)
         except Exception as e:
             polished = f"Error polishing grammar: {str(e)}"
@@ -791,12 +804,12 @@ def _strip_signature(text: str) -> str:
 # =============================================================================
 
 class TriageWindow(QMainWindow):
-    def __init__(self, raw_emails):
+    def __init__(self, raw_emails, processed_entry_ids: set[str] = None):
         super().__init__()
-        # Session blocklist: EntryIDs that were already processed (sent, skipped).
-        # Never re-fetch these during this session even if still unread in Outlook.
-        self.processed_entry_ids: set[str] = set()
+        self.processed_entry_ids = processed_entry_ids if processed_entry_ids is not None else set()
         self.emails = []
+        self.pending_emails: list[dict] = []
+        self.max_active = 5
         self.state = {}
         self.current_index = 0
         self.email_index_counter = 0
@@ -811,14 +824,7 @@ class TriageWindow(QMainWindow):
         self.init_ui()
         self.start_workers()
 
-        # Pre-populate the blocklist with the initial batch so _fetch_and_queue_next
-        # skips them on the first dynamic fetch calls.
-        for email in raw_emails:
-            eid = email.get("entry_id", "")
-            if eid:
-                self.processed_entry_ids.add(eid)
-
-        # Queue the initial batch directly (no Outlook fetch needed — already in hand)
+        # Queue the initial batch directly
         for email in raw_emails:
             idx = self._append_email(email)
             self.filter_queue.put((idx, email))
@@ -850,21 +856,23 @@ class TriageWindow(QMainWindow):
         }
         return idx
 
-    def _fetch_and_queue_next(self):
-        """Dynamically fetch 1 unread email from Outlook, excluding processed EntryIDs."""
-        from amy.tools.outlook_tool import fetch_inbox_emails
-        new_emails = fetch_inbox_emails(
-            count=1, max_body=30000, unread_only=True,
-            exclude_entry_ids=self.processed_entry_ids
+    def _count_active(self):
+        """Return the number of emails currently in the processing pipeline."""
+        return sum(
+            1 for st in self.state.values()
+            if st["send_status"] not in ("sent", "skipped")
         )
-        if new_emails:
-            email = new_emails[0]
-            eid = email.get("entry_id", "")
-            if eid:
-                self.processed_entry_ids.add(eid)
-            idx = self._append_email(email)
-            self.filter_queue.put((idx, email))
-            self.update_ui_state()
+
+    def _all_emails_done(self):
+        """Return True if every email (active + pending) has been processed."""
+        if len(self.emails) == 0 and len(self.pending_emails) == 0:
+            return True
+        if len(self.emails) > 0:
+            return all(
+                st["send_status"] in ("sent", "skipped")
+                for st in self.state.values()
+            ) and len(self.pending_emails) == 0
+        return False
 
     def init_ui(self):
         self.setWindowTitle("Interactive Triage & Auto-Reply Workstation")
@@ -899,8 +907,16 @@ class TriageWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
 
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-        main_layout.addWidget(splitter)
+        self.empty_label = QLabel("No emails in queue.\nPress M to add more.")
+        self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.empty_label.setStyleSheet(
+            "font-size: 22px; color: #A8A8A8; border: none; background: transparent; padding: 60px;"
+        )
+        self.empty_label.setVisible(False)
+        main_layout.addWidget(self.empty_label)
+
+        self.splitter = QSplitter(Qt.Orientation.Horizontal)
+        main_layout.addWidget(self.splitter)
 
         # --- LEFT PANEL (Original Email) ---
         left_panel = QFrame()
@@ -1054,6 +1070,15 @@ class TriageWindow(QMainWindow):
 
         controls_layout.addStretch()
 
+        self.btn_mails = QPushButton("📬 Mails (M)")
+        self.btn_mails.setMinimumWidth(100)
+        self.btn_mails.setMinimumHeight(35)
+        self.btn_mails.setStyleSheet(
+            "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px;"
+        )
+        self.btn_mails.clicked.connect(self.open_mail_lister)
+        controls_layout.addWidget(self.btn_mails)
+
         self.btn_regenerate = QPushButton("🔄 Regenerate (R)")
         self.btn_regenerate.setMinimumWidth(130)
         self.btn_regenerate.setMinimumHeight(35)
@@ -1141,17 +1166,18 @@ class TriageWindow(QMainWindow):
         QShortcut(QKeySequence("5"), self).activated.connect(self.save_key_facts)
         QShortcut(QKeySequence("G"), self).activated.connect(self.grammar_polish)
         QShortcut(QKeySequence("Q"), self).activated.connect(self.open_attachment_dialog)
+        QShortcut(QKeySequence("M"), self).activated.connect(self.open_mail_lister)
 
         right_layout.addLayout(controls_layout)
 
         # Add to splitter
-        splitter.addWidget(left_panel)
-        splitter.addWidget(right_panel)
-        splitter.setSizes([600, 800])
-        splitter.setCollapsible(0, False)
-        splitter.setCollapsible(1, False)
-        splitter.setStretchFactor(0, 3)
-        splitter.setStretchFactor(1, 4)
+        self.splitter.addWidget(left_panel)
+        self.splitter.addWidget(right_panel)
+        self.splitter.setSizes([600, 800])
+        self.splitter.setCollapsible(0, False)
+        self.splitter.setCollapsible(1, False)
+        self.splitter.setStretchFactor(0, 3)
+        self.splitter.setStretchFactor(1, 4)
 
     # -------------------------------------------------------------------------
     # Workers
@@ -1305,7 +1331,19 @@ class TriageWindow(QMainWindow):
         self.update_ui_state()
 
     def update_ui_state(self):
-        self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}")
+        if len(self.emails) == 0 or self._all_emails_done():
+            self.empty_label.setVisible(True)
+            self.splitter.setVisible(False)
+            self.lbl_counter.setText("0 / 0")
+            return
+        self.empty_label.setVisible(False)
+        self.splitter.setVisible(True)
+
+        pending = len(self.pending_emails)
+        if pending > 0:
+            self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}  (+{pending} queued)")
+        else:
+            self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}")
         st = self.state[self.current_index]
 
         # --- Attachment count on button ---
@@ -1600,6 +1638,43 @@ class TriageWindow(QMainWindow):
     def next_email(self):
         self.load_email(self.current_index + 1)
 
+    def open_mail_lister(self):
+        dialog = MailListerDialog(self.processed_entry_ids, parent=self)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            emails = dialog.get_selected_emails()
+            if emails:
+                self.batch_queue_emails(emails)
+
+    def batch_queue_emails(self, emails: list):
+        for email in emails:
+            eid = email.get("entry_id", "")
+            if eid:
+                self.processed_entry_ids.add(eid)
+            self.pending_emails.append(email)
+        self._promote_pending()
+
+    def _promote_pending(self):
+        """Move emails from pending to the active pipeline, up to max_active."""
+        had_emails = len(self.emails) > 0
+
+        while self.pending_emails and self._count_active() < self.max_active:
+            email = self.pending_emails.pop(0)
+            idx = self._append_email(email)
+            self.filter_queue.put((idx, email))
+
+        if not had_emails and self.emails:
+            self.load_email(0)
+        elif self.emails and self.current_index < len(self.emails):
+            st = self.state.get(self.current_index)
+            if st and st["send_status"] in ("sent", "skipped"):
+                for i in range(len(self.emails)):
+                    s = self.state.get(i)
+                    if s and s["send_status"] not in ("sent", "skipped"):
+                        self.load_email(i)
+                        break
+
+        self.update_ui_state()
+
     def regenerate_current(self):
         """Regenerate from the earliest failed stage for the current email."""
         idx = self.current_index
@@ -1695,12 +1770,11 @@ class TriageWindow(QMainWindow):
             self.state[self.current_index]["send_status"] = "sent"
             self.state[self.current_index]["reply_text"] = body
 
-            # Block this EntryID and fetch a fresh replacement from Outlook
+            # Block this EntryID for the session; promote from pending if room
             if entry_id:
                 self.processed_entry_ids.add(entry_id)
-            self._fetch_and_queue_next()
 
-            self.update_ui_state()
+            self._promote_pending()
 
             # Auto jump to next unsent
             for i in range(self.current_index + 1, len(self.emails)):
@@ -1737,12 +1811,11 @@ class TriageWindow(QMainWindow):
         st["reply_text"] = "⏭️ Skipped"
         st["workflow_text"] = st["workflow_text"] or "⏭️ Skipped"
 
-        # Block this EntryID for the session and fetch a fresh replacement
+        # Block this EntryID for the session; promote from pending if room
         if entry_id:
             self.processed_entry_ids.add(entry_id)
-        self._fetch_and_queue_next()
 
-        self.update_ui_state()
+        self._promote_pending()
 
         # Auto jump to next unskipped/unsent email
         for i in range(idx + 1, len(self.emails)):
@@ -1771,12 +1844,12 @@ class TriageWindow(QMainWindow):
 # Entry Point
 # =============================================================================
 
-def show_triage_report(raw_emails):
-    """Launch the GUI with a list of raw email dicts."""
+def show_triage_report(raw_emails, processed_entry_ids: set[str] = None):
+    """Launch the GUI with a list of raw email dicts and optional session blocklist."""
     app = QApplication.instance()
     if not app:
         app = QApplication(sys.argv)
 
-    window = TriageWindow(raw_emails)
+    window = TriageWindow(raw_emails, processed_entry_ids)
     window.show()
     app.exec()
