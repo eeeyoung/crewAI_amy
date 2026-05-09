@@ -7,25 +7,36 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
 def run_triage():
     """
-    Fetch emails directly, then launch the interactive GUI.
-    Triage and reply generation happen in background threads inside the GUI.
+    Launch the MailLister dialog first so the user can select up to 5 emails,
+    then open the interactive GUI for triage and reply generation.
     """
     from amy.fact_store import init_db
     init_db()
 
-    from amy.tools.outlook_tool import fetch_inbox_emails
+    from PyQt6.QtWidgets import QApplication, QDialog
+    import sys
 
-    print("Fetching up to 5 unread emails from Outlook Inbox...")
-    raw_emails = fetch_inbox_emails(count=5, max_body=30000, unread_only=True)
+    app = QApplication.instance()
+    if not app:
+        app = QApplication(sys.argv)
 
-    if not raw_emails:
-        print("No emails found in Inbox. Exiting.")
+    processed_entry_ids: set[str] = set()
+
+    from amy.mail_lister import MailListerDialog
+    dialog = MailListerDialog(processed_entry_ids)
+    if dialog.exec() != QDialog.DialogCode.Accepted:
+        print("No emails selected. Exiting.")
         return
 
-    print(f"Fetched {len(raw_emails)} emails. Launching workstation...")
+    selected_emails = dialog.get_selected_emails()
+    if not selected_emails:
+        print("No emails selected. Exiting.")
+        return
+
+    print(f"Selected {len(selected_emails)} emails. Launching workstation...")
 
     from amy.gui_viewer import show_triage_report
-    show_triage_report(raw_emails)
+    show_triage_report(selected_emails, processed_entry_ids)
 
 
 def run():
