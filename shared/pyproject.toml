@@ -1,0 +1,13 @@
+[project]
+name = "shared-tools"
+version = "0.1.0"
+description = "Shared tools and utilities for CrewAI-based assistants"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai>=1.14.2",
+    "pywin32>=308; sys_platform == 'win32'",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

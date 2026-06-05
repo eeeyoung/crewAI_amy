@@ -10,7 +10,11 @@ dependencies = [
     "google-generativeai>=0.8.6",
     "pyqt6>=6.11.0",
     "pywin32>=308; sys_platform == 'win32'",
+    "shared-tools",
 ]
+
+[tool.uv.sources]
+shared-tools = { workspace = true }
 
 [dependency-groups]
 dev = [

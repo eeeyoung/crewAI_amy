@@ -1,9 +1,11 @@
 [project]
 name = "my-crew-project"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Multi-tool CrewAI workspace"
 requires-python = ">=3.11"
-dependencies = [
-    "crewai>=1.14.2",
-]
+
+[tool.uv.workspace]
+members = ["tools/*", "shared"]
+
+[tool.uv.sources]
+shared-tools = { workspace = true }

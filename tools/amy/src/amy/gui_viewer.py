@@ -14,10 +14,12 @@ from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
 from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
 from amy.fact_store import init_db, search_facts, save_facts
-from amy.tools.outlook_tool import (
+from shared_tools.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
     fetch_attachments_for_email, save_attachment, fetch_outlook_contacts,
 )
+
+_AMY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 from amy.mail_lister import MailListerDialog
 
 
@@ -1245,7 +1247,7 @@ class TriageWindow(QMainWindow):
         # Only inject if it's the raw text from LLM (not already HTML or error)
         if not text.startswith("Error generating"):
             body_html = "".join(f"<p>{line}</p>" if line.strip() else "<br>" for line in text.split("\n"))
-            sig_path = os.path.abspath("knowledge/amy_signature.html")
+            sig_path = os.path.join(_AMY_ROOT, "knowledge/amy_signature.html")
             signature_html = ""
             if os.path.exists(sig_path):
                 with open(sig_path, "r", encoding="utf-8") as f:
@@ -1553,7 +1555,7 @@ class TriageWindow(QMainWindow):
         st = self.state[idx]
         
         os.makedirs("knowledge", exist_ok=True)
-        with open("knowledge/workflow_examples.jsonl", "a", encoding="utf-8") as f:
+        with open(os.path.join(_AMY_ROOT, "knowledge/workflow_examples.jsonl"), "a", encoding="utf-8") as f:
             data = {
                 "email_subject": email["subject"],
                 "category": st["category"],
@@ -1573,7 +1575,7 @@ class TriageWindow(QMainWindow):
         reply_text = self.txt_reply_content.toPlainText() # use plain text to avoid pure HTML styling mess in prompt
         
         os.makedirs("knowledge", exist_ok=True)
-        with open("knowledge/reply_examples.jsonl", "a", encoding="utf-8") as f:
+        with open(os.path.join(_AMY_ROOT, "knowledge/reply_examples.jsonl"), "a", encoding="utf-8") as f:
             data = {
                 "email_subject": email["subject"],
                 "category": st["category"],
@@ -1757,7 +1759,15 @@ class TriageWindow(QMainWindow):
         subject = self.le_reply_subject.text()
         body = self.txt_reply_content.toHtml()
 
-        tool = OutlookSendTool()
+        tool = OutlookSendTool(
+            signature_html_path=os.path.join(_AMY_ROOT, "knowledge/amy_signature.html"),
+            signature_image_specs=[
+                (os.path.join(_AMY_ROOT, "knowledge/logo_meritor_welink.png"), "logo_meritor_welink.png"),
+                (os.path.join(_AMY_ROOT, "knowledge/logo_hia_awards.png"), "logo_hia_awards.png"),
+                (os.path.join(_AMY_ROOT, "knowledge/icon_instagram.png"), "icon_instagram.png"),
+                (os.path.join(_AMY_ROOT, "knowledge/icon_facebook.png"), "icon_facebook.png"),
+            ],
+        )
         result = tool._run(recipient=recipient, subject=subject, body=body, cc=cc_list, is_html=True)
 
         if "successfully sent" in result.lower():

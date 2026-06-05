@@ -63,7 +63,6 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, excl
             sender_email = getattr(message, "SenderEmailAddress", "Unknown")
             if sender_email and sender_email.upper().startswith("/O="):
                 try:
-                    # Using PR_SMTP_ADDRESS property tag
                     sender_email = message.Sender.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
                 except Exception:
                     try:
@@ -71,7 +70,7 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, excl
                         if exch_user: sender_email = exch_user.PrimarySmtpAddress
                     except Exception:
                         pass
-            
+
             # Resolve CC addresses
             cc_list = []
             try:
@@ -107,9 +106,8 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, excl
     return emails
 
 def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
-    import subprocess
     import json
-    
+
     jxa_script = """
     function run(argv) {
         var count = parseInt(argv[0]) || 10;
@@ -126,15 +124,15 @@ def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False, exclud
                 for (var j = 0; j < messages.length; j++) {
                     if (msgs.length >= count) break;
                     var msg = messages[j];
-                    
+
                     if (unreadOnly && msg.isRead && msg.isRead()) {
                         continue;
                     }
-                    
+
                     var sender = msg.sender();
                     var senderName = sender ? (sender.name || "Unknown") : "Unknown";
                     var senderEmail = sender ? (sender.address || "Unknown") : "Unknown";
-                    
+
                     var ccStr = "";
                     try {
                         var ccList = msg.ccRecipients();
@@ -172,7 +170,7 @@ def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False, exclud
         return JSON.stringify(msgs);
     }
     """
-    
+
     try:
         result = subprocess.run(
             ["osascript", "-l", "JavaScript", "-e", jxa_script, str(count), str(max_body), str(unread_only).lower()],
@@ -181,15 +179,16 @@ def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False, exclud
             check=True
         )
         emails = json.loads(result.stdout.strip())
-        
+
         if emails and "error" in emails[0]:
             print(f"JXA script error: {emails[0]['error']}")
             return []
-            
+
         return emails
     except Exception as e:
         print(f"Error fetching emails on macOS: {e}")
         return []
+
 def mark_email_as_read(entry_id: str) -> bool:
     """Mark an Outlook email as read by its EntryID. Returns True on success."""
     if platform.system() != "Windows":
@@ -295,7 +294,6 @@ def fetch_attachments_for_email(entry_id: str) -> list:
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         msg = outlook.GetItemFromID(entry_id)
 
-        # Get the HTML body so we can check if a CID is actually used inline
         html_body = getattr(msg, "HTMLBody", "") or ""
         html_body_lower = html_body.lower()
 
@@ -305,16 +303,14 @@ def fetch_attachments_for_email(entry_id: str) -> list:
         for i in range(1, msg.Attachments.Count + 1):
             att = msg.Attachments.Item(i)
 
-            # Check if this attachment is referenced inline in the HTML body
             try:
                 content_id = att.PropertyAccessor.GetProperty(PR_ATTACH_CONTENT_ID)
                 if content_id and str(content_id).strip():
                     cid = str(content_id).strip()
-                    # Only skip if the CID is actually referenced in the body
                     if f"cid:{cid}".lower() in html_body_lower:
                         continue
             except Exception:
-                pass  # property not set → not inline
+                pass
 
             attachments.append({
                 "index": i,
@@ -354,7 +350,7 @@ class OutlookReadTool(BaseTool):
 
     def _run(self) -> str:
         current_os = platform.system()
-        
+
         if current_os == "Windows":
             return self._run_windows()
         elif current_os == "Darwin":
@@ -366,10 +362,10 @@ class OutlookReadTool(BaseTool):
         try:
             import win32com.client
             outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-            inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
+            inbox = outlook.GetDefaultFolder(6)
             messages = inbox.Items
-            messages.Sort("[ReceivedTime]", True)  # Sort by newest first
-            
+            messages.Sort("[ReceivedTime]", True)
+
             if messages.Count > 0:
                 message = messages.GetFirst()
                 return f"ID: {message.EntryID}\nSender: {message.SenderEmailAddress}\nSubject: {message.Subject}\n\nContent: {message.Body}"
@@ -384,7 +380,6 @@ class OutlookReadTool(BaseTool):
         applescript = """
         tell application "Microsoft Outlook"
             try
-                -- Find all folders named "Inbox" and look for the one with messages
                 set theInboxes to every mail folder whose name is "Inbox"
                 set foundMessage to false
                 repeat with theInbox in theInboxes
@@ -399,7 +394,7 @@ class OutlookReadTool(BaseTool):
                         return "ID: " & msgId & "\\nSender: " & theSender & "\\nSubject: " & theSubject & "\\n\\nContent: " & theContent
                     end if
                 end repeat
-                
+
                 if not foundMessage then
                     return "No messages found in any Inbox."
                 end if
@@ -429,10 +424,10 @@ class OutlookInboxBatchTool(BaseTool):
         import json
         try:
             emails = fetch_inbox_emails(count=10, max_body=500, unread_only=False)
-            
+
             if not emails:
                 return json.dumps({"error": "No messages found in Inbox."})
-                
+
             extracted_emails = []
             for email in emails:
                 extracted_emails.append({
@@ -442,7 +437,7 @@ class OutlookInboxBatchTool(BaseTool):
                     "ReceivedTime": email.get("received_time", "Unknown Date"),
                     "BodySnippet": email.get("body", "")
                 })
-                
+
             return json.dumps(extracted_emails)
         except Exception as e:
             return json.dumps({"error": f"Error accessing Outlook Inbox: {str(e)}"})
@@ -450,73 +445,56 @@ class OutlookInboxBatchTool(BaseTool):
 class OutlookSendTool(BaseTool):
     name: str = "outlook_send_tool"
     description: str = "Sends an email using the Microsoft Outlook application."
+    # Configurable signature — set these when instantiating the tool
+    signature_html_path: str = ""
+    signature_image_specs: list = Field(default_factory=list)  # [(relative_path, content_id), ...]
 
     def _run(self, recipient: str, subject: str, body: str, cc: str = "", is_html: bool = False) -> str:
         current_os = platform.system()
-        
+
         if current_os == "Windows":
             try:
                 import win32com.client
-                import os
                 outlook = win32com.client.Dispatch("Outlook.Application")
                 mail = outlook.CreateItem(0)  # 0 = olMailItem
-                
+
                 mail.To = recipient
                 if cc:
                     mail.CC = cc
                 mail.Subject = subject
-                
+
                 if is_html:
-                    image_files = [
-                        ("knowledge/logo_meritor_welink.png", "logo_meritor_welink.png"),
-                        ("knowledge/logo_hia_awards.png", "logo_hia_awards.png"),
-                        ("knowledge/icon_instagram.png", "icon_instagram.png"),
-                        ("knowledge/icon_facebook.png", "icon_facebook.png")
-                    ]
-                    for img_path, cid in image_files:
+                    for img_path, cid in self.signature_image_specs:
                         if os.path.exists(img_path):
                             abs_img_path = os.path.abspath(img_path)
                             attachment = mail.Attachments.Add(abs_img_path)
-                            # Set PR_ATTACH_CONTENT_ID
                             attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x3712001F", cid)
-                            
-                            # Replace occurrences of absolute path, file URI, and relative path with CID
+
                             file_uri = f"file:///{abs_img_path.replace(chr(92), '/')}"
                             body = body.replace(file_uri, f"cid:{cid}")
                             body = body.replace(abs_img_path, f"cid:{cid}")
                             body = body.replace(img_path, f"cid:{cid}")
-                    
+
                     mail.HTMLBody = body
                 else:
-                    # Convert the plain text draft into basic HTML paragraphs
                     body_html = "".join(f"<p>{line}</p>" if line.strip() else "<br>" for line in body.split("\n"))
-                    
-                    # Check for our custom HTML signature
-                    sig_path = "knowledge/amy_signature.html"
-                    if os.path.exists(sig_path):
+
+                    sig_path = self.signature_html_path
+                    if sig_path and os.path.exists(sig_path):
                         with open(sig_path, "r", encoding="utf-8") as f:
                             signature_html = f.read()
-                        
+
                         mail.HTMLBody = f'<div style="font-family: Calibri, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
-                        
-                        # Attach signature images and set their Content-ID
-                        image_files = [
-                            ("knowledge/logo_meritor_welink.png", "logo_meritor_welink.png"),
-                            ("knowledge/logo_hia_awards.png", "logo_hia_awards.png"),
-                            ("knowledge/icon_instagram.png", "icon_instagram.png"),
-                            ("knowledge/icon_facebook.png", "icon_facebook.png")
-                        ]
-                        for img_path, cid in image_files:
+
+                        for img_path, cid in self.signature_image_specs:
                             if os.path.exists(img_path):
                                 abs_img_path = os.path.abspath(img_path)
                                 attachment = mail.Attachments.Add(abs_img_path)
-                                # Set PR_ATTACH_CONTENT_ID
                                 attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x3712001F", cid)
                     else:
-                        # Fallback to plain text with default outlook signature if html signature is missing
                         _ = mail.GetInspector
                         mail.Body = body + "\n\n" + mail.Body
-                
+
                 mail.Send()
                 return "Email successfully sent."
             except Exception as e:

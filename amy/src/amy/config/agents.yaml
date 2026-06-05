@@ -1,3 +1,0 @@
-# Legacy file — no longer used.
-# All agents are now in their own config files:
-#   filter_agents.yaml, triage_agents.yaml, reply_agents.yaml

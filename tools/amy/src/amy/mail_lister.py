@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont, QShortcut, QKeySequence, QCursor
 
-from amy.tools.outlook_tool import fetch_inbox_emails
+from shared_tools.outlook_tool import fetch_inbox_emails
 
 
 class DragSelectTable(QTableWidget):

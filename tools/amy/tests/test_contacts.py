@@ -271,7 +271,7 @@ class TestFetchOutlookContacts:
 
     def test_returns_list_of_dicts(self, com_mocks):
         with patch.dict(sys.modules, com_mocks):
-            from amy.tools.outlook_tool import fetch_outlook_contacts
+            from shared_tools.outlook_tool import fetch_outlook_contacts
             contacts = fetch_outlook_contacts()
             assert isinstance(contacts, list)
             assert len(contacts) >= 1
@@ -300,14 +300,14 @@ class TestFetchOutlookContacts:
         gal.AddressEntries.Item.side_effect = lambda i: entries[i - 1]
 
         with patch.dict(sys.modules, com_mocks):
-            from amy.tools.outlook_tool import fetch_outlook_contacts
+            from shared_tools.outlook_tool import fetch_outlook_contacts
             contacts = fetch_outlook_contacts()
             emails = [c["email"] for c in contacts]
             assert emails.count("alice@example.com") == 1
 
     def test_results_sorted_by_name(self, com_mocks):
         with patch.dict(sys.modules, com_mocks):
-            from amy.tools.outlook_tool import fetch_outlook_contacts
+            from shared_tools.outlook_tool import fetch_outlook_contacts
             contacts = fetch_outlook_contacts()
             names = [c["name"].lower() for c in contacts]
             assert names == sorted(names)
@@ -327,13 +327,13 @@ class TestFetchOutlookContacts:
         gal.AddressEntries.Item.side_effect = lambda i: entry
 
         with patch.dict(sys.modules, com_mocks):
-            from amy.tools.outlook_tool import fetch_outlook_contacts
+            from shared_tools.outlook_tool import fetch_outlook_contacts
             contacts = fetch_outlook_contacts()
             assert len(contacts) == 0
 
     def test_returns_empty_on_non_windows(self, monkeypatch):
         monkeypatch.setattr(platform, "system", lambda: "Darwin")
-        from amy.tools.outlook_tool import fetch_outlook_contacts
+        from shared_tools.outlook_tool import fetch_outlook_contacts
         contacts = fetch_outlook_contacts()
         assert contacts == []
 
@@ -342,6 +342,6 @@ class TestFetchOutlookContacts:
         namespace.GetGlobalAddressList.side_effect = Exception("GAL unavailable")
 
         with patch.dict(sys.modules, com_mocks):
-            from amy.tools.outlook_tool import fetch_outlook_contacts
+            from shared_tools.outlook_tool import fetch_outlook_contacts
             contacts = fetch_outlook_contacts()
             assert any(c["email"] == "dave@example.com" for c in contacts)

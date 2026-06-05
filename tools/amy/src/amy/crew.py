@@ -1,28 +1,13 @@
-import os
-from crewai import Agent, Crew, Process, Task, LLM
+import os as _os
+from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import DirectoryReadTool
 from pydantic import BaseModel
+from shared_tools.llm_config import get_llm
 
 from amy.fact_store import search_facts
 
-# Toggle provider here: 'gem' for Gemini, 'ds' for DeepSeek
-ACTIVE_PROVIDER = os.environ.get("AI_PROVIDER", "gem").lower()
-
-def get_llm(role="fast"):
-    """
-    Returns the appropriate LLM based on ACTIVE_PROVIDER.
-    'role' can be 'fast' (for standard tasks) or 'smart' (for complex reasoning).
-    """
-    if ACTIVE_PROVIDER == "ds":
-        api_key = os.environ.get("DEEPSEEK_API_KEY")
-        if role == "smart":
-            return LLM(model="deepseek/deepseek-reasoner", api_key=api_key)
-        return LLM(model="deepseek/deepseek-chat", api_key=api_key)
-    else:
-        if role == "smart":
-            return LLM(model="gemini/gemini-2.5-pro")
-        return LLM(model="gemini/gemini-2.5-flash")
+_AMY_ROOT = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..", ".."))
 
 class StyleBlueprint(BaseModel):
     sentence_structure: str
@@ -43,7 +28,7 @@ class StyleLearnerCrew():
             config=self.agents_config['style_analyst'],
             llm=get_llm("smart"),
             verbose=True,
-            tools=[DirectoryReadTool(directory="knowledge/historical_emails")]
+            tools=[DirectoryReadTool(directory=_os.path.join(_AMY_ROOT, "knowledge/historical_emails"))]
         )
 
     @task
@@ -51,7 +36,7 @@ class StyleLearnerCrew():
         return Task(
             config=self.tasks_config['extract_style_blueprint_task'],
             output_pydantic=StyleBlueprint,
-            output_file='knowledge/style_blueprint.md'
+            output_file=_os.path.join(_AMY_ROOT, 'knowledge/style_blueprint.md')
         )
 
     @crew
@@ -149,15 +134,15 @@ class ReplyGeneratorCrew():
     def reply_assistant(self) -> Agent:
         # Dynamically load style blueprint if it exists
         style_injection = ""
-        blueprint_path = "knowledge/style_blueprint.md"
-        if os.path.exists(blueprint_path):
+        blueprint_path = _os.path.join(_AMY_ROOT, "knowledge/style_blueprint.md")
+        if _os.path.exists(blueprint_path):
             with open(blueprint_path, "r", encoding="utf-8") as f:
                 style_injection = f"\n\nYOUR REQUIRED WRITING STYLE BLUEPRINT:\n{f.read()}"
-        
+
         # Dynamically load few-shot reply examples
         examples_injection = ""
-        examples_path = "knowledge/reply_examples.jsonl"
-        if os.path.exists(examples_path):
+        examples_path = _os.path.join(_AMY_ROOT, "knowledge/reply_examples.jsonl")
+        if _os.path.exists(examples_path):
             try:
                 with open(examples_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
@@ -167,8 +152,8 @@ class ReplyGeneratorCrew():
             except Exception:
                 pass
 
-        amy_name = os.environ.get("AMY_NAME", "Amy Chen")
-        amy_email = os.environ.get("AMY_EMAIL", "amy@welink.com.au")
+        amy_name = _os.environ.get("AMY_NAME", "Amy Chen")
+        amy_email = _os.environ.get("AMY_EMAIL", "amy@welink.com.au")
         identity_injection = (
             f"\n\nYOUR IDENTITY: You are {amy_name} ({amy_email}), "
             f"a construction contract administrator. You ALWAYS write as "
@@ -213,8 +198,8 @@ class WorkflowGeneratorCrew():
     def workflow_admin(self) -> Agent:
         # Dynamically load workflow examples if they exist
         examples_injection = ""
-        examples_path = "knowledge/workflow_examples.jsonl"
-        if os.path.exists(examples_path):
+        examples_path = _os.path.join(_AMY_ROOT, "knowledge/workflow_examples.jsonl")
+        if _os.path.exists(examples_path):
             try:
                 with open(examples_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()

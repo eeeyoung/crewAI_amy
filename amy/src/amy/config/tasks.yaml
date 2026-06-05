@@ -1,3 +1,0 @@
-# This file is kept for reference but is no longer used by the active pipeline.
-# Triage is now handled by TriageSingleCrew (inline config in crew.py).
-# Reply is handled by ReplyGeneratorCrew (config in reply_agents.yaml / reply_tasks.yaml).
