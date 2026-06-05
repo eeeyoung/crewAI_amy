@@ -20,10 +20,6 @@ dev = [
 [project.scripts]
 amy = "amy.main:run"
 run_crew = "amy.main:run"
-train = "amy.main:train"
-replay = "amy.main:replay"
-test = "amy.main:test"
-run_with_trigger = "amy.main:run_with_trigger"
 run_triage = "amy.main:run_triage"
 extract_style = "amy.main:extract_style"
 view_facts = "amy.main:view_facts"

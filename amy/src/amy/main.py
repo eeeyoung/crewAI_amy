@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import warnings
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
@@ -55,37 +54,6 @@ def extract_style():
         print("\nSuccess! Style blueprint saved to knowledge/style_blueprint.md")
     except Exception as e:
         print(f"\nError extracting style: {e}")
-
-
-def train():
-    """
-    Run CrewAI's training loop on the ReplyGeneratorCrew.
-    Provide the number of iterations as a command line argument, e.g., 'uv run train 2'.
-    """
-    from amy.crew import ReplyGeneratorCrew
-    n_iterations = 1
-    if len(sys.argv) > 1:
-        try:
-            n_iterations = int(sys.argv[1])
-        except ValueError:
-            pass
-
-    print(f"Starting training loop with {n_iterations} iterations...")
-    try:
-        ReplyGeneratorCrew().crew().train(
-            n_iterations=n_iterations,
-            filename='my_style_training.pkl',
-            inputs={
-                "email_subject": "Test Inquiry",
-                "email_content": "Hi Amy, what is the status of the concrete pour?",
-                "email_category": "RFI",
-                "email_context": "Checking on schedule.",
-                "relevant_facts": "No relevant stored facts found."
-            }
-        )
-        print("\nTraining complete. Saved to my_style_training.pkl")
-    except Exception as e:
-        print(f"\nError during training: {e}")
 
 
 def view_facts():
