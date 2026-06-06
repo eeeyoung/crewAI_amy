@@ -25,6 +25,19 @@ from shared_tools.ipc_bridge import (
 )
 
 _AMAIL_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_KNOWLEDGE_DIR = os.path.join(_AMAIL_ROOT, "knowledge")
+
+def _resolve_signature_images(html: str) -> str:
+    """Replace bare image filenames in signature HTML with file:/// URIs so
+    QTextEdit can find them regardless of the working directory."""
+    for fname in ("logo_meritor_welink.png", "logo_hia_awards.png",
+                  "icon_instagram.png", "icon_facebook.png"):
+        img_path = os.path.join(_KNOWLEDGE_DIR, fname)
+        if os.path.exists(img_path):
+            file_uri = f"file:///{img_path.replace(chr(92), '/')}"
+            html = html.replace(f'src="{fname}"', f'src="{file_uri}"')
+    return html
+
 from amail.mail_lister import MailListerDialog
 
 
@@ -1388,12 +1401,12 @@ class TriageWindow(QMainWindow):
             signature_html = ""
             if os.path.exists(sig_path):
                 with open(sig_path, "r", encoding="utf-8") as f:
-                    signature_html = f.read()
+                    signature_html = _resolve_signature_images(f.read())
             full_html = f'<div style="font-family: Arial, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
             self.state[idx]["reply_text"] = full_html
         else:
             self.state[idx]["reply_text"] = text
-            
+
         self.state[idx]["reply_status"] = "done"
 
         if idx == self.current_index:
@@ -1424,7 +1437,7 @@ class TriageWindow(QMainWindow):
         signature_html = ""
         if os.path.exists(sig_path):
             with open(sig_path, "r", encoding="utf-8") as f:
-                signature_html = f.read()
+                signature_html = _resolve_signature_images(f.read())
         full_html = f'<div style="font-family: Arial, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
 
         self.state[idx]["reply_text"] = full_html

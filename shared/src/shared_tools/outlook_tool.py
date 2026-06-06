@@ -474,6 +474,7 @@ class OutlookSendTool(BaseTool):
                             body = body.replace(file_uri, f"cid:{cid}")
                             body = body.replace(abs_img_path, f"cid:{cid}")
                             body = body.replace(img_path, f"cid:{cid}")
+                            body = body.replace(os.path.basename(img_path), f"cid:{cid}")
 
                     mail.HTMLBody = body
                 else:
@@ -484,13 +485,18 @@ class OutlookSendTool(BaseTool):
                         with open(sig_path, "r", encoding="utf-8") as f:
                             signature_html = f.read()
 
-                        mail.HTMLBody = f'<div style="font-family: Calibri, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
+                        combined_html = f'<div style="font-family: Calibri, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
 
                         for img_path, cid in self.signature_image_specs:
                             if os.path.exists(img_path):
                                 abs_img_path = os.path.abspath(img_path)
                                 attachment = mail.Attachments.Add(abs_img_path)
                                 attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x3712001F", cid)
+                                combined_html = combined_html.replace(abs_img_path, f"cid:{cid}")
+                                combined_html = combined_html.replace(img_path, f"cid:{cid}")
+                                combined_html = combined_html.replace(os.path.basename(img_path), f"cid:{cid}")
+
+                        mail.HTMLBody = combined_html
                     else:
                         _ = mail.GetInspector
                         mail.Body = body + "\n\n" + mail.Body

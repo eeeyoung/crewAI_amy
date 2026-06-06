@@ -1357,6 +1357,18 @@ wheels = [
 name = "lilamy"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "acalendar" },
+    { name = "amail" },
+    { name = "shared-tools" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "acalendar", editable = "tools/acalendar" },
+    { name = "amail", editable = "tools/amail" },
+    { name = "shared-tools", editable = "shared" },
+]
 
 [[package]]
 name = "linkify-it-py"
