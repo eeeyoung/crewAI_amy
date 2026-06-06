@@ -5,9 +5,9 @@ from crewai_tools import DirectoryReadTool
 from pydantic import BaseModel
 from shared_tools.llm_config import get_llm
 
-from amy.fact_store import search_facts
+from amail.fact_store import search_facts
 
-_AMY_ROOT = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..", ".."))
+_AMAIL_ROOT = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..", ".."))
 
 class StyleBlueprint(BaseModel):
     sentence_structure: str
@@ -28,7 +28,7 @@ class StyleLearnerCrew():
             config=self.agents_config['style_analyst'],
             llm=get_llm("smart"),
             verbose=True,
-            tools=[DirectoryReadTool(directory=_os.path.join(_AMY_ROOT, "knowledge/historical_emails"))]
+            tools=[DirectoryReadTool(directory=_os.path.join(_AMAIL_ROOT, "knowledge/historical_emails"))]
         )
 
     @task
@@ -36,7 +36,7 @@ class StyleLearnerCrew():
         return Task(
             config=self.tasks_config['extract_style_blueprint_task'],
             output_pydantic=StyleBlueprint,
-            output_file=_os.path.join(_AMY_ROOT, 'knowledge/style_blueprint.md')
+            output_file=_os.path.join(_AMAIL_ROOT, 'knowledge/style_blueprint.md')
         )
 
     @crew
@@ -134,14 +134,14 @@ class ReplyGeneratorCrew():
     def reply_assistant(self) -> Agent:
         # Dynamically load style blueprint if it exists
         style_injection = ""
-        blueprint_path = _os.path.join(_AMY_ROOT, "knowledge/style_blueprint.md")
+        blueprint_path = _os.path.join(_AMAIL_ROOT, "knowledge/style_blueprint.md")
         if _os.path.exists(blueprint_path):
             with open(blueprint_path, "r", encoding="utf-8") as f:
                 style_injection = f"\n\nYOUR REQUIRED WRITING STYLE BLUEPRINT:\n{f.read()}"
 
         # Dynamically load few-shot reply examples
         examples_injection = ""
-        examples_path = _os.path.join(_AMY_ROOT, "knowledge/reply_examples.jsonl")
+        examples_path = _os.path.join(_AMAIL_ROOT, "knowledge/reply_examples.jsonl")
         if _os.path.exists(examples_path):
             try:
                 with open(examples_path, "r", encoding="utf-8") as f:
@@ -198,7 +198,7 @@ class WorkflowGeneratorCrew():
     def workflow_admin(self) -> Agent:
         # Dynamically load workflow examples if they exist
         examples_injection = ""
-        examples_path = _os.path.join(_AMY_ROOT, "knowledge/workflow_examples.jsonl")
+        examples_path = _os.path.join(_AMAIL_ROOT, "knowledge/workflow_examples.jsonl")
         if _os.path.exists(examples_path):
             try:
                 with open(examples_path, "r", encoding="utf-8") as f:

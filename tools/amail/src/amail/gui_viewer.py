@@ -4,23 +4,28 @@ import queue
 import os
 import re
 import threading
+from pathlib import Path
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QTextEdit, QPushButton, QSplitter, QMessageBox, QFrame,
     QStackedLayout, QDialog, QFileDialog, QScrollArea, QCompleter
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QStringListModel, QSortFilterProxyModel, QRegularExpression
+from PyQt6.QtCore import Qt, QThread, QTimer, pyqtSignal, QStringListModel, QSortFilterProxyModel, QRegularExpression
 from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
-from amy.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
-from amy.fact_store import init_db, search_facts, save_facts
+from amail.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
+from amail.fact_store import init_db, search_facts, save_facts
 from shared_tools.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
     fetch_attachments_for_email, save_attachment, fetch_outlook_contacts,
 )
+from shared_tools.ipc_bridge import (
+    register_app, unregister_app, init_shared_db,
+    push_categorized_email, pull_calendar_events,
+)
 
-_AMY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-from amy.mail_lister import MailListerDialog
+_AMAIL_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+from amail.mail_lister import MailListerDialog
 
 
 # =============================================================================
@@ -81,8 +86,9 @@ class FilterWorker(QThread):
 
 
 class TriageWorker(QThread):
-    """Processes filtered emails one-by-one through the triage agent."""
-    category_ready = pyqtSignal(int, str, str, str)
+    """Processes filtered emails one-by-one through the triage agent.
+    Now also extracts calendar dates as part of triage."""
+    category_ready = pyqtSignal(int, str, str, str, list)
 
     def __init__(self, triage_queue, reply_queue, workflow_queue, skipped_indices, parent=None):
         super().__init__(parent)
@@ -114,6 +120,7 @@ class TriageWorker(QThread):
             category = "Uncategorized"
             urgency = ""
             extra_info = ""
+            dates = []
 
             try:
                 with _llm_semaphore:
@@ -129,6 +136,7 @@ class TriageWorker(QThread):
                     category = parsed.get("category", "Uncategorized")
                     urgency = parsed.get("urgency", "")
                     extra_info = parsed.get("extra_info", "")
+                    dates = parsed.get("dates", [])
                 except (json.JSONDecodeError, AttributeError):
                     category = raw[:100]
                     urgency = ""
@@ -140,9 +148,9 @@ class TriageWorker(QThread):
 
             if idx in self.skipped_indices:
                 continue
-            self.category_ready.emit(idx, category, urgency, extra_info)
-            self.reply_queue.put((idx, email, filtered_body, category, urgency, extra_info))
-            self.workflow_queue.put((idx, email, filtered_body, category, urgency, extra_info))
+            self.category_ready.emit(idx, category, urgency, extra_info, dates)
+            self.reply_queue.put((idx, email, filtered_body, category, urgency, extra_info, dates))
+            self.workflow_queue.put((idx, email, filtered_body, category, urgency, extra_info, dates))
 
     def stop(self):
         self.running = False
@@ -168,7 +176,7 @@ class ReplyWorker(QThread):
             if item is None:
                 break
 
-            idx, email, filtered_body, category, urgency, extra_info = item
+            idx, email, filtered_body, category, urgency, extra_info, _dates = item
             if idx in self.skipped_indices:
                 continue
 
@@ -180,6 +188,22 @@ class ReplyWorker(QThread):
                     for f in facts
                 )
 
+            # Inject relevant calendar context from ACalendar
+            calendar_context = "No calendar data available."
+            try:
+                events = pull_calendar_events()
+                if events:
+                    lines = []
+                    for ev in events[:10]:  # limit to 10 most relevant
+                        start = ev.get("start_date", "TBC")[:10]
+                        lines.append(
+                            f"- {ev['description']}: {start} ({ev.get('date_type', '')})"
+                        )
+                    if lines:
+                        calendar_context = "\n".join(lines)
+            except Exception:
+                pass
+
             inputs = {
                 "email_subject": email["subject"],
                 "email_content": filtered_body,
@@ -187,6 +211,7 @@ class ReplyWorker(QThread):
                 "email_urgency": urgency,
                 "email_context": extra_info,
                 "relevant_facts": facts_text or "No relevant stored facts found.",
+                "relevant_schedule": calendar_context,
                 "email_sender": email["sender"],
                 "email_cc": email.get("cc", ""),
                 "amy_name": os.environ.get("AMY_NAME", "Amy Chen"),
@@ -228,7 +253,7 @@ class WorkflowWorker(QThread):
             if item is None:
                 break
 
-            idx, email, filtered_body, category, urgency, extra_info = item
+            idx, email, filtered_body, category, urgency, extra_info, _dates = item
             if idx in self.skipped_indices:
                 continue
 
@@ -274,7 +299,7 @@ class ContactFetchWorker(QThread):
 class RegenerateWorker(QThread):
     """Re-runs filter, triage, or reply for a single email depending on which stage failed."""
     filter_done = pyqtSignal(int, str)
-    triage_done = pyqtSignal(int, str, str, str)
+    triage_done = pyqtSignal(int, str, str, str, list)
     reply_done = pyqtSignal(int, str)
 
     def __init__(self, idx, email, mode, filtered_body="", category="", urgency="", extra_info="", parent=None):
@@ -315,6 +340,7 @@ class RegenerateWorker(QThread):
             "email_sender": self.email["sender"],
             "email_content": self.filtered_body,
         }
+        dates = []
         try:
             with _llm_semaphore:
                 result = TriageSingleCrew().crew().kickoff(inputs=inputs)
@@ -328,6 +354,7 @@ class RegenerateWorker(QThread):
                 self.category = parsed.get("category", "Uncategorized")
                 self.urgency = parsed.get("urgency", "")
                 self.extra_info = parsed.get("extra_info", "")
+                dates = parsed.get("dates", [])
             except (json.JSONDecodeError, AttributeError):
                 self.category = raw[:100]
                 self.urgency = ""
@@ -336,7 +363,7 @@ class RegenerateWorker(QThread):
             self.category = "Error"
             self.urgency = ""
             self.extra_info = str(e)
-        self.triage_done.emit(self.idx, self.category, self.urgency, self.extra_info)
+        self.triage_done.emit(self.idx, self.category, self.urgency, self.extra_info, dates)
 
     def _run_reply(self):
         facts = search_facts(self.email["subject"], self.filtered_body, self.category)
@@ -378,7 +405,7 @@ class GrammarPolishWorker(QThread):
         self.draft_text = draft_text
 
     def run(self):
-        from amy.crew import GrammarPolisherCrew
+        from amail.crew import GrammarPolisherCrew
         try:
             with _llm_semaphore:
                 result = GrammarPolisherCrew().crew().kickoff(
@@ -826,6 +853,12 @@ class TriageWindow(QMainWindow):
         self.init_ui()
         self.start_workers()
 
+        # Navigation request poll timer (for "Open Email in AMail" from ACalendar)
+        self.nav_poll_timer = QTimer()
+        self.nav_poll_timer.setInterval(3000)
+        self.nav_poll_timer.timeout.connect(self._poll_nav_requests)
+        self.nav_poll_timer.start()
+
         # Queue the initial batch directly
         for email in raw_emails:
             idx = self._append_email(email)
@@ -878,7 +911,8 @@ class TriageWindow(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle("Interactive Triage & Auto-Reply Workstation")
-        self.resize(1200, 800)
+        self.resize(1400, 800)
+        self.setMinimumWidth(1000)
         
         self.setStyleSheet("""
             QMainWindow { background-color: #FFFDE7; }
@@ -923,7 +957,7 @@ class TriageWindow(QMainWindow):
         # --- LEFT PANEL (Original Email) ---
         left_panel = QFrame()
         left_panel.setFrameShape(QFrame.Shape.StyledPanel)
-        left_panel.setMaximumWidth(750)
+        left_panel.setMinimumWidth(280)
         left_layout = QVBoxLayout(left_panel)
         left_layout.setContentsMargins(15, 15, 15, 15)
 
@@ -976,53 +1010,45 @@ class TriageWindow(QMainWindow):
 
         left_layout.addWidget(self.content_container)
 
-        # Attachment button
-        self.btn_attachment = QPushButton("📎 Attachments (Q)")
-        self.btn_attachment.setMinimumHeight(30)
-        self.btn_attachment.setStyleSheet(
-            "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;"
-        )
-        self.btn_attachment.clicked.connect(self.open_attachment_dialog)
-        left_layout.addWidget(self.btn_attachment)
-
-        # --- RIGHT PANEL (Draft Reply) ---
-        right_panel = QFrame()
-        right_panel.setFrameShape(QFrame.Shape.StyledPanel)
-        right_layout = QVBoxLayout(right_panel)
-        right_layout.setContentsMargins(15, 15, 15, 15)
+        # --- MIDDLE PANEL (Draft Reply) ---
+        middle_panel = QFrame()
+        middle_panel.setFrameShape(QFrame.Shape.StyledPanel)
+        reply_layout = QVBoxLayout(middle_panel)
+        reply_layout.setContentsMargins(15, 15, 15, 15)
+        reply_layout.setSpacing(6)
 
         lbl_draft = QLabel("AI Draft Reply")
         lbl_draft.setFont(header_font)
-        right_layout.addWidget(lbl_draft)
+        reply_layout.addWidget(lbl_draft)
 
         # Subject
-        right_layout.addWidget(QLabel("Subject:"))
+        reply_layout.addWidget(QLabel("Subject:"))
         self.le_reply_subject = QLineEdit()
-        right_layout.addWidget(self.le_reply_subject)
+        reply_layout.addWidget(self.le_reply_subject)
 
-        # Triage Info (Category, Urgency, Extra Info)
+        # Triage Info
         self.lbl_category = QLabel("Category: ⏳ Waiting...")
         self.lbl_category.setStyleSheet("color: #174EA6; background-color: #E8F0FE; padding: 6px; border-radius: 4px; font-weight: bold;")
         self.lbl_category.setWordWrap(True)
-        right_layout.addWidget(self.lbl_category)
+        reply_layout.addWidget(self.lbl_category)
 
         self.lbl_urgency = QLabel("Urgency: ⏳ Waiting...")
         self.lbl_urgency.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-weight: bold;")
         self.lbl_urgency.setWordWrap(True)
-        right_layout.addWidget(self.lbl_urgency)
+        reply_layout.addWidget(self.lbl_urgency)
 
         self.lbl_extra_info = QLabel("Extra Info: ⏳ Waiting...")
         self.lbl_extra_info.setStyleSheet("color: #3C4043; background-color: #F8F9FA; padding: 6px; border-radius: 4px; font-style: italic;")
         self.lbl_extra_info.setWordWrap(True)
-        right_layout.addWidget(self.lbl_extra_info)
+        reply_layout.addWidget(self.lbl_extra_info)
 
         self.btn_workflow = QPushButton("📝 View/Edit Workflow (W)")
         self.btn_workflow.clicked.connect(self.open_workflow_dialog)
-        self.btn_workflow.setStyleSheet("margin-top: 10px; margin-bottom: 10px;")
-        right_layout.addWidget(self.btn_workflow)
+        self.btn_workflow.setStyleSheet("margin-top: 4px; margin-bottom: 4px;")
+        reply_layout.addWidget(self.btn_workflow)
 
         # Receiver
-        right_layout.addWidget(QLabel("Receiver:"))
+        reply_layout.addWidget(QLabel("Receiver:"))
         receiver_row = QWidget()
         receiver_layout = QHBoxLayout(receiver_row)
         receiver_layout.setContentsMargins(0, 0, 0, 0)
@@ -1039,122 +1065,187 @@ class TriageWindow(QMainWindow):
         )
         self.btn_clear_receiver.clicked.connect(lambda: self.le_reply_receiver.setText(""))
         receiver_layout.addWidget(self.btn_clear_receiver)
-        right_layout.addWidget(receiver_row)
+        reply_layout.addWidget(receiver_row)
 
         # CC
-        right_layout.addWidget(QLabel("CC:"))
+        reply_layout.addWidget(QLabel("CC:"))
         self.cc_section = CcSection()
-        right_layout.addWidget(self.cc_section)
+        reply_layout.addWidget(self.cc_section)
 
         # Content
-        right_layout.addWidget(QLabel("Content:"))
+        reply_layout.addWidget(QLabel("Content:"))
         self.txt_reply_content = QTextEdit()
         self.txt_reply_content.setMinimumHeight(200)
-        right_layout.addWidget(self.txt_reply_content, stretch=1)
+        reply_layout.addWidget(self.txt_reply_content, stretch=1)
 
-        # --- BOTTOM CONTROLS ---
-        controls_layout = QHBoxLayout()
+        # -- Button column (right side of right panel) --
+        btn_column = QWidget()
+        btn_column.setMinimumWidth(120)
+        btn_column.setStyleSheet("background-color: transparent; border: none;")
+        btn_layout = QVBoxLayout(btn_column)
+        btn_layout.setContentsMargins(0, 0, 0, 0)
+        btn_layout.setSpacing(5)
 
-        self.btn_prev = QPushButton("< Prev (A)")
-        self.btn_prev.setMinimumWidth(100)
-        self.btn_prev.clicked.connect(self.prev_email)
-        controls_layout.addWidget(self.btn_prev)
+        # ── Top group: save / skip ──────────────────────────
 
-        self.lbl_counter = QLabel("0 / 0")
-        self.lbl_counter.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.lbl_counter.setMinimumWidth(100)
-        controls_layout.addWidget(self.lbl_counter)
-
-        self.btn_next = QPushButton("Next > (D)")
-        self.btn_next.setMinimumWidth(100)
-        self.btn_next.clicked.connect(self.next_email)
-        controls_layout.addWidget(self.btn_next)
-
-        controls_layout.addStretch()
-
-        self.btn_mails = QPushButton("📬 Mails (M)")
-        self.btn_mails.setMinimumWidth(100)
-        self.btn_mails.setMinimumHeight(35)
-        self.btn_mails.setStyleSheet(
-            "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px;"
-        )
-        self.btn_mails.clicked.connect(self.open_mail_lister)
-        controls_layout.addWidget(self.btn_mails)
-
-        self.btn_regenerate = QPushButton("🔄 Regenerate (R)")
-        self.btn_regenerate.setMinimumWidth(130)
-        self.btn_regenerate.setMinimumHeight(35)
-        self.btn_regenerate.setStyleSheet(
-            "background-color: #D83B01; color: white; font-weight: bold; border-radius: 4px;"
-        )
-        self.btn_regenerate.clicked.connect(self.regenerate_current)
-        controls_layout.addWidget(self.btn_regenerate)
-
-        self.btn_grammar = QPushButton("Grammar Polish (G)")
-        self.btn_grammar.setMinimumWidth(130)
-        self.btn_grammar.setMinimumHeight(35)
-        self.btn_grammar.setStyleSheet(
-            "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px;"
-        )
-        self.btn_grammar.clicked.connect(self.grammar_polish)
-        controls_layout.addWidget(self.btn_grammar)
-
-        self.btn_send = QPushButton("Send && Mark as Read (1)")
-        self.btn_send.setMinimumWidth(150)
-        self.btn_send.setMinimumHeight(35)
-        self.btn_send.setStyleSheet(
-            "background-color: #0078D4; color: white; font-weight: bold; font-size: 10px; border-radius: 4px;"
-        )
-        self.btn_send.clicked.connect(self.send_email)
-        controls_layout.addWidget(self.btn_send)
-
-        # Stacked Skip buttons (occupy the space of one button)
-        skip_container = QWidget()
-        skip_layout = QVBoxLayout(skip_container)
-        skip_layout.setContentsMargins(0, 0, 0, 0)
-        skip_layout.setSpacing(2)
-
-        self.btn_skip_read = QPushButton("Skip with READ (2)")
-        self.btn_skip_read.setMinimumHeight(16)
-        self.btn_skip_read.setStyleSheet(
-            "background-color: #6B8E23; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
-        )
-        self.btn_skip_read.clicked.connect(self.skip_read)
-        skip_layout.addWidget(self.btn_skip_read)
-
-        self.btn_skip_unread = QPushButton("Skip with UNREAD (3)")
-        self.btn_skip_unread.setMinimumHeight(16)
-        self.btn_skip_unread.setStyleSheet(
-            "background-color: #8B4513; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
-        )
-        self.btn_skip_unread.clicked.connect(self.skip_unread)
-        skip_layout.addWidget(self.btn_skip_unread)
-
-        controls_layout.addWidget(skip_container)
-
-        # Stacked Save buttons
-        save_container = QWidget()
-        save_layout = QVBoxLayout(save_container)
-        save_layout.setContentsMargins(0, 0, 0, 0)
-        save_layout.setSpacing(2)
-
-        self.btn_save_reply = QPushButton("💾 Save as Example (4)")
-        self.btn_save_reply.setMinimumHeight(16)
+        self.btn_save_reply = QPushButton("💾 Save Ex (4)")
+        self.btn_save_reply.setMinimumHeight(34)
         self.btn_save_reply.setStyleSheet(
-            "background-color: #107C10; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
+            "QPushButton { background-color: #107C10; color: white; font-weight: bold; "
+            "border-radius: 4px; border: none; }"
+            "QPushButton:hover { background-color: #0D652D; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
         )
         self.btn_save_reply.clicked.connect(self.save_reply_feedback)
-        save_layout.addWidget(self.btn_save_reply)
+        btn_layout.addWidget(self.btn_save_reply)
 
-        self.btn_save_facts = QPushButton("📋 Save Key Facts (5)")
-        self.btn_save_facts.setMinimumHeight(16)
+        self.btn_save_facts = QPushButton("📋 Facts (5)")
+        self.btn_save_facts.setMinimumHeight(34)
         self.btn_save_facts.setStyleSheet(
-            "background-color: #0F5B8C; color: white; font-weight: bold; border-radius: 3px; font-size: 10px; padding: 2px 8px;"
+            "QPushButton { background-color: #0F5B8C; color: white; font-weight: bold; "
+            "border-radius: 4px; border: none; }"
+            "QPushButton:hover { background-color: #0B456A; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
         )
         self.btn_save_facts.clicked.connect(self.save_key_facts)
-        save_layout.addWidget(self.btn_save_facts)
+        btn_layout.addWidget(self.btn_save_facts)
 
-        controls_layout.addWidget(save_container)
+        self.btn_skip_read = QPushButton("⏭️ Skip+Read (2)")
+        self.btn_skip_read.setMinimumHeight(34)
+        self.btn_skip_read.setStyleSheet(
+            "QPushButton { background-color: #6B8E23; color: white; font-weight: bold; "
+            "border-radius: 4px; border: none; }"
+            "QPushButton:hover { background-color: #557018; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
+        )
+        self.btn_skip_read.clicked.connect(self.skip_read)
+        btn_layout.addWidget(self.btn_skip_read)
+
+        self.btn_skip_unread = QPushButton("⏭️ Skip (3)")
+        self.btn_skip_unread.setMinimumHeight(34)
+        self.btn_skip_unread.setStyleSheet(
+            "QPushButton { background-color: #8B4513; color: white; font-weight: bold; "
+            "border-radius: 4px; border: none; }"
+            "QPushButton:hover { background-color: #6B340E; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
+        )
+        self.btn_skip_unread.clicked.connect(self.skip_unread)
+        btn_layout.addWidget(self.btn_skip_unread)
+
+        # --- Separator ---
+        sep1 = QLabel()
+        sep1.setFixedHeight(1)
+        sep1.setStyleSheet("background-color: #E6DEB1; border: none;")
+        btn_layout.addWidget(sep1)
+
+        # ── Middle group: utility ──────────────────────────
+
+        self.btn_mails = QPushButton("📬 Mails (M)")
+        self.btn_mails.setMinimumHeight(34)
+        self.btn_mails.setStyleSheet(
+            "QPushButton { background-color: #FFF3CD; color: #3E3E3E; font-weight: bold; "
+            "border: 1px solid #E6DEB1; border-radius: 4px; }"
+            "QPushButton:hover { background-color: #FFE8A1; }"
+        )
+        self.btn_mails.clicked.connect(self.open_mail_lister)
+        btn_layout.addWidget(self.btn_mails)
+
+        self.btn_attachment = QPushButton("📎 Attach (Q)")
+        self.btn_attachment.setMinimumHeight(34)
+        self.btn_attachment.setStyleSheet(
+            "QPushButton { background-color: #FFF3CD; color: #3E3E3E; font-weight: bold; "
+            "border: 1px solid #E6DEB1; border-radius: 4px; }"
+            "QPushButton:hover { background-color: #FFE8A1; }"
+        )
+        self.btn_attachment.clicked.connect(self.open_attachment_dialog)
+        btn_layout.addWidget(self.btn_attachment)
+
+        btn_layout.addStretch()
+
+        # --- Separator ---
+        sep2 = QLabel()
+        sep2.setFixedHeight(1)
+        sep2.setStyleSheet("background-color: #E6DEB1; border: none;")
+        btn_layout.addWidget(sep2)
+
+        # ── Bottom group: reply actions (Regen → Polish → Send) ──
+
+        self.btn_regenerate = QPushButton("🔄 Regen (R)")
+        self.btn_regenerate.setMinimumHeight(34)
+        self.btn_regenerate.setStyleSheet(
+            "QPushButton { background-color: #D83B01; color: white; font-weight: bold; "
+            "border-radius: 4px; border: none; }"
+            "QPushButton:hover { background-color: #B02F01; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
+        )
+        self.btn_regenerate.clicked.connect(self.regenerate_current)
+        btn_layout.addWidget(self.btn_regenerate)
+
+        self.btn_grammar = QPushButton("✏️ Polish (G)")
+        self.btn_grammar.setMinimumHeight(34)
+        self.btn_grammar.setStyleSheet(
+            "QPushButton { background-color: #5B5EA6; color: white; font-weight: bold; "
+            "border-radius: 4px; border: none; }"
+            "QPushButton:hover { background-color: #484B8C; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
+        )
+        self.btn_grammar.clicked.connect(self.grammar_polish)
+        btn_layout.addWidget(self.btn_grammar)
+
+        self.btn_send = QPushButton("📨 Send (1)")
+        self.btn_send.setMinimumHeight(42)
+        self.btn_send.setStyleSheet(
+            "QPushButton { background-color: #0078D4; color: white; font-weight: bold; "
+            "font-size: 12px; border-radius: 6px; border: none; }"
+            "QPushButton:hover { background-color: #106EBE; }"
+            "QPushButton:disabled { background-color: #A8A8A8; }"
+        )
+        self.btn_send.clicked.connect(self.send_email)
+        btn_layout.addWidget(self.btn_send)
+
+        # ── Navigation (horizontal, squeezed, counter as text) ──
+
+        nav_frame = QFrame()
+        nav_frame.setStyleSheet(
+            "QFrame { background-color: #FFF9E6; border: 1px solid #E6DEB1; border-radius: 6px; }"
+        )
+        nav_layout = QHBoxLayout(nav_frame)
+        nav_layout.setContentsMargins(2, 2, 2, 2)
+        nav_layout.setSpacing(0)
+
+        self.btn_prev = QPushButton("◀")
+        self.btn_prev.setFixedSize(36, 28)
+        self.btn_prev.setToolTip("Previous (A)")
+        self.btn_prev.setStyleSheet(
+            "QPushButton { background-color: transparent; color: #3E3E3E; font-weight: bold; "
+            "border: none; border-radius: 4px; font-size: 14px; }"
+            "QPushButton:hover { background-color: #FFE8A1; }"
+            "QPushButton:disabled { color: #A8A8A8; }"
+        )
+        self.btn_prev.clicked.connect(self.prev_email)
+        nav_layout.addWidget(self.btn_prev)
+
+        self.lbl_counter = QLabel("0/0")
+        self.lbl_counter.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lbl_counter.setStyleSheet(
+            "font-size: 11px; font-weight: bold; color: #3E3E3E; "
+            "border: none; background: transparent; padding: 0px 4px;"
+        )
+        nav_layout.addWidget(self.lbl_counter)
+
+        self.btn_next = QPushButton("▶")
+        self.btn_next.setFixedSize(36, 28)
+        self.btn_next.setToolTip("Next (D)")
+        self.btn_next.setStyleSheet(
+            "QPushButton { background-color: transparent; color: #3E3E3E; font-weight: bold; "
+            "border: none; border-radius: 4px; font-size: 14px; }"
+            "QPushButton:hover { background-color: #FFE8A1; }"
+            "QPushButton:disabled { color: #A8A8A8; }"
+        )
+        self.btn_next.clicked.connect(self.next_email)
+        nav_layout.addWidget(self.btn_next)
+
+        btn_layout.addWidget(nav_frame)
 
         # --- Keyboard Shortcuts ---
         QShortcut(QKeySequence("A"), self).activated.connect(self.prev_email)
@@ -1170,16 +1261,19 @@ class TriageWindow(QMainWindow):
         QShortcut(QKeySequence("Q"), self).activated.connect(self.open_attachment_dialog)
         QShortcut(QKeySequence("M"), self).activated.connect(self.open_mail_lister)
 
-        right_layout.addLayout(controls_layout)
-
-        # Add to splitter
+        # Three-column splitter: left (email) | middle (reply) | right (buttons)
+        # Ratio 3 : 5 : 1 — initial sizes for 1400px window
+        middle_panel.setMinimumWidth(350)
         self.splitter.addWidget(left_panel)
-        self.splitter.addWidget(right_panel)
-        self.splitter.setSizes([600, 800])
+        self.splitter.addWidget(middle_panel)
+        self.splitter.addWidget(btn_column)
+        self.splitter.setSizes([467, 778, 155])
         self.splitter.setCollapsible(0, False)
         self.splitter.setCollapsible(1, False)
+        self.splitter.setCollapsible(2, False)
         self.splitter.setStretchFactor(0, 3)
-        self.splitter.setStretchFactor(1, 4)
+        self.splitter.setStretchFactor(1, 5)
+        self.splitter.setStretchFactor(2, 1)
 
     # -------------------------------------------------------------------------
     # Workers
@@ -1220,14 +1314,57 @@ class TriageWindow(QMainWindow):
         if idx == self.current_index:
             self.update_ui_state()
 
-    def on_category_ready(self, idx, category, urgency, extra_info):
+    def on_category_ready(self, idx, category, urgency, extra_info, dates=None):
         if idx in self.skipped_indices:
             return
+        if dates is None:
+            dates = []
         self.state[idx]["category"] = category
         self.state[idx]["urgency"] = urgency
         self.state[idx]["extra_info"] = extra_info
+        self.state[idx]["dates"] = dates
         self.state[idx]["category_status"] = "done"
         self.state[idx]["reply_status"] = "generating"
+
+        email = self.emails[idx]
+        filtered_body = self.state[idx].get("filtered_body", email.get("body", ""))
+
+        # Push categorized email to shared DB for ACalendar
+        try:
+            push_categorized_email({
+                "email_entry_id": email.get("entry_id", ""),
+                "email_subject": email.get("subject", ""),
+                "email_sender": email.get("sender", ""),
+                "email_body": filtered_body,
+                "category": category,
+                "urgency": urgency,
+                "extra_info": extra_info,
+            })
+        except Exception:
+            pass  # Non-critical; don't disrupt the triage workflow
+
+        # Push calendar events directly — triage agent now extracts dates
+        if dates:
+            try:
+                from shared_tools.ipc_bridge import push_calendar_events
+                events_to_push = []
+                for d in dates:
+                    events_to_push.append({
+                        "source_email_entry_id": email.get("entry_id", ""),
+                        "source_email_subject": email.get("subject", ""),
+                        "source_email_sender": email.get("sender", ""),
+                        "description": d.get("description", ""),
+                        "date_type": d.get("date_type", "tbd"),
+                        "start_date": d.get("start_date"),
+                        "end_date": d.get("end_date"),
+                        "confidence": d.get("confidence", 0.5),
+                        "project": d.get("project", ""),
+                        "status": "pending",
+                    })
+                if events_to_push:
+                    push_calendar_events(events_to_push)
+            except Exception:
+                pass  # Non-critical
 
         if idx == self.current_index:
             self.update_ui_state()
@@ -1247,7 +1384,7 @@ class TriageWindow(QMainWindow):
         # Only inject if it's the raw text from LLM (not already HTML or error)
         if not text.startswith("Error generating"):
             body_html = "".join(f"<p>{line}</p>" if line.strip() else "<br>" for line in text.split("\n"))
-            sig_path = os.path.join(_AMY_ROOT, "knowledge/amy_signature.html")
+            sig_path = os.path.join(_AMAIL_ROOT, "knowledge/amy_signature.html")
             signature_html = ""
             if os.path.exists(sig_path):
                 with open(sig_path, "r", encoding="utf-8") as f:
@@ -1272,7 +1409,7 @@ class TriageWindow(QMainWindow):
         if idx != self.current_index:
             return
 
-        self.btn_grammar.setText("Grammar Polish (G)")
+        self.btn_grammar.setText("✏️ Polish (G)")
         self.btn_grammar.setEnabled(True)
 
         if polished_text.startswith("Error polishing"):
@@ -1336,16 +1473,16 @@ class TriageWindow(QMainWindow):
         if len(self.emails) == 0 or self._all_emails_done():
             self.empty_label.setVisible(True)
             self.splitter.setVisible(False)
-            self.lbl_counter.setText("0 / 0")
+            self.lbl_counter.setText("0/0")
             return
         self.empty_label.setVisible(False)
         self.splitter.setVisible(True)
 
         pending = len(self.pending_emails)
         if pending > 0:
-            self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}  (+{pending} queued)")
+            self.lbl_counter.setText(f"{self.current_index + 1}/{len(self.emails)}+{pending}")
         else:
-            self.lbl_counter.setText(f"{self.current_index + 1} / {len(self.emails)}")
+            self.lbl_counter.setText(f"{self.current_index + 1}/{len(self.emails)}")
         st = self.state[self.current_index]
 
         # --- Attachment count on button ---
@@ -1357,12 +1494,12 @@ class TriageWindow(QMainWindow):
                 st["attachment_count"] = 0
         att_n = st["attachment_count"]
         if att_n > 0:
-            self.btn_attachment.setText(f"📎 Attachments ({att_n}) (Q)")
+            self.btn_attachment.setText(f"📎 Attach ({att_n})")
             self.btn_attachment.setStyleSheet(
                 "background-color: #5B5EA6; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;"
             )
         else:
-            self.btn_attachment.setText("📎 Attachments (Q)")
+            self.btn_attachment.setText("📎 Attach (Q)")
             self.btn_attachment.setStyleSheet(
                 "background-color: #9E9E9E; color: white; font-weight: bold; border-radius: 4px; padding: 4px 12px;"
             )
@@ -1433,7 +1570,7 @@ class TriageWindow(QMainWindow):
             self.btn_clear_receiver.setEnabled(False)
             self.cc_section.setEnabled(False)
             self.le_reply_subject.setEnabled(False)
-            self.btn_send.setText("Skipped")
+            self.btn_send.setText("⏭️ Skipped")
             self.btn_send.setStyleSheet(
                 "background-color: #6B8E23; color: white; font-weight: bold; border-radius: 4px;"
             )
@@ -1451,7 +1588,7 @@ class TriageWindow(QMainWindow):
             self.btn_clear_receiver.setEnabled(False)
             self.cc_section.setEnabled(False)
             self.le_reply_subject.setEnabled(False)
-            self.btn_send.setText("Already Sent")
+            self.btn_send.setText("📨 Sent")
             self.btn_send.setStyleSheet(
                 "background-color: #888888; color: white; font-weight: bold; border-radius: 4px;"
             )
@@ -1472,7 +1609,7 @@ class TriageWindow(QMainWindow):
             self.btn_clear_receiver.setEnabled(True)
             self.cc_section.setEnabled(True)
             self.le_reply_subject.setEnabled(True)
-            self.btn_send.setText("Send && Mark as Read (1)")
+            self.btn_send.setText("📨 Send (1)")
             self.btn_send.setStyleSheet(
                 "background-color: #0078D4; color: white; font-weight: bold; border-radius: 4px;"
             )
@@ -1555,7 +1692,7 @@ class TriageWindow(QMainWindow):
         st = self.state[idx]
         
         os.makedirs("knowledge", exist_ok=True)
-        with open(os.path.join(_AMY_ROOT, "knowledge/workflow_examples.jsonl"), "a", encoding="utf-8") as f:
+        with open(os.path.join(_AMAIL_ROOT, "knowledge/workflow_examples.jsonl"), "a", encoding="utf-8") as f:
             data = {
                 "email_subject": email["subject"],
                 "category": st["category"],
@@ -1575,7 +1712,7 @@ class TriageWindow(QMainWindow):
         reply_text = self.txt_reply_content.toPlainText() # use plain text to avoid pure HTML styling mess in prompt
         
         os.makedirs("knowledge", exist_ok=True)
-        with open(os.path.join(_AMY_ROOT, "knowledge/reply_examples.jsonl"), "a", encoding="utf-8") as f:
+        with open(os.path.join(_AMAIL_ROOT, "knowledge/reply_examples.jsonl"), "a", encoding="utf-8") as f:
             data = {
                 "email_subject": email["subject"],
                 "category": st["category"],
@@ -1760,12 +1897,12 @@ class TriageWindow(QMainWindow):
         body = self.txt_reply_content.toHtml()
 
         tool = OutlookSendTool(
-            signature_html_path=os.path.join(_AMY_ROOT, "knowledge/amy_signature.html"),
+            signature_html_path=os.path.join(_AMAIL_ROOT, "knowledge/amy_signature.html"),
             signature_image_specs=[
-                (os.path.join(_AMY_ROOT, "knowledge/logo_meritor_welink.png"), "logo_meritor_welink.png"),
-                (os.path.join(_AMY_ROOT, "knowledge/logo_hia_awards.png"), "logo_hia_awards.png"),
-                (os.path.join(_AMY_ROOT, "knowledge/icon_instagram.png"), "icon_instagram.png"),
-                (os.path.join(_AMY_ROOT, "knowledge/icon_facebook.png"), "icon_facebook.png"),
+                (os.path.join(_AMAIL_ROOT, "knowledge/logo_meritor_welink.png"), "logo_meritor_welink.png"),
+                (os.path.join(_AMAIL_ROOT, "knowledge/logo_hia_awards.png"), "logo_hia_awards.png"),
+                (os.path.join(_AMAIL_ROOT, "knowledge/icon_instagram.png"), "icon_instagram.png"),
+                (os.path.join(_AMAIL_ROOT, "knowledge/icon_facebook.png"), "icon_facebook.png"),
             ],
         )
         result = tool._run(recipient=recipient, subject=subject, body=body, cc=cc_list, is_html=True)
@@ -1841,7 +1978,33 @@ class TriageWindow(QMainWindow):
     def skip_unread(self):
         self._skip_current(mark_read=False)
 
+    def _poll_nav_requests(self):
+        """Check if ACalendar has requested navigation to a specific email."""
+        from pathlib import Path
+        nav_path = Path.home() / ".crewai" / "nav_request.json"
+        if not nav_path.exists():
+            return
+        try:
+            with open(nav_path, "r") as f:
+                request = json.load(f)
+            target_entry_id = request.get("target_entry_id")
+            if not target_entry_id:
+                return
+            for i, email in enumerate(self.emails):
+                if email.get("entry_id") == target_entry_id:
+                    self.load_email(i)
+                    self.activateWindow()
+                    self.raise_()
+                    break
+            nav_path.unlink(missing_ok=True)
+        except Exception:
+            try:
+                nav_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+
     def closeEvent(self, event):
+        self.nav_poll_timer.stop()
         for worker_name in ('filter_worker', 'triage_worker', 'reply_worker', 'contact_worker'):
             worker = getattr(self, worker_name, None)
             if worker:
@@ -1860,6 +2023,12 @@ def show_triage_report(raw_emails, processed_entry_ids: set[str] = None):
     if not app:
         app = QApplication(sys.argv)
 
+    # Register with IPC bridge so ACalendar can detect AMail
+    init_shared_db()
+    register_app("amail")
+
     window = TriageWindow(raw_emails, processed_entry_ids)
     window.show()
     app.exec()
+
+    unregister_app("amail")

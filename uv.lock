@@ -8,9 +8,31 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "amy",
-    "my-crew-project",
+    "acalendar",
+    "amail",
+    "lilamy",
     "shared-tools",
+]
+
+[[package]]
+name = "acalendar"
+version = "0.1.0"
+source = { editable = "tools/acalendar" }
+dependencies = [
+    { name = "crewai", extra = ["google-genai", "tools"] },
+    { name = "google-generativeai" },
+    { name = "pyqt6" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+    { name = "shared-tools" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "crewai", extras = ["google-genai", "tools"], specifier = "==1.14.2" },
+    { name = "google-generativeai", specifier = ">=0.8.6" },
+    { name = "pyqt6", specifier = ">=6.11.0" },
+    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = ">=308" },
+    { name = "shared-tools", editable = "shared" },
 ]
 
 [[package]]
@@ -134,9 +156,9 @@ wheels = [
 ]
 
 [[package]]
-name = "amy"
+name = "amail"
 version = "0.1.0"
-source = { editable = "tools/amy" }
+source = { editable = "tools/amail" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "crewai", extra = ["google-genai", "tools"] },
@@ -1332,6 +1354,11 @@ wheels = [
 ]
 
 [[package]]
+name = "lilamy"
+version = "0.1.0"
+source = { virtual = "." }
+
+[[package]]
 name = "linkify-it-py"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1665,11 +1692,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/3d/a3/cc409ba012c83ca024a308516703cf339bdc4b696195644a7215a5164a24/multidict-6.7.1-cp313-cp313t-win_arm64.whl", hash = "sha256:5a37ca18e360377cfda1d62f5f382ff41f2b8c4ccb329ed974cc2e1643440118", size = 45573, upload-time = "2026-01-26T02:45:09.349Z" },
     { url = "https://files.pythonhosted.org/packages/81/08/7036c080d7117f28a4af526d794aab6a84463126db031b007717c1a6676e/multidict-6.7.1-py3-none-any.whl", hash = "sha256:55d97cc6dae627efa6a6e548885712d4864b81110ac76fa4e534c03819fa4a56", size = 12319, upload-time = "2026-01-26T02:46:44.004Z" },
 ]
-
-[[package]]
-name = "my-crew-project"
-version = "0.1.0"
-source = { virtual = "." }
 
 [[package]]
 name = "numpy"

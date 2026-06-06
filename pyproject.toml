@@ -1,7 +1,7 @@
 [project]
-name = "my-crew-project"
+name = "lilamy"
 version = "0.1.0"
-description = "Multi-tool CrewAI workspace"
+description = "lilAmy — multi-agent desktop workspace"
 requires-python = ">=3.11"
 
 [tool.uv.workspace]

@@ -9,7 +9,7 @@ def run_triage():
     Launch the MailLister dialog first so the user can select up to 5 emails,
     then open the interactive GUI for triage and reply generation.
     """
-    from amy.fact_store import init_db
+    from amail.fact_store import init_db
     init_db()
 
     from PyQt6.QtWidgets import QApplication, QDialog
@@ -21,7 +21,7 @@ def run_triage():
 
     processed_entry_ids: set[str] = set()
 
-    from amy.mail_lister import MailListerDialog
+    from amail.mail_lister import MailListerDialog
     dialog = MailListerDialog(processed_entry_ids)
     if dialog.exec() != QDialog.DialogCode.Accepted:
         print("No emails selected. Exiting.")
@@ -34,7 +34,7 @@ def run_triage():
 
     print(f"Selected {len(selected_emails)} emails. Launching workstation...")
 
-    from amy.gui_viewer import show_triage_report
+    from amail.gui_viewer import show_triage_report
     show_triage_report(selected_emails, processed_entry_ids)
 
 
@@ -47,7 +47,7 @@ def extract_style():
     Run the StyleLearnerCrew to extract writing style from the historical_emails folder.
     This generates the style_blueprint.md file.
     """
-    from amy.crew import StyleLearnerCrew
+    from amail.crew import StyleLearnerCrew
     print("Extracting style blueprint from historical emails...")
     try:
         StyleLearnerCrew().crew().kickoff()
@@ -58,7 +58,7 @@ def extract_style():
 
 def view_facts():
     """Print all facts in the knowledge store."""
-    from amy.fact_store import init_db, list_all_facts
+    from amail.fact_store import init_db, list_all_facts
     init_db()
     facts = list_all_facts()
     if not facts:

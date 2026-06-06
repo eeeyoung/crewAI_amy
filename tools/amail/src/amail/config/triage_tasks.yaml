@@ -1,0 +1,41 @@
+triage_single_email_task:
+  description: >
+    Analyze the following email and classify it:
+    Subject: {email_subject}
+    Sender: {email_sender}
+    Content: {email_content}
+
+    Categorize the email based on:
+    a. Urgency (Does it need a response ASAP?)
+    b. Actionability (Is it an assignment requiring extra work?)
+    c. Pure Text (Can it be replied to directly?)
+    d. Business vs. Personal
+    e. Construction Domain (RFIs, Submittals/Approvals, Financial/Invoicing, Scheduling/Logistics, Safety & Compliance, etc.)
+
+    Also scan for ANY date references related to construction activities, deadlines, meetings,
+    or milestones. Classify each as:
+    - "exact": A specific calendar date and/or time (e.g., "June 15th at 2pm", "15/06/2026")
+    - "approximate": An imprecise date (e.g., "around mid-July", "early August")
+    - "range": A span between two dates (e.g., "between June 10-15", "week of the 20th")
+    - "deadline": A due date (e.g., "due by Friday", "must be submitted before 30/6")
+    - "tbd": Date explicitly stated as unconfirmed (e.g., "TBC", "to be confirmed", "TBD")
+
+    For each date found: extract a short description, the date type, the date(s) as ISO strings,
+    a time-of-day hint if mentioned (e.g., "morning", "14:00"), a confidence score (0.0-1.0),
+    and the project/job name when present in context.
+
+    RELATIVE DATES: Resolve "next Tuesday" or "in 2 weeks" to actual calendar dates.
+
+    Return ONLY a JSON object with these keys:
+    - "category": string
+    - "urgency": string
+    - "extra_info": string (additional context)
+    - "dates": array of date objects, each with: description, date_type, start_date (ISO or null),
+      end_date (ISO or null), time_of_day (string or null), confidence (float), project (string or null).
+      If no dates are found, return an empty array [].
+  expected_output: >
+    A JSON object like:
+    {"category": "Scheduling", "urgency": "High", "extra_info": "Site walk-through scheduled",
+     "dates": [{"description": "Site walk-through", "date_type": "exact", "start_date": "2026-06-15",
+     "end_date": null, "time_of_day": "14:00", "confidence": 0.95, "project": "ARCO"}]}
+  agent: triage_analyst

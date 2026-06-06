@@ -5,38 +5,38 @@ import pytest
 
 class TestGetLlm:
     def test_default_provider_is_gemini(self, monkeypatch):
-        monkeypatch.setattr("amy.crew.ACTIVE_PROVIDER", "gem")
-        from amy.crew import get_llm
+        monkeypatch.setattr("amail.crew.ACTIVE_PROVIDER", "gem")
+        from amail.crew import get_llm
         llm = get_llm("fast")
         assert "flash" in str(llm.model).lower()
 
     def test_gemini_fast_returns_flash(self, monkeypatch):
-        monkeypatch.setattr("amy.crew.ACTIVE_PROVIDER", "gem")
-        from amy.crew import get_llm
+        monkeypatch.setattr("amail.crew.ACTIVE_PROVIDER", "gem")
+        from amail.crew import get_llm
         llm = get_llm("fast")
         assert "flash" in str(llm.model).lower()
 
     def test_gemini_smart_returns_pro(self, monkeypatch):
-        monkeypatch.setattr("amy.crew.ACTIVE_PROVIDER", "gem")
-        from amy.crew import get_llm
+        monkeypatch.setattr("amail.crew.ACTIVE_PROVIDER", "gem")
+        from amail.crew import get_llm
         llm = get_llm("smart")
         assert "pro" in str(llm.model).lower()
 
     def test_deepseek_fast_returns_chat(self, monkeypatch):
-        monkeypatch.setattr("amy.crew.ACTIVE_PROVIDER", "ds")
-        from amy.crew import get_llm
+        monkeypatch.setattr("amail.crew.ACTIVE_PROVIDER", "ds")
+        from amail.crew import get_llm
         llm = get_llm("fast")
         assert "chat" in str(llm.model).lower()
 
     def test_deepseek_smart_returns_reasoner(self, monkeypatch):
-        monkeypatch.setattr("amy.crew.ACTIVE_PROVIDER", "ds")
-        from amy.crew import get_llm
+        monkeypatch.setattr("amail.crew.ACTIVE_PROVIDER", "ds")
+        from amail.crew import get_llm
         llm = get_llm("smart")
         assert "reasoner" in str(llm.model).lower()
 
     def test_unknown_role_defaults_to_fast(self, monkeypatch):
-        monkeypatch.setattr("amy.crew.ACTIVE_PROVIDER", "gem")
-        from amy.crew import get_llm
+        monkeypatch.setattr("amail.crew.ACTIVE_PROVIDER", "gem")
+        from amail.crew import get_llm
         llm = get_llm("unknown_role")
         assert "flash" in str(llm.model).lower()
 

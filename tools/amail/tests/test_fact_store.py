@@ -2,7 +2,7 @@ import sqlite3
 
 import pytest
 
-import amy.fact_store as fs
+import amail.fact_store as fs
 
 
 class TestInitDb:

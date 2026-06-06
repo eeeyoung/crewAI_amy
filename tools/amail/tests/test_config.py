@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 import pytest
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "src" / "amy" / "config"
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "src" / "amail" / "config"
 
 # These are documented as legacy/abandoned — they contain only comments.
 LEGACY_FILES = {"agents.yaml", "tasks.yaml"}

@@ -17,7 +17,7 @@ def qapp():
 
 class TestContactAutocomplete:
     def test_set_contacts_populates_model(self, qapp):
-        from amy.gui_viewer import ContactAutocomplete
+        from amail.gui_viewer import ContactAutocomplete
         widget = ContactAutocomplete()
         widget.set_contacts([
             {"name": "Alice", "email": "alice@example.com"},
@@ -27,27 +27,27 @@ class TestContactAutocomplete:
         assert model.rowCount() == 2
 
     def test_get_text_returns_trimmed(self, qapp):
-        from amy.gui_viewer import ContactAutocomplete
+        from amail.gui_viewer import ContactAutocomplete
         widget = ContactAutocomplete()
         widget.setText("  test@example.com  ")
         assert widget.get_text() == "test@example.com"
 
     def test_free_text_accepted(self, qapp):
-        from amy.gui_viewer import ContactAutocomplete
+        from amail.gui_viewer import ContactAutocomplete
         widget = ContactAutocomplete()
         widget.set_contacts([{"name": "Alice", "email": "alice@example.com"}])
         widget.setText("someone@external.com")
         assert widget.get_text() == "someone@external.com"
 
     def test_empty_contacts_does_not_crash(self, qapp):
-        from amy.gui_viewer import ContactAutocomplete
+        from amail.gui_viewer import ContactAutocomplete
         widget = ContactAutocomplete()
         widget.set_contacts([])
         widget.setText("anything")
         assert widget.get_text() == "anything"
 
     def test_can_set_and_clear_text(self, qapp):
-        from amy.gui_viewer import ContactAutocomplete
+        from amail.gui_viewer import ContactAutocomplete
         widget = ContactAutocomplete()
         widget.setText("hello")
         assert widget.get_text() == "hello"
@@ -57,25 +57,25 @@ class TestContactAutocomplete:
 
 class TestCcRecipientRow:
     def test_initial_state(self, qapp):
-        from amy.gui_viewer import CcRecipientRow
+        from amail.gui_viewer import CcRecipientRow
         row = CcRecipientRow()
         assert row.get_text() == ""
 
     def test_set_and_get_text(self, qapp):
-        from amy.gui_viewer import CcRecipientRow
+        from amail.gui_viewer import CcRecipientRow
         row = CcRecipientRow()
         row.set_text("  Alice <alice@x.com>  ")
         assert row.get_text() == "Alice <alice@x.com>"
 
     def test_set_contacts_propagates(self, qapp):
-        from amy.gui_viewer import CcRecipientRow
+        from amail.gui_viewer import CcRecipientRow
         row = CcRecipientRow()
         row.set_contacts([{"name": "Test", "email": "t@x.com"}])
         model = row.le_cc._completer.model()
         assert model.rowCount() == 1
 
     def test_remove_signal_emitted(self, qapp):
-        from amy.gui_viewer import CcRecipientRow
+        from amail.gui_viewer import CcRecipientRow
         row = CcRecipientRow()
         removed = []
         row.removed.connect(lambda w: removed.append(w))
@@ -84,7 +84,7 @@ class TestCcRecipientRow:
         assert removed[0] is row
 
     def test_setEnabled_propagates(self, qapp):
-        from amy.gui_viewer import CcRecipientRow
+        from amail.gui_viewer import CcRecipientRow
         row = CcRecipientRow()
         row.setEnabled(False)
         assert not row.le_cc.isEnabled()
@@ -96,7 +96,7 @@ class TestCcRecipientRow:
         assert row.btn_remove.isEnabled()
 
     def test_clear_button_clears_text(self, qapp):
-        from amy.gui_viewer import CcRecipientRow
+        from amail.gui_viewer import CcRecipientRow
         row = CcRecipientRow()
         row.set_text("alice@example.com")
         row.btn_clear.click()
@@ -105,12 +105,12 @@ class TestCcRecipientRow:
 
 class TestCcSection:
     def test_empty_section_has_no_rows(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         assert section.get_cc_string() == ""
 
     def test_set_from_cc_string_parses_recipients(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("Alice <a@x.com>; Bob <b@x.com>")
         rows = section.get_rows()
@@ -119,39 +119,39 @@ class TestCcSection:
         assert rows[1].get_text() == "Bob <b@x.com>"
 
     def test_get_cc_string_reconstructs(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("Alice <a@x.com>; Bob <b@x.com>")
         assert section.get_cc_string() == "Alice <a@x.com>; Bob <b@x.com>"
 
     def test_skips_empty_entries_in_reconstruction(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("Alice <a@x.com>; Bob <b@x.com>")
         section.get_rows()[1].le_cc.setText("")
         assert section.get_cc_string() == "Alice <a@x.com>"
 
     def test_empty_string_creates_no_rows(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("")
         assert section.get_rows() == []
 
     def test_whitespace_only_creates_no_rows(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("   ")
         assert section.get_rows() == []
 
     def test_add_row_via_button(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.add_row(initial_text="new@x.com")
         assert len(section.get_rows()) == 1
         assert section.get_rows()[0].get_text() == "new@x.com"
 
     def test_remove_row(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("A <a@x.com>; B <b@x.com>")
         row = section.get_rows()[0]
@@ -160,7 +160,7 @@ class TestCcSection:
         assert section.get_rows()[0].get_text() == "B <b@x.com>"
 
     def test_clear_rows(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("A <a@x.com>; B <b@x.com>; C <c@x.com>")
         section.clear_rows()
@@ -168,7 +168,7 @@ class TestCcSection:
         assert section.get_cc_string() == ""
 
     def test_set_contacts_propagates_to_existing_rows(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.add_row(initial_text="alice@x.com")
         section.set_contacts([{"name": "Alice", "email": "alice@x.com"}])
@@ -177,7 +177,7 @@ class TestCcSection:
             assert model.rowCount() == 1
 
     def test_set_contacts_stored_for_new_rows(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_contacts([{"name": "Test", "email": "t@x.com"}])
         section.add_row()
@@ -185,7 +185,7 @@ class TestCcSection:
         assert model.rowCount() == 1
 
     def test_setEnabled_propagates(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.add_row(initial_text="a@x.com")
         section.setEnabled(False)
@@ -199,7 +199,7 @@ class TestCcSection:
         assert section.btn_add.isEnabled()
 
     def test_multiple_rows_independent(self, qapp):
-        from amy.gui_viewer import CcSection
+        from amail.gui_viewer import CcSection
         section = CcSection()
         section.set_from_cc_string("A <a@x.com>; B <b@x.com>")
         section.get_rows()[0].le_cc.setText("Changed <c@x.com>")

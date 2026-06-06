@@ -501,3 +501,164 @@ class OutlookSendTool(BaseTool):
                 return f"Error sending email: {str(e)}"
         else:
             return f"This tool is currently only supported on Windows. Current OS: {current_os}"
+
+
+# =============================================================================
+# Outlook Calendar Functions
+# =============================================================================
+
+def create_calendar_event(
+    subject: str,
+    start_date: str,
+    end_date: str,
+    body: str = "",
+    location: str = "",
+    reminder_minutes: int = 15,
+    categories: list[str] | None = None,
+) -> str:
+    """Create an Outlook calendar appointment.
+    Returns the EntryID string of the created event, or an error string starting with 'Error:'.
+    start_date and end_date should be ISO format strings, e.g. "2026-06-15T14:00:00".
+    """
+    if platform.system() != "Windows":
+        return "Error: Calendar operations are only supported on Windows."
+
+    try:
+        import win32com.client
+        from datetime import datetime
+
+        outlook = win32com.client.Dispatch("Outlook.Application")
+        appointment = outlook.CreateItem(1)  # 1 = olAppointmentItem
+
+        appointment.Subject = subject
+        appointment.Start = datetime.fromisoformat(start_date)
+        appointment.End = datetime.fromisoformat(end_date)
+        appointment.Location = location
+        appointment.Body = body
+        appointment.ReminderMinutesBeforeStart = reminder_minutes
+
+        if categories:
+            appointment.Categories = ", ".join(categories)
+
+        appointment.Save()
+        return str(appointment.EntryID)
+
+    except ImportError:
+        return "Error: pywin32 not installed. Please install it to use this tool on Windows."
+    except Exception as e:
+        print(f"Error creating calendar event: {e}")
+        return f"Error: {e}"
+
+
+def get_calendar_events(start_date: str, end_date: str) -> list[dict]:
+    """Fetch Outlook calendar events in a date range.
+    start_date and end_date are ISO format strings, e.g. "2026-06-01T00:00:00".
+    Returns a list of event dicts with keys: entry_id, subject, start, end,
+    location, body, categories, duration_minutes, all_day_event, busy_status.
+    """
+    if platform.system() != "Windows":
+        return []
+
+    try:
+        import win32com.client
+        from datetime import datetime
+
+        dt_start = datetime.fromisoformat(start_date)
+        dt_end = datetime.fromisoformat(end_date)
+
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        calendar = outlook.GetDefaultFolder(9)  # 9 = olFolderCalendar
+        items = calendar.Items
+        items.Sort("[Start]")
+        items.IncludeRecurrences = True
+
+        events = []
+        for item in items:
+            try:
+                if item.Class != 44:  # 44 = olAppointment
+                    continue
+
+                item_start = getattr(item, "Start", None)
+                item_end = getattr(item, "End", None)
+
+                if item_start is None:
+                    continue
+
+                # Filter by date range
+                if item_end and item_end < dt_start:
+                    continue
+                if item_start > dt_end:
+                    break  # Sorted by Start, so no more relevant items
+
+                duration = int((item_end - item_start).total_seconds() / 60) if item_end and item_start else 0
+
+                events.append({
+                    "entry_id": getattr(item, "EntryID", ""),
+                    "subject": getattr(item, "Subject", ""),
+                    "start": item_start.isoformat() if item_start else "",
+                    "end": item_end.isoformat() if item_end else "",
+                    "location": getattr(item, "Location", ""),
+                    "body": getattr(item, "Body", "")[:1000],
+                    "categories": getattr(item, "Categories", ""),
+                    "duration_minutes": duration,
+                    "all_day_event": bool(getattr(item, "AllDayEvent", False)),
+                    "busy_status": getattr(item, "BusyStatus", 0),
+                })
+            except Exception:
+                continue
+
+        return events
+
+    except ImportError:
+        return []
+    except Exception as e:
+        print(f"Error fetching calendar events: {e}")
+        return []
+
+
+def delete_calendar_event(event_entry_id: str) -> bool:
+    """Delete an Outlook calendar event by EntryID. Returns True on success."""
+    if platform.system() != "Windows":
+        return False
+
+    try:
+        import win32com.client
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        appointment = outlook.GetItemFromID(event_entry_id)
+        appointment.Delete()
+        return True
+    except Exception as e:
+        print(f"Error deleting calendar event: {e}")
+        return False
+
+
+def update_calendar_event(event_entry_id: str, **kwargs) -> bool:
+    """Update fields of an existing Outlook calendar event by EntryID.
+    Allowed kwargs: Subject, Start, End, Body, Location,
+    ReminderMinutesBeforeStart, Categories, AllDayEvent, BusyStatus.
+    Start and End should be ISO format strings.
+    Returns True on success.
+    """
+    if platform.system() != "Windows":
+        return False
+
+    try:
+        import win32com.client
+        from datetime import datetime
+
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        appointment = outlook.GetItemFromID(event_entry_id)
+
+        for key, value in kwargs.items():
+            if not hasattr(appointment, key):
+                print(f"Warning: AppointmentItem has no attribute '{key}'")
+                continue
+            if key in ("Start", "End") and isinstance(value, str):
+                value = datetime.fromisoformat(value)
+            setattr(appointment, key, value)
+
+        appointment.Save()
+        return True
+    except Exception as e:
+        print(f"Error updating calendar event: {e}")
+        return False

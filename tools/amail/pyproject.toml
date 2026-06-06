@@ -1,7 +1,7 @@
 [project]
-name = "amy"
+name = "amail"
 version = "0.1.0"
-description = "amy using crewAI"
+description = "AMail — email triage and auto-reply agent"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
@@ -22,11 +22,11 @@ dev = [
 ]
 
 [project.scripts]
-amy = "amy.main:run"
-run_crew = "amy.main:run"
-run_triage = "amy.main:run_triage"
-extract_style = "amy.main:extract_style"
-view_facts = "amy.main:view_facts"
+amail = "amail.main:run"
+run_crew = "amail.main:run"
+run_triage = "amail.main:run_triage"
+extract_style = "amail.main:extract_style"
+view_facts = "amail.main:view_facts"
 
 [build-system]
 requires = ["hatchling"]

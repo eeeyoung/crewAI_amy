@@ -4,7 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Amy is a CrewAI-powered email triage and auto-reply workstation for construction project management. It reads unread emails from Microsoft Outlook (via COM on Windows), runs them through a pipeline of AI agents to clean, categorize, draft replies, and generate task workflows — all presented through an interactive PyQt6 GUI.
+AMail is a CrewAI-powered email triage and auto-reply agent for the **lilAmy** platform.
+It reads unread emails from Microsoft Outlook (via COM on Windows), runs them through a
+pipeline of AI agents to clean, categorize, draft replies, and generate task workflows —
+all presented through an interactive PyQt6 GUI.
 
 ## Commands
 
@@ -13,13 +16,10 @@ Amy is a CrewAI-powered email triage and auto-reply workstation for construction
 uv sync
 
 # Run the main workflow: fetch unread Outlook emails and launch interactive GUI
-uv run amy
+uv run amail
 
 # Extract writing style blueprint from historical emails
 uv run extract_style
-
-# Train ReplyGeneratorCrew (arg: number of iterations)
-uv run train 3
 
 # View all facts stored in the project knowledge base
 uv run view_facts
@@ -40,7 +40,7 @@ The system is a **6-agent pipeline** with a PyQt6 GUI orchestrating everything:
 4. **WorkflowGeneratorCrew** — Generates a step-by-step task workflow for handling the email, identifying other specialized AI agents to activate.
 5. **FactExtractorCrew** — On user request ("Save Key Facts"), extracts durable project facts (project names, reference numbers, dates, decisions, specs) from an email and stores them in an FTS5 full-text search database. This knowledge is then injected into future reply generation via `search_facts()`.
 
-### Source File Map (`src/amy/`)
+### Source File Map (`src/amail/`)
 
 | File | Purpose |
 |------|---------|
@@ -53,7 +53,7 @@ The system is a **6-agent pipeline** with a PyQt6 GUI orchestrating everything:
 | `tools/check_email_body.py` | Email body validation utility |
 | `tools/custom_tool.py` | CrewAI custom tool base |
 
-### GUI (`src/amy/gui_viewer.py`)
+### GUI (`src/amail/gui_viewer.py`)
 
 PyQt6 window with left panel (original email + filtered view overlay) and right panel (draft reply, category/urgency labels, workflow dialog). Uses background `QThread` workers processing emails through the pipeline concurrently via queues. Keyboard shortcuts: `A`/`D` (prev/next), `R` (regenerate), `W` (workflow), `1` (send), `2`/`3` (skip read/unread), `4` (save as example), `5` (save key facts), `Q` (attachments).
 
@@ -65,7 +65,7 @@ Controlled by `AI_PROVIDER` env var in `.env`:
 
 The `get_llm(role)` function in `crew.py` routes all LLM requests.
 
-### Outlook Integration (`src/amy/tools/outlook_tool.py`)
+### Outlook Integration (`shared/src/shared_tools/outlook_tool.py`)
 
 Windows-only (COM via `win32com.client`). Key functions:
 - `fetch_inbox_emails(count, max_body, unread_only)` — returns list of email dicts with subject, sender, cc, received_time, body, entry_id
@@ -85,7 +85,7 @@ Windows-only (COM via `win32com.client`). Key functions:
 
 ### Key Configuration
 
-- Agents/tasks defined as YAML in `src/amy/config/` (filter, triage, reply, workflow, fact_extractor, style_learner)
+- Agents/tasks defined as YAML in `src/amail/config/` (filter, triage, reply, workflow, fact_extractor, style_learner)
 - `agents.yaml` and `tasks.yaml` are **legacy/abandoned** — the active pipeline uses the per-crew config files
 - `pyproject.toml` has `[tool.crewai] type = "crew"` which tells the CLI this is a crew project
 - `.env` contains API keys and model selection — never commit changes to it

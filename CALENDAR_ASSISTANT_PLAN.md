@@ -1,7 +1,7 @@
-# Calendar Assistant Agent — Implementation Plan
+# ACalendar — Implementation Plan
 
-This document describes the complete design and phased implementation plan for a Calendar
-Assistant agent that integrates with the existing Amy email reply assistant. Any LLM or
+This document describes the complete design and phased implementation plan for an
+ACalendar agent that integrates with the existing AMail email agent. Any LLM or
 developer should be able to read this and understand what to build, in what order, and why.
 
 ---
@@ -11,15 +11,15 @@ developer should be able to read this and understand what to build, in what orde
 ### Multi-Tool Workspace (current state after Phase 2+3)
 
 ```
-my-crew-project/
+lilamy/
 ├── pyproject.toml              # uv workspace: members = ["tools/*", "shared"]
 ├── shared/src/shared_tools/
 │   ├── llm_config.py           # get_llm() — provider toggle (DeepSeek/Gemini)
 │   ├── outlook_tool.py         # fetch_inbox_emails, OutlookSendTool, mark_read/unread,
 │   │                           # fetch_attachments, save_attachment, fetch_outlook_contacts
 │   └── ipc_bridge.py           # NEW — inter-app communication (Phase B)
-├── tools/amy/                  # email reply assistant (existing)
-└── tools/calendar/             # calendar assistant (to be built)
+├── tools/amail/                  # email agent (existing)
+└── tools/acalendar/              # calendar agent (to be built)
 ```
 
 ### Inter-App Communication (the five improvements)
@@ -30,7 +30,7 @@ writes independently. Presence is detected via lock files at `~/.crewai/<app>.lo
 
 ```
 ┌──────────────────────────┐          ┌──────────────────────────┐
-│          Amy             │          │        Calendar          │
+│         AMail             │          │       ACalendar         │
 │                          │          │                          │
 │  1. Triage emails        │          │  3. Poll shared DB       │
 │     → categorizes by     │          │     → read new triage    │
@@ -42,8 +42,8 @@ writes independently. Presence is detected via lock files at `~/.crewai/<app>.lo
 │  6. Read events when     │          │  5. Detect conflicts     │
 │     composing replies ◄──│──────────│     → flag before saving │
 │                          │  writes  │                          │
-│  7. "Open in Amy" from   │ calendar_│  6. Create in Outlook    │
-│     Calendar → jumps to  │ events   │     Calendar (COM API)   │
+│  7. "Open in AMail" from │ calendar_│  6. Create in Outlook    │
+│     ACalendar → jumps to  │ events   │     Calendar (COM API)   │
 │     source email         │          │                          │
 │                          │          │  7. Weekly digest email  │
 └──────────────────────────┘          └──────────────────────────┘
@@ -52,14 +52,14 @@ writes independently. Presence is detected via lock files at `~/.crewai/<app>.lo
                      │
           ~/.crewai/
           ├── shared_data.db      SQLite database
-          ├── amy.lock            PID + timestamp + status
-          └── calendar.lock       PID + timestamp + status
+          ├── amail.lock           PID + timestamp + status
+          └── acalendar.lock       PID + timestamp + status
 ```
 
 **Why this approach:**
 - No networking — works offline, no CORS, no firewall popups
-- Single writer per table avoids locking conflicts (Amy writes `triage_results`,
-  Calendar writes `calendar_events`, both read freely)
+- Single writer per table avoids locking conflicts (AMail writes `triage_results`,
+  ACalendar writes `calendar_events`, both read freely)
 - Lock files provide live presence detection (green dot in GUI)
 - Survives app restarts — data persists in SQLite
 
@@ -70,7 +70,7 @@ writes independently. Presence is detected via lock files at `~/.crewai/<app>.lo
 Located at `~/.crewai/shared_data.db`. Created automatically on first access.
 
 ```sql
--- Written by Amy after triage
+-- Written by AMail after triage
 CREATE TABLE IF NOT EXISTS triage_results (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email_entry_id TEXT UNIQUE NOT NULL,       -- Outlook EntryID
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS triage_results (
     consumed_by_calendar INTEGER DEFAULT 0     -- 0 = new, 1 = processed
 );
 
--- Written by Calendar after date extraction & Outlook creation
+-- Written by ACalendar after date extraction & Outlook creation
 CREATE TABLE IF NOT EXISTS calendar_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     source_email_entry_id TEXT,                -- NULL if manually created
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS calendar_events (
     updated_at TEXT DEFAULT (datetime('now'))
 );
 
--- Written by Calendar for conflict detection
+-- Written by ACalendar for conflict detection
 CREATE TABLE IF NOT EXISTS conflicts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id_1 INTEGER REFERENCES calendar_events(id),
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS conflicts (
     resolved INTEGER DEFAULT 0
 );
 
--- Written by Calendar on user request
+-- Written by ACalendar on user request
 CREATE TABLE IF NOT EXISTS weekly_digests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     week_start TEXT NOT NULL,
@@ -187,26 +187,26 @@ def init_shared_db() -> sqlite3.Connection:
     """Create tables if they don't exist. Called on app startup."""
 
 def push_triage_result(email_data: dict) -> int:
-    """Amy calls this after triage. Inserts into triage_results. Returns row id."""
+    """AMail calls this after triage. Inserts into triage_results. Returns row id."""
 
 def pull_new_triage_results() -> list[dict]:
-    """Calendar calls this. Returns unconsumed triage results (consumed_by_calendar=0)."""
+    """ACalendar calls this. Returns unconsumed triage results (consumed_by_calendar=0)."""
 
 def mark_triage_consumed(email_entry_id: str) -> None:
-    """Calendar calls this after processing a triage result."""
+    """ACalendar calls this after processing a triage result."""
 
 def push_calendar_events(events: list[dict]) -> list[int]:
-    """Calendar calls this after extracting dates. Inserts into calendar_events."""
+    """ACalendar calls this after extracting dates. Inserts into calendar_events."""
 
 def pull_calendar_events(
     project: str | None = None,
     date_type: str | None = None,
     status: str | None = None,
 ) -> list[dict]:
-    """Amy calls this when composing replies. Returns filtered events."""
+    """AMail calls this when composing replies. Returns filtered events."""
 
 def push_conflict(event_id_1: int, event_id_2: int, conflict_type: str) -> int:
-    """Calendar calls this when conflict detected."""
+    """ACalendar calls this when conflict detected."""
 
 def pull_conflicts(resolved: bool = False) -> list[dict]:
     """Pull unresolved conflicts."""
@@ -217,17 +217,17 @@ def resolve_conflict(conflict_id: int) -> None:
 
 ---
 
-## 4. Calendar Assistant Project (`tools/calendar/`)
+## 4. ACalendar Project (`tools/acalendar/`)
 
 ### Phase C — Scaffold & Date Extractor Crew
 
-#### `tools/calendar/pyproject.toml`
+#### `tools/acalendar/pyproject.toml`
 
 ```toml
 [project]
-name = "calendar"
+name = "acalendar"
 version = "0.1.0"
-description = "Calendar Assistant — date extraction and scheduling"
+description = "ACalendar — date extraction and scheduling"
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "crewai[google-genai,tools]==1.14.2",
@@ -241,7 +241,7 @@ dependencies = [
 shared-tools = { workspace = true }
 
 [project.scripts]
-calendar = "calendar.main:run"
+acalendar = "acalendar.main:run"
 
 [build-system]
 requires = ["hatchling"]
@@ -251,7 +251,7 @@ build-backend = "hatchling.build"
 type = "crew"
 ```
 
-#### `tools/calendar/src/calendar/crew.py` — DateExtractorCrew
+#### `tools/acalendar/src/acalendar/crew.py` — DateExtractorCrew
 
 A single-crew project. One agent specializes in extracting temporal information from
 construction emails:
@@ -305,7 +305,7 @@ class DateExtractorCrew:
         )
 ```
 
-#### `tools/calendar/src/calendar/config/date_extractor_agents.yaml`
+#### `tools/acalendar/src/acalendar/config/date_extractor_agents.yaml`
 
 ```yaml
 date_extractor:
@@ -324,7 +324,7 @@ date_extractor:
     job sites mentioned in the same email.
 ```
 
-#### `tools/calendar/src/calendar/config/date_extractor_tasks.yaml`
+#### `tools/acalendar/src/acalendar/config/date_extractor_tasks.yaml`
 
 ```yaml
 extract_dates_task:
@@ -334,7 +334,7 @@ extract_dates_task:
 
     Email Subject: {email_subject}
     Email Sender: {email_sender}
-    Email Category (from Amy): {email_category}
+    Email Category (from AMail): {email_category}
     Email Content: {email_content}
 
     For each date found, classify it as one of:
@@ -362,17 +362,17 @@ extract_dates_task:
 
 ---
 
-## 5. Calendar GUI (`tools/calendar/src/calendar/gui_viewer.py`)
+## 5. ACalendar GUI (`tools/acalendar/src/acalendar/gui_viewer.py`)
 
 ### Phase D — PyQt6 Dashboard
 
-The GUI is a standalone PyQt6 window (similar pattern to Amy's `gui_viewer.py`).
+The GUI is a standalone PyQt6 window (similar pattern to AMail's `gui_viewer.py`).
 
 #### Layout
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  📅 Calendar Assistant                           [Amy: 🟢] [─][□][×] │
+│  📅 ACalendar                                      [AMail: 🟢] [─][□][×] │
 ├─────────────────────────────────────────────────────────────────┤
 │  Job Filter: [ALL ▼]  Date Type: [ALL ▼]  [🔄 Refresh] [📧 Digest] │
 ├─────────────────────────────────────────────────────────────────┤
@@ -395,16 +395,16 @@ The GUI is a standalone PyQt6 window (similar pattern to Amy's `gui_viewer.py`).
 │  └────────────────────────────────────────────────────────────┘   │
 │                                                                   │
 ├─────────────────────────────────────────────────────────────────┤
-│  [📅 Create in Outlook] [✏️ Edit] [🗑️ Delete]  [Open Email in Amy] │
+│  [📅 Create in Outlook] [✏️ Edit] [🗑️ Delete]  [Open Email in AMail] │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 #### Key Behaviors
 
 **Startup:**
-1. Call `register_app("calendar")` → write lock file
+1. Call `register_app("acalendar")` → write lock file
 2. Call `init_shared_db()` → ensure tables exist
-3. Poll `get_app_status("amy")` every 5 seconds → update green/red dot
+3. Poll `get_app_status("amail")` every 5 seconds → update green/red dot
 4. Load existing events from `pull_calendar_events()`
 5. Start background thread: poll `pull_new_triage_results()` every 30 seconds
 
@@ -421,11 +421,11 @@ The GUI is a standalone PyQt6 window (similar pattern to Amy's `gui_viewer.py`).
 3. Update the event's `outlook_event_id` and `status` in shared DB
 4. Refresh display
 
-**"Open Email in Amy" (right-click or button):**
+**"Open Email in AMail" (right-click or button):**
 1. Get the source email's EntryID from the calendar event
-2. If Amy is running (check lock file), write a "navigation request" to shared DB
-3. Amy polls for navigation requests and jumps to the email
-4. If Amy is NOT running, prompt user to launch it
+2. If AMail is running (check lock file), write a "navigation request" to shared DB
+3. AMail polls for navigation requests and jumps to the email
+4. If AMail is NOT running, prompt user to launch it
 
 **"Weekly Digest" button:**
 1. Collect all events for the next 7 days
@@ -441,20 +441,20 @@ The GUI is a standalone PyQt6 window (similar pattern to Amy's `gui_viewer.py`).
 
 ---
 
-## 6. Amy Integration (Phase E)
+## 6. AMail Integration (Phase E)
 
-### Changes to `tools/amy/src/amy/gui_viewer.py`
+### Changes to `tools/amail/src/amail/gui_viewer.py`
 
-1. **On startup:** Call `register_app("amy")` and `init_shared_db()`
+1. **On startup:** Call `register_app("amail")` and `init_shared_db()`
 2. **After triage completes** (in `on_category_ready` signal handler): Call
    `push_triage_result()` to write to shared DB
 3. **When composing replies** (in ReplyWorker): Call `pull_calendar_events()`
    and inject relevant events as context into the reply generation prompt
 4. **Navigation:** Add a poll timer that checks for "navigation request" from
-   Calendar app → jump to source email
-5. **On close:** Call `unregister_app("amy")`
+   ACalendar app → jump to source email
+5. **On close:** Call `unregister_app("amail")`
 
-### Changes to `tools/amy/src/amy/crew.py`
+### Changes to `tools/amail/src/amail/crew.py`
 
 In `ReplyGeneratorCrew.reply_assistant()` — after loading style blueprint and
 examples, also query calendar events related to this email's project/context and
@@ -477,22 +477,22 @@ if events:
 
 ### PyInstaller Configuration
 
-Both Amy and Calendar can be packaged as standalone `.exe` files for desktop use.
+Both AMail and ACalendar can be packaged as standalone `.exe` files for desktop use.
 
 ```bash
 # From project root
 uv run pyinstaller --onefile --windowed \
-    --name "AmyAssistant" \
-    --add-data "tools/amy/knowledge:knowledge" \
-    --add-data "tools/amy/src/amy/config:config" \
-    --hidden-import=amy \
-    tools/amy/src/amy/main.py
+    --name "AMail" \
+    --add-data "tools/amail/knowledge:knowledge" \
+    --add-data "tools/amail/src/amail/config:config" \
+    --hidden-import=amail \
+    tools/amail/src/amail/main.py
 
 uv run pyinstaller --onefile --windowed \
-    --name "CalendarAssistant" \
-    --add-data "tools/calendar/src/calendar/config:config" \
-    --hidden-import=calendar \
-    tools/calendar/src/calendar/main.py
+    --name "ACalendar" \
+    --add-data "tools/acalendar/src/acalendar/config:config" \
+    --hidden-import=acalendar \
+    tools/acalendar/src/acalendar/main.py
 ```
 
 Key flags:
@@ -501,7 +501,7 @@ Key flags:
 - `--add-data`: Bundle YAML configs and knowledge files into the .exe
 - `--hidden-import`: Ensure crewai and shared_tools are bundled
 
-Output: `dist/AmyAssistant.exe` and `dist/CalendarAssistant.exe` — drop on desktop.
+Output: `dist/AMail.exe` and `dist/ACalendar.exe` — drop on desktop.
 
 The `.env` file cannot be bundled (contains secrets). Each app should check for
 `~/.crewai/.env` on startup, and if not found, show a first-run dialog asking for
@@ -516,9 +516,9 @@ directory location.
 |-------|-------------|-------------|-----------|
 | **A** | Add Outlook Calendar APIs to shared | None | `shared/src/shared_tools/outlook_tool.py` |
 | **B** | Build IPC bridge (lock files + shared SQLite) | None | `shared/src/shared_tools/ipc_bridge.py` |
-| **C** | Scaffold calendar project + DateExtractorCrew | A, B | `tools/calendar/pyproject.toml`, `crew.py`, YAML configs |
-| **D** | Build Calendar GUI (schedule view, filters, conflict badges) | A, B, C | `tools/calendar/src/calendar/gui_viewer.py` |
-| **E** | Amy integration (push triage, pull events, navigation) | B, D | `tools/amy/src/amy/gui_viewer.py`, `crew.py` |
+| **C** | Scaffold calendar project + DateExtractorCrew | A, B | `tools/acalendar/pyproject.toml`, `crew.py`, YAML configs |
+| **D** | Build ACalendar GUI (schedule view, filters, conflict badges) | A, B, C | `tools/acalendar/src/acalendar/gui_viewer.py` |
+| **E** | AMail integration (push triage, pull events, navigation) | B, D | `tools/amail/src/amail/gui_viewer.py`, `crew.py` |
 | **F** | PyInstaller packaging for .exe | E | `pyinstaller` config, first-run setup dialog |
 
 Phases A and B are independent and can be done in parallel. Everything else is sequential:
@@ -530,20 +530,20 @@ Phases A and B are independent and can be done in parallel. Everything else is s
 
 ```
 NEW:
-  shared/src/shared_tools/ipc_bridge.py           # Phase B
-  tools/calendar/pyproject.toml                    # Phase C
-  tools/calendar/src/calendar/__init__.py           # Phase C
-  tools/calendar/src/calendar/main.py               # Phase C
-  tools/calendar/src/calendar/crew.py               # Phase C
-  tools/calendar/src/calendar/gui_viewer.py          # Phase D
-  tools/calendar/src/calendar/config/
-      date_extractor_agents.yaml                    # Phase C
-      date_extractor_tasks.yaml                     # Phase C
+  shared/src/shared_tools/ipc_bridge.py                 # Phase B
+  tools/acalendar/pyproject.toml                        # Phase C
+  tools/acalendar/src/acalendar/__init__.py             # Phase C
+  tools/acalendar/src/acalendar/main.py                 # Phase C
+  tools/acalendar/src/acalendar/crew.py                 # Phase C
+  tools/acalendar/src/acalendar/gui_viewer.py           # Phase D
+  tools/acalendar/src/acalendar/config/
+      date_extractor_agents.yaml                        # Phase C
+      date_extractor_tasks.yaml                         # Phase C
 
 MODIFIED:
-  shared/src/shared_tools/outlook_tool.py           # Phase A (add calendar APIs)
-  tools/amy/src/amy/gui_viewer.py                   # Phase E (IPC integration)
-  tools/amy/src/amy/crew.py                         # Phase E (calendar context injection)
+  shared/src/shared_tools/outlook_tool.py               # Phase A (add calendar APIs)
+  tools/amail/src/amail/gui_viewer.py                   # Phase E (IPC integration)
+  tools/amail/src/amail/crew.py                         # Phase E (calendar context injection)
 
 EXISTING (unchanged):
   shared/src/shared_tools/llm_config.py
@@ -556,14 +556,14 @@ EXISTING (unchanged):
 
 ```bash
 # Development
-uv run --package calendar calendar    # Launch Calendar Assistant
-uv run --package amy amy              # Launch Amy (in another terminal)
+uv run acalendar    # Launch ACalendar
+uv run amail        # Launch AMail (in another terminal)
 
 # After Phase F — clickable desktop icons
-dist/CalendarAssistant.exe
-dist/AmyAssistant.exe
+dist/ACalendar.exe
+dist/AMail.exe
 ```
 
-Both apps auto-detect each other via lock files. Calendar polls for new Amy triage
-results. Amy reads calendar events when composing replies. No manual refresh needed
+Both apps auto-detect each other via lock files. ACalendar polls for new AMail triage
+results. AMail reads calendar events when composing replies. No manual refresh needed
 when both are open.

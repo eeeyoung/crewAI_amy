@@ -1,0 +1,30 @@
+extract_dates_task:
+  description: >
+    Analyze the following email and extract ALL date references related to
+    construction activities, deadlines, meetings, or milestones.
+
+    Email Subject: {email_subject}
+    Email Sender: {email_sender}
+    Email Category (from AMail): {email_category}
+    Email Content: {email_content}
+
+    For each date found, classify it as one of:
+    - "exact": A specific calendar date and/or time (e.g., "June 15th at 2pm", "15/06/2026")
+    - "approximate": An imprecise date (e.g., "around mid-July", "early August", "late next week")
+    - "range": A span between two dates (e.g., "between June 10-15", "week of the 20th")
+    - "deadline": A due date (e.g., "due by Friday", "must be submitted before 30/6")
+    - "tbd": Date explicitly stated as unconfirmed (e.g., "TBC", "to be confirmed", "TBD", "we'll confirm")
+
+    For each date, also:
+    - Extract the associated project/job name when it appears in context
+    - Assign a confidence score (0.0-1.0) based on specificity
+    - Capture the time of day if mentioned (e.g., "2pm", "morning")
+    - If no dates are found, set no_dates_found = true
+
+    RELATIVE DATES: If the email says "next Tuesday" or "in 2 weeks", resolve these
+    to actual calendar dates using the current date as reference. The current date is
+    provided in the system prompt.
+  expected_output: >
+    A structured ExtractedDates object containing all dates found in the email,
+    or no_dates_found = true if nothing was found.
+  agent: date_extractor
