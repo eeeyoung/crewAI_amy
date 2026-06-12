@@ -10,3 +10,20 @@ wheels/
 .venv
 .env
 .env.txt
+
+# Storage files — never commit client project data
+*.db
+*.bin
+*.pkl
+*.jsonl
+*.ost
+*.pst
+*.vec
+*.index
+chroma/
+vectordb/
+embeddings/
+indices/
+.knowledge/
+.cache/
+.crewai/
