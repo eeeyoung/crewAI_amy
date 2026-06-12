@@ -565,7 +565,7 @@ class CalendarWindow(QMainWindow):
 
         for e in filtered:
             dt = e.get("date_type", "")
-            start = e.get("start_date", "")
+            start = e.get("start_date") or ""
             if dt == "tbd" or not start:
                 tbc_events.append(e)
             elif start:
@@ -595,8 +595,8 @@ class CalendarWindow(QMainWindow):
             table.setRowHeight(row, 28)
 
             # Date column
-            start = e.get("start_date", "")
-            end = e.get("end_date", "")
+            start = e.get("start_date") or ""
+            end = e.get("end_date") or ""
             if end and end != start:
                 date_text = f"{start[:10] or '?'} – {end[:10] or '?'}"
             elif start:
@@ -718,42 +718,46 @@ class CalendarWindow(QMainWindow):
 
     def on_weekly_digest(self):
         """Compose and send a weekly digest email of upcoming events."""
-        today = date.today()
-        week_end = today + timedelta(days=7)
+        try:
+            today = date.today()
+            week_end = today + timedelta(days=7)
 
-        upcoming = [
-            e for e in self.events
-            if e.get("start_date") and e.get("start_date", "")[:10] <= week_end.isoformat()
-            and e.get("status") != "cancelled"
-        ]
+            upcoming = [
+                e for e in self.events
+                if (e.get("start_date") or "") and (e.get("start_date") or "")[:10] <= week_end.isoformat()
+                and e.get("status") != "cancelled"
+            ]
 
-        if not upcoming:
-            QMessageBox.information(self, "No Events",
-                                    "No events in the next 7 days.")
+            if not upcoming:
+                QMessageBox.information(self, "No Events",
+                                        "No events in the next 7 days.")
+                return
+
+            # Group by project
+            by_project: dict[str, list] = {}
+            for e in upcoming:
+                proj = e.get("project") or "Other"
+                by_project.setdefault(proj, []).append(e)
+
+            # Build HTML body
+            lines = ["<h2>Weekly Schedule Digest</h2>",
+                      f"<p><b>Week of {today.isoformat()}</b></p><hr>"]
+            for proj, events in sorted(by_project.items()):
+                lines.append(f"<h3>{proj}</h3><ul>")
+                for e in sorted(events, key=lambda x: (x.get("start_date") or "")):
+                    start = (e.get("start_date") or "TBC")[:10]
+                    dt = e.get("date_type") or ""
+                    icon = TYPE_ICONS.get(dt, "").split(" ")[0]
+                    lines.append(
+                        f"<li>{icon} <b>{start}</b> — "
+                        f"{e.get('description') or ''} ({dt})</li>"
+                    )
+                lines.append("</ul>")
+
+            body = "\n".join(lines)
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Could not build digest:\n{e}")
             return
-
-        # Group by project
-        by_project: dict[str, list] = {}
-        for e in upcoming:
-            proj = e.get("project", "Other")
-            by_project.setdefault(proj, []).append(e)
-
-        # Build HTML body
-        lines = ["<h2>Weekly Schedule Digest</h2>",
-                  f"<p><b>Week of {today.isoformat()}</b></p><hr>"]
-        for proj, events in sorted(by_project.items()):
-            lines.append(f"<h3>{proj}</h3><ul>")
-            for e in sorted(events, key=lambda x: x.get("start_date", "")):
-                start = e.get("start_date", "TBC")[:10]
-                dt = e.get("date_type", "")
-                icon = TYPE_ICONS.get(dt, "").split(" ")[0]
-                lines.append(
-                    f"<li>{icon} <b>{start}</b> — "
-                    f"{e.get('description', '')} ({dt})</li>"
-                )
-            lines.append("</ul>")
-
-        body = "\n".join(lines)
 
         try:
             tool = OutlookSendTool()

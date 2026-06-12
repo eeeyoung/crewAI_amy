@@ -1,0 +1,38 @@
+summarize_email_task:
+  description: >
+    Read this construction-related email and produce a structured JSON analysis.
+
+    SUBJECT: {email_subject}
+    SENDER: {email_sender}
+    CATEGORY: {email_category}
+    CONTENT: {email_content}
+
+    Produce three things:
+
+    1. **chinese_summary**: A one-sentence summary in Chinese capturing the core
+       message or request. Use construction-domain terminology naturally
+       (e.g., 提交, 审批, 报价, 进度, 安全). Keep it under 50 Chinese characters.
+
+    2. **assignee**: The person or role who should handle this email.
+       If a specific name is mentioned, use it. Otherwise use a logical role
+       based on the category (e.g., "项目经理", "合同管理员", "财务", "现场经理",
+       "安全负责人", "Amy Chen").
+
+    3. **todos**: A list of 1-3 concrete action items in Chinese. Each item should
+       start with a verb (e.g., "审核RFI并回复承包商", "确认现场访问日期",
+       "准备下周三的报价单"). If purely informational with no action needed,
+       return an empty array [].
+
+    Return ONLY a JSON object (no markdown, no extra text):
+    {{
+      "chinese_summary": "string",
+      "assignee": "string",
+      "todos": ["string", ...]
+    }}
+  expected_output: >
+    {{
+      "chinese_summary": "承包商提交了23号图纸的RFI审批请求，需本周内回复",
+      "assignee": "项目经理",
+      "todos": ["审核23号图纸的RFI内容", "与设计团队确认技术细节", "在周五前回复审批结果"]
+    }}
+  agent: chinese_summarizer

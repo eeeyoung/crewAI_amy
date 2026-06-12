@@ -3,7 +3,7 @@ name = "lilamy"
 version = "0.1.0"
 description = "lilAmy — multi-agent desktop workspace"
 requires-python = ">=3.11"
-dependencies = ["amail", "acalendar", "shared-tools"]
+dependencies = ["amail", "acalendar", "asummary", "asummary1", "shared-tools"]
 
 [tool.uv.workspace]
 members = ["tools/*", "shared"]
@@ -11,4 +11,6 @@ members = ["tools/*", "shared"]
 [tool.uv.sources]
 amail = { workspace = true }
 acalendar = { workspace = true }
+asummary = { workspace = true }
+asummary1 = { workspace = true }
 shared-tools = { workspace = true }

@@ -1,0 +1,22 @@
+draft_reply_task:
+  description: >
+    You received this email and need to draft a reply as Amy Chen.
+
+    ORIGINAL EMAIL SUBJECT: {email_subject}
+    ORIGINAL EMAIL SENDER: {email_sender}
+    ORIGINAL EMAIL BODY: {email_content}
+
+    Write a professional reply email. Follow these rules:
+    - Address the sender by their first name
+    - Keep it concise — 3 to 6 sentences is usually enough
+    - Answer questions directly, ask for clarification if needed
+    - Reference specific details from the original email to show you read it
+    - Propose next steps or a clear action
+    - End with "Kind regards," followed by "Amy Chen"
+
+    Write ONLY the reply email body (no subject line, no extra commentary).
+    Do not use markdown. Just plain email text.
+  expected_output: >
+    A plain-text email reply body that Amy Chen would send. Professional,
+    concise, direct. No markdown, no meta-commentary — just the email text.
+  agent: amy_chen

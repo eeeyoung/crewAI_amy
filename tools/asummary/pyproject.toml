@@ -1,0 +1,24 @@
+[project]
+name = "asummary"
+version = "0.1.0"
+description = "ASummary — reads AMail-processed emails and generates Chinese summaries, assignees, and todos"
+authors = [{ name = "Yiyang Guan", email = "eeeyoung2001@gmail.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[google-genai,tools]==1.14.2",
+    "google-generativeai>=0.8.6",
+    "shared-tools",
+]
+
+[tool.uv.sources]
+shared-tools = { workspace = true }
+
+[project.scripts]
+asummary = "asummary.main:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
