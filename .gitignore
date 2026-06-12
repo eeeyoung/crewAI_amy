@@ -11,7 +11,23 @@ wheels/
 .env
 .env.txt
 
-# Storage files — never commit client project data
+# ── Storage files — NEVER commit client project data ──────────────────
+# Per CLAUDE.md: all storage must be written to LILAMY_DATA_DIR, never
+# inside the repository.  Each client deployment has its own data root.
+# Pushing one client's data into version control is a confidentiality
+# breach and a commercial liability.
+
+# ChromaDB vector stores
+.chromadb/
+chroma/
+chroma.sqlite3
+
+# lilAmy platform data files
+.lilamy_registry.db
+.lilamy_vision_cache/
+.lilamy_graph_token.json
+
+# Generic database and binary formats
 *.db
 *.bin
 *.pkl
@@ -20,10 +36,20 @@ wheels/
 *.pst
 *.vec
 *.index
-chroma/
+*.sqlite3
+
+# Embedding and index directories
 vectordb/
 embeddings/
 indices/
 .knowledge/
+
+# Cache and temporary directories
 .cache/
 .crewai/
+
+# Training data and knowledge base files (may contain client emails)
+knowledge/historical_emails/.chromadb/
+tools/amail/knowledge/historical_emails/.chromadb/
+tools/amail/historical_emails/.chromadb/
+historical_emails/
