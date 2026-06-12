@@ -5,7 +5,7 @@ from crewai_tools import DirectoryReadTool
 from pydantic import BaseModel
 from shared_tools.llm_config import get_llm
 
-from amail.fact_store import search_facts
+from amail.mail_knowledge import search_facts
 
 _AMAIL_ROOT = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..", ".."))
 

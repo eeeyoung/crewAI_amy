@@ -13,14 +13,10 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
 
 from shared_tools.ipc_bridge import (
-    pull_new_categorized_emails, mark_email_consumed,
-    pull_calendar_events, update_calendar_event_db,
-    push_conflict, pull_conflicts, resolve_conflict, get_app_status,
+    get_app_status,
 )
-from shared_tools.outlook_tool import (
-    create_calendar_event, delete_calendar_event, update_calendar_event,
-    OutlookSendTool,
-)
+from shared_tools.outlook_tool import OutlookSendTool
+from shared_tools.calendar_service import CalendarService
 
 # ── icons for date types ──
 TYPE_ICONS = {
@@ -336,12 +332,20 @@ class EventEditDialog(QDialog):
 class CalendarWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.events: list[dict] = []
+        self.service = CalendarService(parent=self)
         self.projects: list[str] = []
 
         self.init_ui()
         self.load_events()
         self.start_polling()
+
+    @property
+    def events(self):
+        return self.service._events
+
+    @events.setter
+    def events(self, value):
+        self.service._events = value
 
     # ── UI Construction ────────────────────────────────────────────────
 
@@ -522,7 +526,7 @@ class CalendarWindow(QMainWindow):
 
     def load_events(self):
         """Reload all events from the shared database."""
-        self.events = pull_calendar_events()
+        self.service.load_events()
         self._refresh_project_filter()
         self.refresh_view()
         self.lbl_status.setText(f"{len(self.events)} event(s) loaded")
@@ -660,18 +664,9 @@ class CalendarWindow(QMainWindow):
             dialog.exec()
 
     def on_refresh_from_mail(self):
-        """Pull latest calendar events from AMail (triage agent now extracts dates).
-        Mark any new categorized emails as consumed."""
-        # Mark newly categorized emails as consumed
-        results = pull_new_categorized_emails()
-        for tr in results:
-            eid = tr.get("email_entry_id", "")
-            if eid:
-                mark_email_consumed(eid)
-
-        # Reload calendar events (pushed directly by AMail's triage agent)
+        """Pull latest calendar events from AMail's triage output."""
+        results = self.service.pull_new_emails()
         self.load_events()
-
         if results:
             self.lbl_status.setText(f"Processed {len(results)} new email(s). Events updated.")
         else:
@@ -683,38 +678,21 @@ class CalendarWindow(QMainWindow):
         if not event:
             QMessageBox.warning(self, "No Selection", "Please select an event first.")
             return
-
         source_entry_id = event.get("source_email_entry_id", "")
         if not source_entry_id:
-            QMessageBox.warning(self, "No Source",
-                                "This event has no linked source email.")
+            QMessageBox.warning(self, "No Source", "This event has no linked source email.")
             return
-
-        amail_status = get_app_status("amail")
-        if not amail_status:
-            QMessageBox.information(
-                self, "AMail Not Running",
-                "AMail is not currently running.\n"
-                "Please launch AMail to navigate to the source email."
-            )
+        amail_running = get_app_status("amail")
+        if not amail_running:
+            QMessageBox.information(self, "AMail Not Running",
+                                    "AMail is not currently running.\n"
+                                    "Please launch AMail to navigate to the source email.")
             return
-
-        # Write navigation request for AMail to pick up
-        nav_path = Path.home() / ".crewai" / "nav_request.json"
-        nav_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(nav_path, "w") as f:
-            json.dump({
-                "target_entry_id": source_entry_id,
-                "from": "acalendar",
-                "timestamp": datetime.now().isoformat(),
-            }, f)
-
+        CalendarService.navigate_to_amail(source_entry_id)
         self.lbl_status.setText("Navigation request sent to AMail.")
-        QMessageBox.information(
-            self, "Request Sent",
-            f"Navigation request sent to AMail.\n"
-            f"AMail will jump to the source email momentarily."
-        )
+        QMessageBox.information(self, "Request Sent",
+                                "Navigation request sent to AMail.\n"
+                                "AMail will jump to the source email momentarily.")
 
     def on_weekly_digest(self):
         """Compose and send a weekly digest email of upcoming events."""
@@ -755,41 +733,18 @@ class CalendarWindow(QMainWindow):
 
         body = "\n".join(lines)
 
-        try:
-            tool = OutlookSendTool()
-            import os
-            recipient = os.environ.get("AMY_EMAIL", "")
-            if not recipient:
-                QMessageBox.warning(self, "No Recipient",
-                                    "Set AMY_EMAIL in your .env to send digests.")
-                return
-
-            result = tool._run(
-                recipient=recipient,
-                subject=f"Weekly Schedule Digest — {today.isoformat()}",
-                body=body,
-                cc="",
-                is_html=True,
-            )
-            if "successfully" in result.lower():
-                from shared_tools.ipc_bridge import _get_connection
-                conn = _get_connection()
-                try:
-                    conn.execute(
-                        "INSERT INTO weekly_digests (week_start, events_json) VALUES (?, ?)",
-                        (today.isoformat(), json.dumps(upcoming, default=str)),
-                    )
-                    conn.commit()
-                except Exception:
-                    pass
-                finally:
-                    conn.close()
-                QMessageBox.information(self, "Sent", "Weekly digest sent!")
-                self.lbl_status.setText("Weekly digest sent.")
-            else:
-                QMessageBox.warning(self, "Error", f"Failed to send:\n{result}")
-        except Exception as e:
-            QMessageBox.warning(self, "Error", f"Could not send digest:\n{e}")
+        import os
+        recipient = os.environ.get("AMY_EMAIL", "")
+        if not recipient:
+            QMessageBox.warning(self, "No Recipient",
+                                "Set AMY_EMAIL in your .env to send digests.")
+            return
+        ok = self.service.send_weekly_digest(recipient)
+        if ok:
+            QMessageBox.information(self, "Sent", "Weekly digest sent!")
+            self.lbl_status.setText("Weekly digest sent.")
+        else:
+            QMessageBox.warning(self, "Error", "Failed to send digest.")
 
     # ── Polling ─────────────────────────────────────────────────────────
 

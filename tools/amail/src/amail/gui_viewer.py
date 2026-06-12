@@ -14,7 +14,7 @@ from PyQt6.QtCore import Qt, QThread, QTimer, pyqtSignal, QStringListModel, QSor
 from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
 from amail.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
-from amail.fact_store import init_db, search_facts, save_facts
+from amail.mail_knowledge import init_db, search_facts, save_facts
 from shared_tools.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
     fetch_attachments_for_email, save_attachment, fetch_outlook_contacts,
@@ -39,15 +39,12 @@ def _resolve_signature_images(html: str) -> str:
     return html
 
 from amail.mail_lister import MailListerDialog
+from shared_tools.mail_service import MailService
 
 
 # =============================================================================
-# Background Workers
+# Background Workers — replaced by MailService
 # =============================================================================
-
-# Shared semaphore: only one LLM call across all workers at a time,
-# preventing concurrent API calls from overwhelming the GUI thread.
-_llm_semaphore = threading.Semaphore(1)
 
 class FilterWorker(QThread):
     """Filters emails one-by-one, stripping signatures and boilerplate.
@@ -849,78 +846,46 @@ class TriageWindow(QMainWindow):
     def __init__(self, raw_emails, processed_entry_ids: set[str] = None):
         super().__init__()
         self.processed_entry_ids = processed_entry_ids if processed_entry_ids is not None else set()
-        self.emails = []
-        self.pending_emails: list[dict] = []
-        self.max_active = 5
-        self.state = {}
         self.current_index = 0
-        self.email_index_counter = 0
-        self.filter_queue = queue.Queue()
-        self.triage_queue = queue.Queue()
-        self.reply_queue = queue.Queue()
-        self.workflow_queue = queue.Queue()
-        self.skipped_indices = set()
-        self.download_dir = os.path.abspath(".")  # default to program root
+        self.download_dir = os.path.abspath(".")
         self.contacts_cache: list[dict] = []
 
-        self.init_ui()
-        self.start_workers()
+        # ---- MailService replaces all workers and pipeline state ----
+        self.service = MailService(parent=self)
+        self.service.processed_entry_ids = self.processed_entry_ids
+        self.pending_emails: list[dict] = []  # local queue (fed from MailLister)
+        self.max_active = 5
 
-        # Navigation request poll timer (for "Open Email in AMail" from ACalendar)
+        self.init_ui()
+        self._connect_service_signals()
+        self.service.start()
+
+        # Navigation request poll timer
         self.nav_poll_timer = QTimer()
         self.nav_poll_timer.setInterval(3000)
         self.nav_poll_timer.timeout.connect(self._poll_nav_requests)
         self.nav_poll_timer.start()
 
-        # Queue the initial batch directly
-        for email in raw_emails:
-            idx = self._append_email(email)
-            self.filter_queue.put((idx, email))
-
-        if self.emails:
-            self.load_email(0)
+        # Submit initial batch
+        if raw_emails:
+            indices = self.service.submit_emails(raw_emails)
+            if indices:
+                self.load_email(0)
         self.update_ui_state()
 
-    def _append_email(self, email: dict) -> int:
-        """Append an email dict to self.emails, create state, return index."""
-        idx = self.email_index_counter
-        self.email_index_counter += 1
-        self.emails.append(email)
+    # ---- Forwarding properties: existing GUI code reads .emails / .state
+    #      transparently from the service ----
+    @property
+    def emails(self):
+        return self.service._emails
 
-        self.state[idx] = {
-            "filtered_body": "",
-            "filter_status": "filtering",
-            "category": "",
-            "urgency": "",
-            "extra_info": "",
-            "category_status": "pending",
-            "reply_cc": email.get("cc", ""),
-            "reply_text": "",
-            "reply_status": "pending",
-            "workflow_text": "",
-            "workflow_status": "pending",
-            "send_status": "unsent",
-            "attachment_count": None,
-        }
-        return idx
+    @property
+    def state(self):
+        return self.service._state
 
-    def _count_active(self):
-        """Return the number of emails currently in the processing pipeline."""
-        return sum(
-            1 for st in self.state.values()
-            if st["send_status"] not in ("sent", "skipped")
-        )
-
-    def _all_emails_done(self):
-        """Return True if every email (active + pending) has been processed."""
-        if len(self.emails) == 0 and len(self.pending_emails) == 0:
-            return True
-        if len(self.emails) > 0:
-            return all(
-                st["send_status"] in ("sent", "skipped")
-                for st in self.state.values()
-            ) and len(self.pending_emails) == 0
-        return False
+    @property
+    def skipped_indices(self):
+        return self.service._skipped_indices
 
     def init_ui(self):
         self.setWindowTitle("Interactive Triage & Auto-Reply Workstation")
@@ -1292,128 +1257,40 @@ class TriageWindow(QMainWindow):
     # Workers
     # -------------------------------------------------------------------------
 
-    def start_workers(self):
-        self.filter_worker = FilterWorker(self.filter_queue, self.triage_queue, self.skipped_indices)
-        self.filter_worker.filter_done.connect(self.on_filter_done)
-        self.filter_worker.start()
+    def _connect_service_signals(self):
+        """Wire MailService signals to existing GUI handlers."""
+        svc = self.service
+        svc.filter_done.connect(self.on_filter_done)
+        svc.category_ready.connect(self.on_category_ready)
+        svc.reply_generated.connect(self.on_reply_generated)
+        svc.workflow_generated.connect(self.on_workflow_generated)
+        svc.contacts_loaded.connect(self.on_contacts_loaded)
+        svc.grammar_polished.connect(self.on_grammar_polished)
 
-        self.triage_worker = TriageWorker(self.triage_queue, self.reply_queue, self.workflow_queue, self.skipped_indices)
-        self.triage_worker.category_ready.connect(self.on_category_ready)
-        self.triage_worker.start()
-
-        self.reply_worker = ReplyWorker(self.reply_queue, self.skipped_indices)
-        self.reply_worker.reply_generated.connect(self.on_reply_generated)
-        self.reply_worker.start()
-
-        self.workflow_worker = WorkflowWorker(self.workflow_queue, self.skipped_indices)
-        self.workflow_worker.workflow_generated.connect(self.on_workflow_generated)
-        self.workflow_worker.start()
-
-        self.contact_worker = ContactFetchWorker()
-        self.contact_worker.contacts_loaded.connect(self.on_contacts_loaded)
-        self.contact_worker.start()
+        # Kick off async contact fetch
+        svc.fetch_contacts_async()
 
     # -------------------------------------------------------------------------
-    # Signal Handlers
+    # Signal Handlers (sync local caches from service signals)
     # -------------------------------------------------------------------------
 
     def on_filter_done(self, idx, cleaned_body):
-        if idx in self.skipped_indices:
-            return
-        self.state[idx]["filtered_body"] = cleaned_body
-        self.state[idx]["filter_status"] = "done"
-        self.state[idx]["category_status"] = "thinking"
-
         if idx == self.current_index:
             self.update_ui_state()
 
     def on_category_ready(self, idx, category, urgency, extra_info, dates=None):
-        if idx in self.skipped_indices:
-            return
-        if dates is None:
-            dates = []
-        self.state[idx]["category"] = category
-        self.state[idx]["urgency"] = urgency
-        self.state[idx]["extra_info"] = extra_info
-        self.state[idx]["dates"] = dates
-        self.state[idx]["category_status"] = "done"
-        self.state[idx]["reply_status"] = "generating"
-
-        email = self.emails[idx]
-        filtered_body = self.state[idx].get("filtered_body", email.get("body", ""))
-
-        # Push categorized email to shared DB for ACalendar
-        try:
-            push_categorized_email({
-                "email_entry_id": email.get("entry_id", ""),
-                "email_subject": email.get("subject", ""),
-                "email_sender": email.get("sender", ""),
-                "email_body": filtered_body,
-                "category": category,
-                "urgency": urgency,
-                "extra_info": extra_info,
-            })
-        except Exception:
-            pass  # Non-critical; don't disrupt the triage workflow
-
-        # Push calendar events directly — triage agent now extracts dates
-        if dates:
-            try:
-                from shared_tools.ipc_bridge import push_calendar_events
-                events_to_push = []
-                for d in dates:
-                    events_to_push.append({
-                        "source_email_entry_id": email.get("entry_id", ""),
-                        "source_email_subject": email.get("subject", ""),
-                        "source_email_sender": email.get("sender", ""),
-                        "description": d.get("description", ""),
-                        "date_type": d.get("date_type", "tbd"),
-                        "start_date": d.get("start_date"),
-                        "end_date": d.get("end_date"),
-                        "confidence": d.get("confidence", 0.5),
-                        "project": d.get("project", ""),
-                        "status": "pending",
-                    })
-                if events_to_push:
-                    push_calendar_events(events_to_push)
-            except Exception:
-                pass  # Non-critical
-
         if idx == self.current_index:
             self.update_ui_state()
 
     def on_workflow_generated(self, idx, text):
-        if idx in self.skipped_indices:
-            return
-        self.state[idx]["workflow_text"] = text
-        self.state[idx]["workflow_status"] = "done"
         if idx == self.current_index:
             self.update_ui_state()
 
     def on_reply_generated(self, idx, text):
-        if idx in self.skipped_indices:
-            return
-        import os
-        # Only inject if it's the raw text from LLM (not already HTML or error)
-        if not text.startswith("Error generating"):
-            body_html = "".join(f"<p>{line}</p>" if line.strip() else "<br>" for line in text.split("\n"))
-            sig_path = os.path.join(_AMAIL_ROOT, "knowledge/amy_signature.html")
-            signature_html = ""
-            if os.path.exists(sig_path):
-                with open(sig_path, "r", encoding="utf-8") as f:
-                    signature_html = _resolve_signature_images(f.read())
-            full_html = f'<div style="font-family: Arial, sans-serif; font-size: 11pt;">{body_html}</div><br><br>{signature_html}'
-            self.state[idx]["reply_text"] = full_html
-        else:
-            self.state[idx]["reply_text"] = text
-
-        self.state[idx]["reply_status"] = "done"
-
         if idx == self.current_index:
             self.update_ui_state()
 
     def on_contacts_loaded(self, contacts: list[dict]):
-        """Store fetched contacts and propagate to all autocomplete widgets."""
         self.contacts_cache = contacts
         self.le_reply_receiver.set_contacts(contacts)
         self.cc_section.set_contacts(contacts)
@@ -1465,7 +1342,6 @@ class TriageWindow(QMainWindow):
         self.lbl_orig_time.setText(f"Received: {email.get('received_time', 'Unknown')}")
         self.lbl_orig_sender.setText(f"Sender: {email['sender']}")
         self.lbl_orig_cc.setText(f"CC: {email.get('cc', '')}")
-        # Show raw body initially; overlay will cover it if still filtering
         st = self.state[idx]
         if st["filter_status"] == "done":
             self.txt_orig_content.setPlainText(st["filtered_body"])
@@ -1483,7 +1359,7 @@ class TriageWindow(QMainWindow):
         self.update_ui_state()
 
     def update_ui_state(self):
-        if len(self.emails) == 0 or self._all_emails_done():
+        if len(self.emails) == 0 or self.service.all_done():
             self.empty_label.setVisible(True)
             self.splitter.setVisible(False)
             self.lbl_counter.setText("0/0")
@@ -1689,100 +1565,43 @@ class TriageWindow(QMainWindow):
         dialog.exec()
 
     def regenerate_workflow(self, idx):
-        self.state[idx]["workflow_status"] = "generating"
-        self.state[idx]["workflow_text"] = ""
         st = self.state[idx]
+        st["workflow_status"] = "generating"
+        st["workflow_text"] = ""
+        # Re-submit for regeneration via the service
+        from queue import Queue
         email = self.emails[idx]
-        self.workflow_queue.put((idx, email, st["filtered_body"], st["category"], st["urgency"], st["extra_info"]))
+        self.service._workflow_queue.put((idx, email, st["filtered_body"], st["category"], st["urgency"], st["extra_info"]))
         if idx == self.current_index:
             self.update_ui_state()
 
     def save_workflow_feedback(self, idx, text):
-        import json
-        import os
-        self.state[idx]["workflow_text"] = text
-        email = self.emails[idx]
-        st = self.state[idx]
-        
-        os.makedirs("knowledge", exist_ok=True)
-        with open(os.path.join(_AMAIL_ROOT, "knowledge/workflow_examples.jsonl"), "a", encoding="utf-8") as f:
-            data = {
-                "email_subject": email["subject"],
-                "category": st["category"],
-                "urgency": st["urgency"],
-                "extra_info": st["extra_info"],
-                "expected_workflow": text
-            }
-            f.write(json.dumps(data) + "\n")
+        self.service.save_workflow_example(idx, text)
 
     def save_reply_feedback(self):
-        import json
-        import os
         idx = self.current_index
-        st = self.state[idx]
-        email = self.emails[idx]
-        
-        reply_text = self.txt_reply_content.toPlainText() # use plain text to avoid pure HTML styling mess in prompt
-        
-        os.makedirs("knowledge", exist_ok=True)
-        with open(os.path.join(_AMAIL_ROOT, "knowledge/reply_examples.jsonl"), "a", encoding="utf-8") as f:
-            data = {
-                "email_subject": email["subject"],
-                "category": st["category"],
-                "urgency": st["urgency"],
-                "extra_info": st["extra_info"],
-                "expected_reply": reply_text
-            }
-            f.write(json.dumps(data) + "\n")
-        
+        reply_text = self.txt_reply_content.toPlainText()
+        self.service.save_reply_example(idx, reply_text)
         QMessageBox.information(self, "Success", "Reply saved as training example!")
 
     def save_key_facts(self):
-        import json
         idx = self.current_index
-        st = self.state[idx]
-        email = self.emails[idx]
-
-        # Visual feedback — show extraction in progress
         self.btn_save_facts.setText("⏳ Extracting Facts...")
         self.btn_save_facts.setEnabled(False)
         QApplication.processEvents()
-
-        inputs = {
-            "email_subject": email["subject"],
-            "email_content": st["filtered_body"] or email["body"],
-            "email_category": st["category"],
-            "email_context": st["extra_info"],
-        }
-
         try:
-            result = FactExtractorCrew().crew().kickoff(inputs=inputs)
-            raw = result.raw if hasattr(result, 'raw') else str(result)
-            cleaned = raw.strip()
-            if cleaned.startswith("```"):
-                cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-            facts = json.loads(cleaned)
-            if not isinstance(facts, list):
-                facts = []
+            facts = self.service.extract_facts(idx)
         except Exception as e:
-            self.btn_save_facts.setText("📋 Save Key Facts (5)")
+            self.btn_save_facts.setText("\U0001f4cb Save Key Facts (5)")
             self.btn_save_facts.setEnabled(True)
             QMessageBox.warning(self, "Extraction Failed", f"Could not extract facts:\n{e}")
             return
-
-        # Restore button
-        self.btn_save_facts.setText("📋 Save Key Facts (5)")
+        self.btn_save_facts.setText("\U0001f4cb Save Key Facts (5)")
         self.btn_save_facts.setEnabled(True)
-
         if not facts:
             QMessageBox.information(self, "No Facts", "No critical facts found in this email.")
             return
-
-        save_facts(facts, email["subject"], email["sender"])
-        QMessageBox.information(
-            self, "Facts Saved",
-            f"{len(facts)} fact(s) saved to the project knowledge base."
-        )
+        QMessageBox.information(self, "Facts Saved", f"{len(facts)} fact(s) saved to the project knowledge base.")
 
     def prev_email(self):
         self.load_email(self.current_index - 1)
@@ -1806,14 +1625,11 @@ class TriageWindow(QMainWindow):
         self._promote_pending()
 
     def _promote_pending(self):
-        """Move emails from pending to the active pipeline, up to max_active."""
+        """Move emails from pending to the active pipeline."""
         had_emails = len(self.emails) > 0
-
-        while self.pending_emails and self._count_active() < self.max_active:
+        while self.pending_emails and self.service.active_count() < self.max_active:
             email = self.pending_emails.pop(0)
-            idx = self._append_email(email)
-            self.filter_queue.put((idx, email))
-
+            self.service.submit_emails([email])
         if not had_emails and self.emails:
             self.load_email(0)
         elif self.emails and self.current_index < len(self.emails):
@@ -1824,165 +1640,58 @@ class TriageWindow(QMainWindow):
                     if s and s["send_status"] not in ("sent", "skipped"):
                         self.load_email(i)
                         break
-
         self.update_ui_state()
 
     def regenerate_current(self):
-        """Regenerate from the earliest failed stage for the current email."""
+        """Regenerate from the earliest failed stage."""
         idx = self.current_index
-        st = self.state[idx]
-        email = self.emails[idx]
-
-        if st["filtered_body"].startswith("Error filtering:"):
-            # Filter failed — re-run entire pipeline
-            st["filter_status"] = "filtering"
-            st["category_status"] = "pending"
-            st["reply_status"] = "pending"
-            st["filtered_body"] = ""
-            st["category"] = ""
-            st["reply_text"] = ""
-            self.txt_orig_content.setPlainText(email["body"])
-            self.update_ui_state()
-
-            self._regen_worker = RegenerateWorker(idx, email, mode="filter")
-            self._regen_worker.filter_done.connect(self.on_filter_done)
-            self._regen_worker.triage_done.connect(self.on_category_ready)
-            self._regen_worker.reply_done.connect(self.on_reply_generated)
-            self._regen_worker.start()
-
-        elif st["category"] == "Error":
-            # Triage failed — re-run triage + reply
-            st["category_status"] = "thinking"
-            st["reply_status"] = "pending"
-            st["category"] = ""
-            st["reply_text"] = ""
-            self.update_ui_state()
-
-            self._regen_worker = RegenerateWorker(
-                idx, email, mode="triage",
-                filtered_body=st["filtered_body"]
-            )
-            self._regen_worker.triage_done.connect(self.on_category_ready)
-            self._regen_worker.reply_done.connect(self.on_reply_generated)
-            self._regen_worker.start()
-
-        else:
-            # Only reply failed or user wants a new draft
-            st["reply_status"] = "generating"
-            st["reply_text"] = ""
-            self.update_ui_state()
-
-            self._regen_worker = RegenerateWorker(
-                idx, email, mode="reply",
-                filtered_body=st["filtered_body"],
-                category=st["category"], urgency=st["urgency"], extra_info=st["extra_info"]
-            )
-            self._regen_worker.reply_done.connect(self.on_reply_generated)
-            self._regen_worker.start()
+        self.service.regenerate(idx)
+        self.update_ui_state()
 
     def grammar_polish(self):
         idx = self.current_index
         st = self.state[idx]
-
         if st["reply_status"] != "done":
             return
-
         draft_text = self.txt_reply_content.toPlainText()
         if not draft_text.strip():
             return
-
         body_only = _strip_signature(draft_text)
         if not body_only.strip():
             return
-
         self.btn_grammar.setText("Polishing...")
         self.btn_grammar.setEnabled(False)
         QApplication.processEvents()
-
-        self._grammar_worker = GrammarPolishWorker(idx, body_only)
-        self._grammar_worker.polish_done.connect(self.on_grammar_polished)
-        self._grammar_worker.start()
+        self.service.polish_grammar(idx, body_only)
 
     def send_email(self):
+        idx = self.current_index
         recipient = self.le_reply_receiver.text()
         cc_list = self.cc_section.get_cc_string()
         subject = self.le_reply_subject.text()
         body = self.txt_reply_content.toHtml()
-
-        tool = OutlookSendTool(
-            signature_html_path=os.path.join(_AMAIL_ROOT, "knowledge/amy_signature.html"),
-            signature_image_specs=[
-                (os.path.join(_AMAIL_ROOT, "knowledge/logo_meritor_welink.png"), "logo_meritor_welink.png"),
-                (os.path.join(_AMAIL_ROOT, "knowledge/logo_hia_awards.png"), "logo_hia_awards.png"),
-                (os.path.join(_AMAIL_ROOT, "knowledge/icon_instagram.png"), "icon_instagram.png"),
-                (os.path.join(_AMAIL_ROOT, "knowledge/icon_facebook.png"), "icon_facebook.png"),
-            ],
-        )
-        result = tool._run(recipient=recipient, subject=subject, body=body, cc=cc_list, is_html=True)
-
-        if "successfully sent" in result.lower():
-            # Mark the original email as read in Outlook
-            entry_id = self.emails[self.current_index].get("entry_id", "")
-            if entry_id:
-                mark_email_as_read(entry_id)
-
-            QMessageBox.information(self, "Success", "Email sent and marked as read!")
-            self.state[self.current_index]["send_status"] = "sent"
-            self.state[self.current_index]["reply_text"] = body
-
-            # Block this EntryID for the session; promote from pending if room
+        ok = self.service.send_email(idx, recipient, cc_list, subject, body)
+        if ok:
+            entry_id = self.emails[idx].get("entry_id", "")
             if entry_id:
                 self.processed_entry_ids.add(entry_id)
-
+            QMessageBox.information(self, "Success", "Email sent and marked as read!")
             self._promote_pending()
-
-            # Auto jump to next unsent
-            for i in range(self.current_index + 1, len(self.emails)):
+            for i in range(idx + 1, len(self.emails)):
                 if self.state[i]["send_status"] != "sent":
                     self.load_email(i)
                     break
         else:
-            QMessageBox.warning(self, "Error", f"Failed to send email:\n{result}")
+            QMessageBox.warning(self, "Error", "Failed to send email.")
 
     def _skip_current(self, mark_read: bool):
-        """Skip the current email, optionally marking it as read in Outlook.
-        Immediately marks all agent sections as skipped and prevents workers
-        from processing this index further."""
         idx = self.current_index
-        entry_id = self.emails[idx].get("entry_id", "")
-
-        if mark_read and entry_id:
-            mark_email_as_read(entry_id)
-
-        # Add to skipped set so workers abandon any in-flight work
-        self.skipped_indices.add(idx)
-
-        # Mark all agent sections as skipped
-        st = self.state[idx]
-        st["send_status"] = "skipped"
-        st["filter_status"] = "skipped"
-        st["category_status"] = "skipped"
-        st["reply_status"] = "skipped"
-        st["workflow_status"] = "skipped"
-        st["filtered_body"] = st["filtered_body"] or "⏭️ Skipped"
-        st["category"] = st["category"] or "⏭️ Skipped"
-        st["urgency"] = st["urgency"] or "⏭️ Skipped"
-        st["extra_info"] = st["extra_info"] or "⏭️ Skipped"
-        st["reply_text"] = "⏭️ Skipped"
-        st["workflow_text"] = st["workflow_text"] or "⏭️ Skipped"
-
-        # Block this EntryID for the session; promote from pending if room
-        if entry_id:
-            self.processed_entry_ids.add(entry_id)
-
+        self.service.skip_email(idx, mark_read)
         self._promote_pending()
-
-        # Auto jump to next unskipped/unsent email
         for i in range(idx + 1, len(self.emails)):
             if self.state[i]["send_status"] not in ("sent", "skipped"):
                 self.load_email(i)
                 return
-        # If nothing ahead, stay on current
         self.update_ui_state()
 
     def skip_read(self):
@@ -2018,11 +1727,7 @@ class TriageWindow(QMainWindow):
 
     def closeEvent(self, event):
         self.nav_poll_timer.stop()
-        for worker_name in ('filter_worker', 'triage_worker', 'reply_worker', 'contact_worker'):
-            worker = getattr(self, worker_name, None)
-            if worker:
-                worker.stop()
-                worker.wait()
+        self.service.stop()
         super().closeEvent(event)
 
 

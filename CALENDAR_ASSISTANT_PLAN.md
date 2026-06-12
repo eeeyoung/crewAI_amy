@@ -374,12 +374,12 @@ The GUI is a standalone PyQt6 window (similar pattern to AMail's `gui_viewer.py`
 ┌─────────────────────────────────────────────────────────────────┐
 │  📅 ACalendar                                      [AMail: 🟢] [─][□][×] │
 ├─────────────────────────────────────────────────────────────────┤
-│  Job Filter: [ALL ▼]  Date Type: [ALL ▼]  [🔄 Refresh] [📧 Digest] │
+│  Job Filter: [ALL ▼]  Date Type: [ALL ▼][🔄 Refresh] [📧 Digest] │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                   │
 │  ┌─ UPCOMING (next 7 days) ──────────────────────────────────┐   │
-│  │ Date       │ Description              │ Project │ Type   │   │
-│  │ Jun 8 2pm  │ Concrete pour inspection │ ARCO    │ ✅ exact│   │
+│  │ Date       │ Description              │ Project │ Type    │   │
+│  │ Jun 8 2pm  │ Concrete pour inspection │ ARCO    │✅ exact │   │
 │  │ Jun 10     │ RFI deadline - cladding  │ Hood St │ ⚡ deadline│ │
 │  │ Jun 12     │ Site walk-through        │ Econolodge│ 📅 range│  │
 │  └────────────────────────────────────────────────────────────┘   │

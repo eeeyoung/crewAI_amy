@@ -13,12 +13,12 @@ if str(SRC) not in sys.path:
 
 @pytest.fixture
 def temp_db():
-    """Create a temporary fact_store.db for isolated tests."""
-    import amail.fact_store as fs
+    """Create a temporary mail_knowledge.db for isolated tests."""
+    import amail.mail_knowledge as fs
 
     old_path = fs.DB_PATH
     with tempfile.TemporaryDirectory() as td:
-        db_path = os.path.join(td, "fact_store.db")
+        db_path = os.path.join(td, "mail_knowledge.db")
         fs.DB_PATH = db_path
         fs.init_db()
         yield db_path
