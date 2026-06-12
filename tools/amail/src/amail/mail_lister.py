@@ -151,7 +151,8 @@ class FetchMailWorker(QThread):
 
 
 class MailListerDialog(QDialog):
-    def __init__(self, processed_entry_ids: set, parent=None):
+    def __init__(self, processed_entry_ids: set, parent=None,
+                 graph_service=None):               # ← optional GraphService
         super().__init__(parent)
         self.processed_entry_ids = processed_entry_ids
         self.displayed_entry_ids: set[str] = set()
@@ -162,6 +163,14 @@ class MailListerDialog(QDialog):
         self._suppress_item_changed = False
         self._active_workers: list[FetchMailWorker] = []
         self._monitor_timer = None
+        self._graph_service = graph_service         # may be None
+        self._graph_enriched = False
+
+        # Wire Graph enrichment signal (detachable — just remove this block)
+        if self._graph_service:
+            self._graph_service.enrichment_complete.connect(
+                self._on_graph_enrichment_complete
+            )
 
         self._build_ui()
         self._trigger_fetch()
@@ -297,6 +306,22 @@ class MailListerDialog(QDialog):
         self.btn_process.clicked.connect(self._process_selected)
         bottom.addWidget(self.btn_process)
 
+        # ── Graph API sign-in (optional, detachable) ──────────────
+        self.btn_graph = QPushButton("🔑 Sign in with Microsoft")
+        self.btn_graph.setMinimumHeight(40)
+        self.btn_graph.setStyleSheet(
+            "background-color: #E8F0FE; color: #1a73e8; font-weight: bold; "
+            "font-size: 12px; border-radius: 4px; padding: 6px 12px;"
+        )
+        self.btn_graph.clicked.connect(self._on_graph_sign_in)
+        self.btn_graph.setVisible(self._graph_service is not None)
+        bottom.addWidget(self.btn_graph)
+
+        self._lbl_graph_status = QLabel()
+        self._lbl_graph_status.setStyleSheet("color: #666; font-size: 11px;")
+        self._lbl_graph_status.setVisible(False)
+        bottom.addWidget(self._lbl_graph_status)
+
         bottom.addStretch()
 
         self.lbl_selection = QLabel("Select up to 100 emails to process")
@@ -333,11 +358,54 @@ class MailListerDialog(QDialog):
         self.displayed_entry_ids.clear()
 
         for email in emails:
+            email.setdefault("is_focused", True)  # default: focused
             self._add_email_row(email)
 
         n = len(emails)
         self.lbl_status.setText(f"{n} unread email(s)")
         self._update_process_button()
+
+        # ── Background Graph enrichment (detachable) ──────────────
+        if self._graph_service and self._graph_service.is_authenticated:
+            self._graph_service.enrich_async(emails)
+
+    # ── Graph API handlers (detachable) ───────────────────────────
+
+    def _on_graph_sign_in(self):
+        """Open the device-code sign-in dialog."""
+        if not self._graph_service:
+            return
+        from amail.graph_dialog import GraphSignInDialog
+        dialog = GraphSignInDialog(self._graph_service, parent=self)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self._lbl_graph_status.setText("✓ Connected")
+            self._lbl_graph_status.setVisible(True)
+            self.btn_graph.setVisible(False)
+            # Re-fetch to enrich current emails
+            self._trigger_fetch()
+        else:
+            self._lbl_graph_status.setText("Sign-in cancelled")
+            self._lbl_graph_status.setVisible(True)
+
+    def _on_graph_enrichment_complete(self, results: dict[str, bool]):
+        """Update email data with Focused/Other classification from Graph."""
+        self._graph_enriched = True
+        focused_count = 0
+        other_count = 0
+        for email in self._emails_data:
+            eid = email.get("entry_id", "")
+            if eid in results:
+                email["is_focused"] = results[eid]
+            if email.get("is_focused", True):
+                focused_count += 1
+            else:
+                other_count += 1
+        self._lbl_graph_status.setText(
+            f"✓ {focused_count} Focused · {other_count} Other"
+        )
+        self._lbl_graph_status.setVisible(True)
+
+    # ── Email table ───────────────────────────────────────────────
 
     def _add_email_row(self, email):
         eid = email.get("entry_id", "")

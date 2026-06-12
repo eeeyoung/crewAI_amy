@@ -9,7 +9,8 @@ def run_triage():
     Launch the MailLister dialog first so the user can select up to 5 emails,
     then open the interactive GUI for triage and reply generation.
     """
-    from amail.fact_store import init_db
+    import os
+    from amail.mail_knowledge import init_db
     init_db()
 
     from PyQt6.QtWidgets import QApplication, QDialog
@@ -21,8 +22,22 @@ def run_triage():
 
     processed_entry_ids: set[str] = set()
 
+    # ── Optional Microsoft Graph enrichment ───────────────────────
+    # Create GraphService if the Azure AD client ID is configured.
+    # The client ID is public (used for device-code OAuth) — it can be
+    # set in .env as GRAPH_CLIENT_ID or left hardcoded for convenience.
+    # If omitted, MailLister works exactly as before.
+    graph_svc = None
+    graph_client_id = os.environ.get(
+        "GRAPH_CLIENT_ID",
+        "d92815c2-ccaa-451d-96ba-96fb35ad993c",  # Azure AD app registration
+    )
+    if graph_client_id:
+        from shared_tools.graph_service import GraphService
+        graph_svc = GraphService(client_id=graph_client_id)
+
     from amail.mail_lister import MailListerDialog
-    dialog = MailListerDialog(processed_entry_ids)
+    dialog = MailListerDialog(processed_entry_ids, graph_service=graph_svc)
     if dialog.exec() != QDialog.DialogCode.Accepted:
         print("No emails selected. Exiting.")
         return
@@ -58,7 +73,7 @@ def extract_style():
 
 def view_facts():
     """Print all facts in the knowledge store."""
-    from amail.fact_store import init_db, list_all_facts
+    from amail.mail_knowledge import init_db, list_all_facts
     init_db()
     facts = list_all_facts()
     if not facts:
