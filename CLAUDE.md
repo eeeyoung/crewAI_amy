@@ -1,10 +1,27 @@
 # CLAUDE.md — lilAmy Platform
 
+Python 3.10–3.13, CrewAI 1.14.2, PyQt6, SQLite + ChromaDB, Windows (Outlook COM).
+
+## Commands
+
+```bash
+uv sync                                          # Install all dependencies
+uv run lilamy                                    # Launch platform (desktop card UI)
+uv run lilamy --web                              # Launch WebUI (http://127.0.0.1:8765)
+uv run lilamy --amail                            # Launch legacy AMail GUI
+uv run amail                                     # Legacy AMail (unchanged)
+uv run acalendar                                 # ACalendar GUI
+uv run asummary1                                 # Email summary GUI
+uv run pytest tools/amail/tests/ -v              # AMail tests (83 pass, 6 pre-existing)
+uv run python ingest.py --data-dir D:/path       # Ingest documents into hybrid DB
+uv run python chat.py                            # Terminal RAG chatbot
+```
+
 ## Core Architectural Principle
 
 **Always separate core logic from UI.** Every feature must be built as a standalone service class with a clean Python API before any GUI is attached. The UI layer (PyQt6, FastAPI, web frontend) must be a thin consumer of the service — never the owner of business logic.
 
-### The Pattern (established by MailService & CalendarService)
+### The Pattern
 
 ```
 ┌──────────────────────┐
@@ -14,44 +31,94 @@
            │  Python method calls
 ┌──────────▼───────────┐
 │  Service Class        │  QObject with signals, owns all logic
-│  (reusable, testable) │  threading, state, CrewAI, COM, DB, IPC
+│  (reusable, testable) │  threading.Thread + queue.Queue, CrewAI, COM, DB
 └──────────────────────┘
 ```
 
-### Rules
+### Rules (with WHY)
 
-1. **New features → service class first.** Create a service in `shared/src/shared_tools/` with public methods, PyQt signals for async results, and `threading.Thread` + `queue.Queue` for internal concurrency.
-2. **UI calls service, never touches internals.** GUI widgets call `self.service.do_thing()`. They never access queues, threads, or raw state dicts directly.
-3. **Forwarding properties for minimal change.** When refactoring existing GUI code, use `@property` to delegate `self.state` → `self.service._state` — keeps existing GUI code working without rewrites.
-4. **Pydantic schemas at API boundaries.** When adding HTTP/FastAPI later, a thin Pydantic model layer translates between stable JSON contracts and the service's internal Python objects.
-5. **No package bloat.** Use only `requests` (already present) for HTTP calls. Do not install new packages without explicit approval.
+1. **New features → service class first.** Create in `shared/src/shared_tools/` as a QObject with public methods, PyQt signals, and `threading.Thread` + `queue.Queue` concurrency. **Why:** A service can have multiple UIs (CLI today, web tomorrow) and can be tested without a GUI.
+2. **UI calls service, never touches internals.** GUI widgets call `self.service.do_thing()`. They never access queues, threads, semaphores, or raw state dicts. **Why:** If the UI touches internals, refactoring the service breaks the UI.
+3. **QThread is deprecated for new code.** Use `threading.Thread` + `queue.Queue` in services. QThread subclasses in GUI are legacy that must be extracted. **Why:** QThread ties logic to PyQt6; threading.Thread is portable.
+4. **Forwarding properties for minimal change.** When refactoring existing GUI code, use `@property` to delegate `self.state` → `self.service._state`. **Why:** Keeps existing GUI code working without full rewrites.
+5. **No package bloat.** Use only `requests` (already present) for HTTP. Do not install new packages without explicit approval. **Why:** Keeps the dependency surface auditable and deployment lightweight.
+6. **ALL data outside repo.** Databases, embeddings, caches, tokens go to `LILAMY_DATA_DIR` (env var). Never inside the repository tree. **Why:** Multi-client deployments; pushing client data to git is a confidentiality breach.
 
-### Existing Services
+## NEVER
+
+- ❌ **Put business logic in a QWidget/QDialog subclass** — extract to a service first
+- ❌ **Create new QThread subclasses** — use `threading.Thread` in a QObject service
+- ❌ **Put `_llm_semaphore` or `queue.Queue` at module level in GUI files** — they belong in a service class
+- ❌ **Call Outlook COM or SQLite directly from GUI code** — route through a service or existing tool
+- ❌ **Duplicate a crew.py or YAML config across tools** — extract the shared logic to `shared_tools/`
+- ❌ **Store .db, .bin, .pkl, .jsonl, .chromadb/ inside the repo** — everything goes to `LILAMY_DATA_DIR`
+- ❌ **Hardcode paths** — always import from `ipc_bridge` (`CREWAI_DIR`, `DB_PATH`) or read `LILAMY_DATA_DIR`
+- ❌ **Install new PyPI packages** without explicit approval
+- ❌ **Use `ChatOpenAI(model_name=...)`** — always `crewai.LLM` via `get_llm(role)` from `llm_config.py`
+
+## Existing Services
 
 | Service | Location | Purpose |
 |---|---|---|
-| `MailService` | `shared/src/shared_tools/mail_service.py` | AMail pipeline: fetch → filter → triage → reply → workflow, plus Outlook send, fact extraction, grammar polish, IPC |
-| `CalendarService` | `shared/src/shared_tools/calendar_service.py` | Event CRUD, conflict detection, weekly digest, AMail status polling, IPC |
+| `MailService` | `shared/src/shared_tools/mail_service.py` | AMail pipeline: fetch → filter → triage → reply → workflow |
+| `CalendarService` | `shared/src/shared_tools/calendar_service.py` | Event CRUD, conflict detection, weekly digest, IPC |
+| `MemoryService` | `shared/src/shared_tools/memory_service.py` | ChromaDB ingestion + hybrid search |
+| `FileRegistry` | `shared/src/shared_tools/file_registry.py` | SQLite file tracker with MD5 hashing |
+| `PDFVisionService` | `shared/src/shared_tools/pdf_vision_service.py` | Multi-modal PDF processing via Gemini Flash |
+| `GraphService` | `shared/src/shared_tools/graph_service.py` | Microsoft Graph API (device-code OAuth) |
 
-### Project Structure
+## Project Structure
 
 ```
 crewAI_amy/
-├── shared/src/shared_tools/   ← reusable services & utilities
-│   ├── mail_service.py
-│   ├── calendar_service.py
+├── shared/src/shared_tools/   ← reusable services & utilities (the foundation)
+│   ├── mail_service.py        ← AMail pipeline service
+│   ├── calendar_service.py    ← Calendar service
+│   ├── memory_service.py      ← ChromaDB ingestion + RAG search
+│   ├── file_registry.py       ← SQLite file tracker
+│   ├── pdf_vision_service.py  ← PDF → PNG → Gemini vision
+│   ├── graph_service.py       ← Microsoft Graph API client
 │   ├── outlook_tool.py        ← Outlook COM wrappers
 │   ├── ipc_bridge.py          ← AMail↔ACalendar shared DB
-│   └── llm_config.py          ← LLM provider routing
+│   └── llm_config.py          ← LLM provider routing (get_llm)
 ├── tools/
-│   ├── amail/                 ← AMail (email triage)
-│   └── acalendar/             ← ACalendar (schedule dashboard)
-├── lilAmy_Architecture_and_Roadmap.md
+│   ├── amail/                 ← AMail (email triage + PyQt6 GUI)
+│   ├── acalendar/             ← ACalendar (schedule dashboard)
+│   ├── asummary/              ← CLI-only email summarizer (superseded by asummary1)
+│   └── asummary1/             ← Email summarizer with PyQt6 GUI
+├── ingest.py                  ← Hybrid ingestion CLI
+├── chat.py                    ← Grounded RAG chatbot
+├── CLAUDE.md                  ← This file
+├── AGENTS.md                  ← Cross-tool version (Cursor, Copilot, Codex, Windsurf)
+├── AMY_Architecture_and_Roadmap.md
 └── SERVICE_EXTRACTION_PLAN.md
 ```
 
-### Testing
+## Gotchas
+
+### ONNX embedding crashes
+`enable_cpu_mem_arena=True` (default) causes OOM on 90+ batches. Fix: `enable_cpu_mem_arena=False`, `intra_op_num_threads=2`, `inter_op_num_threads=2`. Singleton ONNXMiniLM_L6_V2 instance prevents duplicate InferenceSessions. See `memory_service.py:_get_persistent_embedding_function()`.
+
+### PyQt6 signals in CLI scripts
+PyQt signals don't deliver without a running event loop. CLI scripts that use QObject services must: (a) create `QApplication`, (b) call `app.processEvents()` in polling loops, (c) never call `app.exec()`.
+
+### Gemini model names
+`gemini-3.1-flash` does NOT exist (404). Use `gemini-3.1-flash-lite` or check the latest valid model names. `MODEL=gemini/gemini-3.1-flash-lite` in `.env`.
+
+### CrewAI LLM pattern
+Always use `get_llm(role)` from `shared_tools.llm_config.py`. Roles: `"fast"` (lightweight tasks), `"smart"` (complex reasoning). Provider routing: `AI_PROVIDER=gem` → Gemini, `AI_PROVIDER=ds` → DeepSeek. **Never** construct `LLM()` or `ChatOpenAI()` directly in tools.
+
+### Data storage
+All persisted data lives in `<project_root>/data/` (gitignored). Override with `LILAMY_DATA_DIR` env var for production deployments. The `.gitignore` excludes: `data/`, `.chromadb/`, `*.sqlite3`, `.lilamy_registry.db`, `.lilamy_vision_cache/`, `.lilamy_graph_token.json`.
+
+## Testing
 
 ```bash
-uv run pytest tools/amail/tests/ -v    # 83 pass, 6 pre-existing failures (test_crew.py)
+uv run pytest tools/amail/tests/ -v              # 83 pass, 6 pre-existing (test_crew.py)
 ```
+
+No tests exist yet for: CalendarService, MemoryService, FileRegistry, PDFVisionService, GraphService, ASummary1. This is a known gap.
+
+## Linked Memory
+
+This file works with Claude Code's persistent memory system at `~/.claude/projects/C--crewAI-crewAI-amy/memory/`. Key memories: session recaps, technical decisions (ONNX fix, Gemini model names), and project milestones. Check `MEMORY.md` index on session start for context.

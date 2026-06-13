@@ -1702,8 +1702,8 @@ class TriageWindow(QMainWindow):
 
     def _poll_nav_requests(self):
         """Check if ACalendar has requested navigation to a specific email."""
-        from pathlib import Path
-        nav_path = Path.home() / ".crewai" / "nav_request.json"
+        from shared_tools.ipc_bridge import CREWAI_DIR
+        nav_path = CREWAI_DIR / "nav_request.json"
         if not nav_path.exists():
             return
         try:

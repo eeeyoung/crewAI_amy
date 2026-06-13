@@ -7,7 +7,6 @@ import json
 import sqlite3
 import sys
 import threading
-from pathlib import Path
 
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -21,7 +20,7 @@ from shared_tools.outlook_tool import fetch_inbox_emails, mark_email_as_read
 from asummary1.crew import SummarizerCrew
 from asummary1.reply_crew import ReplyCrew
 
-DB_PATH = Path.home() / ".crewai" / "shared_data.db"
+from shared_tools.ipc_bridge import DB_PATH
 
 # ── Styles ────────────────────────────────────────────────────────────
 

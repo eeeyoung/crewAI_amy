@@ -9,11 +9,9 @@ Usage:
 """
 
 import json
-import os
 import sqlite3
 import sys
 import warnings
-from pathlib import Path
 
 # Force UTF-8 on Windows so emojis and Chinese render correctly
 if sys.platform == "win32":
@@ -21,7 +19,7 @@ if sys.platform == "win32":
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-DB_PATH = Path.home() / ".crewai" / "shared_data.db"
+from shared_tools.ipc_bridge import DB_PATH  # noqa: E402 — import after path setup
 
 
 def _get_connection() -> sqlite3.Connection:
@@ -165,11 +163,11 @@ def run():
     """Main entry point. Use --list / --latest / --all for CLI options."""
     print("🔍 ASummary — reading emails processed by AMail...\n")
 
-    # Check shared DB exists
+    # Ensure shared DB exists (auto-init if missing)
     if not DB_PATH.exists():
-        print(f"⚠️  No shared database found at {DB_PATH}")
-        print("   Make sure AMail has processed some emails first.")
-        return
+        from shared_tools.ipc_bridge import init_shared_db
+        init_shared_db()
+        print(f"📦 Initialized shared database at {DB_PATH}\n")
 
     # Handle CLI flags
     if "--list" in sys.argv:

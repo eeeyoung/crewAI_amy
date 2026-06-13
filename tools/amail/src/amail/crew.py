@@ -16,6 +16,16 @@ class StyleBlueprint(BaseModel):
     reasoning_logic: str
 
 
+class UnifiedEmailOutput(BaseModel):
+    """Single-pass structured output from the unified summarizer.
+    Replaces the old 6-stage pipeline for initial triage."""
+    chinese_summary: str
+    category: str
+    urgency: str          # low | medium | high | critical
+    assignee: str
+    todos: list[str]
+
+
 @CrewBase
 class StyleLearnerCrew():
     """Crew for extracting personal writing style from historical emails."""
@@ -292,4 +302,35 @@ class GrammarPolisherCrew():
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
+        )
+
+
+@CrewBase
+class UnifiedSummarizerCrew():
+    """Single-pass summarizer — one LLM call replacing the old 6-stage pipeline.
+    Produces: chinese_summary, category, urgency, assignee, todos."""
+    agents_config = 'config/summarizer_agents.yaml'
+    tasks_config = 'config/summarizer_tasks.yaml'
+
+    @agent
+    def unified_summarizer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['unified_summarizer'],  # type: ignore[index]
+            llm=get_llm("fast"),
+            verbose=False,
+        )
+
+    @task
+    def unified_summarize_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['unified_summarize_task'],  # type: ignore[index]
+        )
+
+    @crew
+    def crew(self) -> Crew:
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.sequential,
+            verbose=False,
         )

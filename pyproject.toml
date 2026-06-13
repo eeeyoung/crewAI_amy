@@ -3,10 +3,30 @@ name = "lilamy"
 version = "0.1.0"
 description = "lilAmy — multi-agent desktop workspace"
 requires-python = ">=3.11"
-dependencies = ["amail", "acalendar", "asummary", "asummary1", "shared-tools"]
+dependencies = [
+    "amail",
+    "acalendar",
+    "asummary",
+    "asummary1",
+    "shared-tools",
+    "fastapi>=0.136.3",
+]
 
 [tool.uv.workspace]
 members = ["tools/*", "shared"]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+lilamy = "lilamy.main:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lilamy"]
 
 [tool.uv.sources]
 amail = { workspace = true }

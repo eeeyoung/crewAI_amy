@@ -182,7 +182,8 @@ class CalendarService(QObject):
             from shared_tools.ipc_bridge import init_shared_db
             import sqlite3
             init_shared_db()
-            conn = sqlite3.connect(str(Path.home() / ".crewai" / "shared_data.db"))
+            from shared_tools.ipc_bridge import DB_PATH
+            conn = sqlite3.connect(str(DB_PATH))
             conn.execute(
                 "INSERT INTO weekly_digests (sent_date, recipient) VALUES (?, ?)",
                 (date.today().isoformat(), recipient),
@@ -219,7 +220,8 @@ class CalendarService(QObject):
     @staticmethod
     def navigate_to_amail(source_entry_id: str):
         """Write a nav-request file that AMail will pick up."""
-        nav_path = Path.home() / ".crewai" / "nav_request.json"
+        from shared_tools.ipc_bridge import CREWAI_DIR
+        nav_path = CREWAI_DIR / "nav_request.json"
         nav_path.parent.mkdir(parents=True, exist_ok=True)
         nav_path.write_text(json.dumps({
             "target_entry_id": source_entry_id,

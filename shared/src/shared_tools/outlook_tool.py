@@ -5,23 +5,36 @@ from crewai.tools import BaseTool
 from pydantic import Field
 
 
-def fetch_inbox_emails(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
-    """Fetch the latest emails from Outlook Inbox directly.
-    Returns a list of dicts with subject, sender, cc, received_time, body.
-    Skips emails whose EntryID is in exclude_entry_ids (session blocklist).
-    Only returns emails from the "Focused" inbox (skips "Other" tab).
-    This is a plain Python function, NOT a CrewAI tool.
+def fetch_inbox_emails(count=100, max_body=4000, unread_only=False,
+                      exclude_entry_ids: set = None,
+                      received_after: str = None, received_before: str = None,
+                      ascending: bool = False):
+    """Fetch emails from Outlook Inbox.
+
+    Args:
+        count: Max emails to return.
+        max_body: Max body length in chars.
+        unread_only: If True, only fetch unread emails.
+        exclude_entry_ids: Set of EntryIDs to skip.
+        received_after: ISO datetime string — only emails received AFTER this.
+        received_before: ISO datetime string — only emails received BEFORE this.
+        ascending: If True, sort oldest-first (for fetch_earlier).
     """
     if exclude_entry_ids is None:
         exclude_entry_ids = set()
     if platform.system() == "Windows":
-        return _fetch_inbox_emails_windows(count, max_body, unread_only, exclude_entry_ids)
+        return _fetch_inbox_emails_windows(count, max_body, unread_only, exclude_entry_ids,
+                                           received_after, received_before, ascending)
     elif platform.system() == "Darwin":
-        return _fetch_inbox_emails_macos(count, max_body, unread_only, exclude_entry_ids)
+        return _fetch_inbox_emails_macos(count, max_body, unread_only, exclude_entry_ids,
+                                         received_after, received_before, ascending)
     else:
         raise RuntimeError(f"This function is not supported on OS: {platform.system()}")
 
-def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
+def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False,
+                                exclude_entry_ids: set = None,
+                                received_after: str = None, received_before: str = None,
+                                ascending: bool = False):
     import win32com.client
 
     if exclude_entry_ids is None:
@@ -32,7 +45,12 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, excl
     messages = inbox.Items
     if unread_only:
         messages = messages.Restrict("[UnRead] = True")
-    messages.Sort("[ReceivedTime]", True)
+    messages.Sort("[ReceivedTime]", not ascending)  # True=DESC (newest first), False=ASC (oldest first)
+
+    # Parse date filters
+    from datetime import datetime
+    after_dt = datetime.fromisoformat(received_after) if received_after else None
+    before_dt = datetime.fromisoformat(received_before) if received_before else None
 
     emails = []
     fetched = 0
@@ -58,6 +76,22 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, excl
                     continue
             except Exception:
                 pass  # Property not available; include the email
+
+            # Date range filtering
+            if after_dt or before_dt:
+                try:
+                    msg_time = message.ReceivedTime
+                    # Outlook returns a pywintypes datetime; strip tz for comparison
+                    msg_dt = datetime(
+                        msg_time.year, msg_time.month, msg_time.day,
+                        msg_time.hour, msg_time.minute, msg_time.second
+                    )
+                    if after_dt and msg_dt <= after_dt:
+                        continue
+                    if before_dt and msg_dt >= before_dt:
+                        continue
+                except Exception:
+                    pass  # if we can't parse the date, include the email
 
             sender_name = getattr(message, "SenderName", "Unknown")
             sender_email = getattr(message, "SenderEmailAddress", "Unknown")
@@ -105,7 +139,10 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False, excl
 
     return emails
 
-def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False, exclude_entry_ids: set = None):
+def _fetch_inbox_emails_macos(count=10, max_body=4000, unread_only=False,
+                              exclude_entry_ids: set = None,
+                              received_after: str = None, received_before: str = None,
+                              ascending: bool = False):
     import json
 
     jxa_script = """

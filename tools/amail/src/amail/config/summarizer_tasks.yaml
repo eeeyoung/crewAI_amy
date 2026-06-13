@@ -1,0 +1,41 @@
+unified_summarize_task:
+  description: >
+    Read this construction-related email and produce a complete structured analysis.
+
+    SUBJECT: {email_subject}
+    SENDER: {email_sender}
+    CONTENT: {email_content}
+
+    Produce these five fields in a JSON object:
+
+    1. chinese_summary: One Chinese sentence under 50 characters capturing the
+       core message or request. Include dates if present in the email.
+
+    2. category: Most specific category from: RFI, Submittal, Financial, Safety,
+       Scheduling, Site Visit, Meeting, Contract, Variation, Progress Claim,
+       Procurement, HR, General.
+
+    3. urgency: "low" | "medium" | "high" | "critical".
+       critical = deadline today, safety issue, contract breach.
+       high = needs response within 48 hours.
+       medium = needs response this week.
+       low = informational, no action timeline.
+
+    4. assignee: Person or role who should handle this. Use names from the email
+       when present, otherwise use a logical role (项目经理, 合同管理员, 财务,
+       现场经理, 安全负责人, Amy Chen).
+
+    5. todos: List of 1-3 Chinese action items starting with verbs
+       (e.g., "审核RFI并回复承包商"). Empty list if purely informational.
+
+    Return ONLY a JSON object (no markdown, no extra text):
+    {{
+      "chinese_summary": "string",
+      "category": "string",
+      "urgency": "string",
+      "assignee": "string",
+      "todos": ["string", ...]
+    }}
+  expected_output: >
+    A JSON object with chinese_summary, category, urgency, assignee, and todos fields.
+  agent: unified_summarizer

@@ -12,10 +12,16 @@ wheels/
 .env.txt
 
 # ── Storage files — NEVER commit client project data ──────────────────
-# Per CLAUDE.md: all storage must be written to LILAMY_DATA_DIR, never
-# inside the repository.  Each client deployment has its own data root.
-# Pushing one client's data into version control is a confidentiality
-# breach and a commercial liability.
+# All storage goes to <project_root>/data/ (or LILAMY_DATA_DIR if set).
+# Each client deployment has its own data root.  Pushing one client's
+# data into version control is a confidentiality breach and a commercial
+# liability.
+
+# Primary data directory (local development default)
+data/
+
+# Legacy data directory (still used if LILAMY_DATA_DIR points elsewhere)
+.crewai/
 
 # ChromaDB vector stores
 .chromadb/
@@ -46,7 +52,6 @@ indices/
 
 # Cache and temporary directories
 .cache/
-.crewai/
 
 # Training data and knowledge base files (may contain client emails)
 knowledge/historical_emails/.chromadb/

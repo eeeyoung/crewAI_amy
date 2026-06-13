@@ -1,95 +1,117 @@
-# CLAUDE.md
+# CLAUDE.md — AMail
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-AMail is a CrewAI-powered email triage and auto-reply agent for the **lilAmy** platform.
-It reads unread emails from Microsoft Outlook (via COM on Windows), runs them through a
-pipeline of AI agents to clean, categorize, draft replies, and generate task workflows —
-all presented through an interactive PyQt6 GUI.
+Email triage and auto-reply agent for the lilAmy platform. Reads Outlook inbox, runs emails through a 6-agent CrewAI pipeline, presents results in a PyQt6 GUI. **Now follows the service-first pattern: MailService owns all pipeline logic; GUI is a thin consumer.**
 
 ## Commands
 
 ```bash
-# Install dependencies (Python >=3.10, <3.14 required)
-uv sync
-
-# Run the main workflow: fetch unread Outlook emails and launch interactive GUI
-uv run amail
-
-# Extract writing style blueprint from historical emails
-uv run extract_style
-
-# View all facts stored in the project knowledge base
-uv run view_facts
-
-# Run the test suite
-uv run pytest
+uv sync                               # Install dependencies
+uv run amail                          # Launch GUI (fetch unread + interactive triage)
+uv run python -m amail.main           # Same as above
+uv run extract_style                  # Build writing style blueprint from historical emails
+uv run view_facts                     # View all FTS5 stored facts
+uv run pytest tools/amail/tests/ -v   # 83 pass, 6 pre-existing (test_crew.py)
 ```
 
 ## Architecture
 
-The system is a **6-agent pipeline** with a PyQt6 GUI orchestrating everything:
+### Service-First (after refactor)
 
-### Pipeline Stages (in order)
+```
+gui_viewer.py (PyQt6)          ← Thin UI: widgets, layouts, signal handlers
+        │  calls methods, connects to signals
+        ▼
+MailService (shared_tools)      ← QObject owning ALL pipeline logic
+        │  uses threading.Thread + queue.Queue (NOT QThread)
+        ▼
+CrewAI crews (crew.py)          ← 6 crews, each with YAML config
+Outlook COM (outlook_tool.py)   ← Fetch, send, mark, attachments
+IPC Bridge (ipc_bridge.py)      ← AMail↔ACalendar shared DB
+Fact Store (fact_store.py)      ← FTS5 knowledge base
+LLM Config (llm_config.py)      ← Provider routing
+```
 
-1. **MessageFilterCrew** — Cleans raw email bodies: strips signatures, legal disclaimers, social media links. For multi-party threads, restructures into chronological sections with sender identity headers.
-2. **TriageSingleCrew** — Classifies each email by construction domain (RFI, Submittal, Financial, Safety, Scheduling, etc.) and urgency. Returns JSON: `{category, urgency, extra_info}`.
-3. **ReplyGeneratorCrew** — Generates a professional email reply in Amy Chen's writing style. Has CrewAI memory enabled with Google Generative AI embeddings. Dynamically injects `knowledge/style_blueprint.md` and recent few-shot examples from `knowledge/reply_examples.jsonl` into the agent's backstory.
-4. **WorkflowGeneratorCrew** — Generates a step-by-step task workflow for handling the email, identifying other specialized AI agents to activate.
-5. **FactExtractorCrew** — On user request ("Save Key Facts"), extracts durable project facts (project names, reference numbers, dates, decisions, specs) from an email and stores them in an FTS5 full-text search database. This knowledge is then injected into future reply generation via `search_facts()`.
+### Pipeline (sequential, 6 stages)
 
-### Source File Map (`src/amail/`)
+1. **MessageFilterCrew** — Strips signatures, disclaimers, social links. Restructures multi-party threads chronologically.
+2. **TriageSingleCrew** — Classifies: RFI, Submittal, Financial, Safety, Scheduling, etc. Returns `{category, urgency, extra_info, dates}`.
+3. **ReplyGeneratorCrew** — Drafts reply as Amy Chen. Uses `knowledge/style_blueprint.md` + `reply_examples.jsonl` as few-shot. Has CrewAI memory (Google Generative AI embeddings).
+4. **WorkflowGeneratorCrew** — Step-by-step task workflow. Identifies specialist agents to activate.
+5. **FactExtractorCrew** — On-demand ("Save Key Facts"). Extracts project names, dates, decisions, specs → FTS5.
+6. **GrammarPolisherCrew** — Polish draft text before send.
+
+## Source Map
 
 | File | Purpose |
-|------|---------|
-| `main.py` | Entry points: `run`, `train`, `extract_style`, `view_facts`, `test` |
-| `crew.py` | All 6 CrewAI crew definitions + `get_llm()` provider routing |
-| `gui_viewer.py` | PyQt6 GUI — TriageWindow, background workers (FilterWorker, TriageWorker, ReplyWorker, WorkflowWorker, RegenerateWorker), dialogs |
-| `fact_store.py` | SQLite FTS5 knowledge base for project facts: `init_db()`, `save_facts()`, `search_facts()`, `list_all_facts()` |
-| `tools/outlook_tool.py` | Outlook COM integration: fetch emails, send replies with inline images, mark read/unread, attachment management |
-| `tools/outlook_reply_tool.py` | Legacy reply tool |
-| `tools/check_email_body.py` | Email body validation utility |
-| `tools/custom_tool.py` | CrewAI custom tool base |
+|---|---|
+| `src/amail/main.py` | Entry points: `run`, `train`, `extract_style`, `view_facts` |
+| `src/amail/crew.py` | All 6 crew definitions |
+| `src/amail/gui_viewer.py` | PyQt6 GUI — TriageWindow (thin, consumes MailService) |
+| `src/amail/fact_store.py` | SQLite FTS5: `init_db()`, `save_facts()`, `search_facts()` |
+| `src/amail/graph_dialog.py` | Graph API sign-in dialog (optional, detachable) |
+| `src/amail/mail_knowledge.py` | Email FTS5 knowledge base |
+| `config/*.yaml` | Per-crew agent/task configs (filter, triage, reply, workflow, fact_extractor, grammar) |
 
-### GUI (`src/amail/gui_viewer.py`)
+## External Services Used
 
-PyQt6 window with left panel (original email + filtered view overlay) and right panel (draft reply, category/urgency labels, workflow dialog). Uses background `QThread` workers processing emails through the pipeline concurrently via queues. Keyboard shortcuts: `A`/`D` (prev/next), `R` (regenerate), `W` (workflow), `1` (send), `2`/`3` (skip read/unread), `4` (save as example), `5` (save key facts), `Q` (attachments).
+| Service | Source | What it provides |
+|---|---|---|
+| MailService | `shared_tools/mail_service.py` | Pipeline orchestration, state, threading, signals |
+| Outlook COM | `shared_tools/outlook_tool.py` | `fetch_inbox_emails()`, `mark_email_as_read()`, `OutlookSendTool` |
+| LLM Config | `shared_tools/llm_config.py` | `get_llm(role)` — `"fast"` or `"smart"` |
+| IPC Bridge | `shared_tools/ipc_bridge.py` | Shared DB for AMail↔ACalendar comm |
 
-### LLM Provider Toggle
+## NEVER (AMail-specific)
 
-Controlled by `AI_PROVIDER` env var in `.env`:
-- `ds` → DeepSeek (`deepseek-chat` for standard tasks, `deepseek-reasoner` for "smart" role)
-- `gem` (default) → Gemini (`gemini-2.5-flash` / `gemini-2.5-pro`)
+- ❌ Put pipeline logic back in `gui_viewer.py` — MailService owns it now
+- ❌ Create new QThread subclasses — use `threading.Thread` in MailService
+- ❌ Call Outlook COM or SQLite directly from GUI — route through MailService or existing tools
+- ❌ Touch `_llm_semaphore` from GUI code — it lives inside MailService
+- ❌ Modify root `config/agents.yaml` or `config/tasks.yaml` — they're **abandoned/legacy**. Use the per-crew configs
+- ❌ Construct `LLM()` or `ChatOpenAI()` directly — always `get_llm(role)` from `llm_config.py`
+- ❌ Add new crews without corresponding YAML configs
 
-The `get_llm(role)` function in `crew.py` routes all LLM requests.
+## Gotchas
 
-### Outlook Integration (`shared/src/shared_tools/outlook_tool.py`)
+### MailService is the source of truth
+After the service extraction, all email state (`_emails`, `_state`, `_processed_entry_ids`, `_skipped_indices`) lives in MailService. The GUI's `TriageWindow` accesses state through MailService properties. Never add state-tracking attributes directly to TriageWindow.
 
-Windows-only (COM via `win32com.client`). Key functions:
-- `fetch_inbox_emails(count, max_body, unread_only)` — returns list of email dicts with subject, sender, cc, received_time, body, entry_id
-- `OutlookSendTool` — CrewAI tool that sends emails, attaches inline images (logo, signature icons) with Content-ID, embeds `amy_signature.html`
-- `mark_email_as_read()` / `mark_email_as_unread()` by EntryID
-- `fetch_attachments_for_email()` / `save_attachment()` — attachment management
+### Outlook COM is Windows-only
+`outlook_tool.py` requires `win32com.client`. All Outlook access must go through this module — never import `win32com` directly in new code.
 
-### Knowledge Base (`knowledge/`)
+### CrewAI YAML configs
+`agents.yaml` and `tasks.yaml` at the config root are **abandoned**. The active pipeline uses: `filter_agents.yaml`, `filter_tasks.yaml`, `triage_agents.yaml`, `triage_tasks.yaml`, `reply_agents.yaml`, `reply_tasks.yaml`, `workflow_agents.yaml`, `workflow_tasks.yaml`, `fact_extractor_agents.yaml`, `fact_extractor_tasks.yaml`, `grammar_agents.yaml`, `grammar_tasks.yaml`.
 
-- `style_blueprint.md` — Generated writing style analysis (output of `extract_style`)
-- `reply_examples.jsonl` — User-curated few-shot examples for reply generation (appended via "Save as Example" button)
-- `workflow_examples.jsonl` — User-curated workflow examples
-- `historical_emails/` — Historical emails used by StyleLearnerCrew
-- `amy_signature.html` — HTML email signature with logo/images
-- `logo_meritor_welink.png`, `logo_hia_awards.png`, `icon_instagram.png`, `icon_facebook.png` — Signature/email images
-- `fact_store.db` — SQLite FTS5 database storing extracted project facts (created automatically on first run)
+### LLM provider toggle
+`AI_PROVIDER=gem` (default, Gemini) or `AI_PROVIDER=ds` (DeepSeek). Set in `.env`. The `get_llm()` function in `crew.py` handles routing — don't duplicate this logic.
 
-### Key Configuration
+## GUI Keyboard Map
 
-- Agents/tasks defined as YAML in `src/amail/config/` (filter, triage, reply, workflow, fact_extractor, style_learner)
-- `agents.yaml` and `tasks.yaml` are **legacy/abandoned** — the active pipeline uses the per-crew config files
-- `pyproject.toml` has `[tool.crewai] type = "crew"` which tells the CLI this is a crew project
-- `.env` contains API keys and model selection — never commit changes to it
+| Key | Action |
+|---|---|
+| `A` / `D` | Prev / Next email |
+| `R` | Regenerate reply |
+| `W` | Workflow dialog |
+| `1` | Send email |
+| `2` | Skip + mark read |
+| `3` | Skip + leave unread |
+| `4` | Save as reply example |
+| `5` | Save key facts |
+| `Q` | Attachment dialog |
 
-### Style Extraction (`convert_pst_txt.py`)
+## Knowledge Base (`knowledge/`)
 
-Standalone script to convert Outlook PST exports to text files in `historical_emails/`. Requires `libpff-python`. Extracts only from "Sent Items" folder to capture the user's outgoing writing style.
+- `style_blueprint.md` — Amy Chen's writing style (generated by `extract_style`)
+- `reply_examples.jsonl` — Curated few-shot reply examples
+- `workflow_examples.jsonl` — Curated workflow examples
+- `historical_emails/` — PST exports from Sent Items (used by StyleLearnerCrew)
+- `amy_signature.html` — HTML email signature with embedded images
+- `fact_store.db` — SQLite FTS5 facts database (created on first run)
+
+## Testing
+
+```bash
+uv run pytest tools/amail/tests/ -v    # 83 pass, 6 pre-existing failures (test_crew.py)
+```
+
+The 6 failures are CrewAI decorator resolution issues in test environments — not runtime bugs. New tests should use `pytest` with mocked crews.

@@ -49,6 +49,7 @@ class MailService(QObject):
 
     # ---- signals (emitted from background threads, auto-queued to main) ----
 
+    # Legacy 6-stage pipeline signals
     filter_done = pyqtSignal(int, str)              # idx, cleaned_body
     category_ready = pyqtSignal(int, str, str, str, list)  # idx, cat, urg, extra, dates
     reply_generated = pyqtSignal(int, str)          # idx, html_body
@@ -56,7 +57,17 @@ class MailService(QObject):
     contacts_loaded = pyqtSignal(list)              # [{"name":..., "email":...}, ...]
     grammar_polished = pyqtSignal(int, str)         # idx, polished_text
 
-    def __init__(self, parent: QObject | None = None):
+    # Unified pipeline signals
+    emails_loaded = pyqtSignal(list)                # initial load from DB (fast)
+    new_emails_arrived = pyqtSignal(int)            # count of new emails after refresh
+    summary_ready = pyqtSignal(dict)                # single email summarized {entry_id, ...}
+    refresh_progress = pyqtSignal(int, int, str)    # current, total, status message
+    refresh_error = pyqtSignal(str)                 # error message
+    email_removed = pyqtSignal(str)                 # entry_id of removed email
+    email_body_updated = pyqtSignal(str)            # entry_id of email with updated body
+    sync_complete = pyqtSignal(int, int, int)       # added, removed, updated counts
+
+    def __init__(self, parent: QObject | None = None, auto_refresh: bool = False):
         super().__init__(parent)
 
         # ---- state ----
@@ -79,6 +90,11 @@ class MailService(QObject):
         self._threads: list[threading.Thread] = []
         self._running = False
         self._contacts_cache: list[dict] = []
+
+        # ---- auto-refresh ----
+        self._auto_refresh = auto_refresh
+        self._refresh_timer: object | None = None  # QTimer, set in start()
+        self._latest_received_time: str | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -106,9 +122,12 @@ class MailService(QObject):
         for t in self._threads:
             t.start()
 
+        self._start_auto_refresh()
+
     def stop(self):
-        """Stop all pipeline threads and unregister IPC."""
+        """Stop all pipeline threads, auto-refresh timer, and unregister IPC."""
         self._running = False
+        self._stop_auto_refresh()
         for q in (self._filter_queue, self._triage_queue,
                   self._reply_queue, self._workflow_queue):
             q.put(None)  # poison pill
@@ -116,6 +135,402 @@ class MailService(QObject):
             t.join(timeout=3)
         from shared_tools.ipc_bridge import unregister_app
         unregister_app("amail")
+
+    # ------------------------------------------------------------------
+    # Unified pipeline — single-pass summarization + auto-refresh
+    # ------------------------------------------------------------------
+
+    def load_emails_from_db(self, status: str = "active", limit: int = 100) -> list[dict]:
+        """Load processed emails from the shared DB (fast, no Outlook call).
+        Emits ``emails_loaded`` with the result list."""
+        from shared_tools.ipc_bridge import get_processed_emails, get_latest_received_time
+        emails = get_processed_emails(status=status, limit=limit)
+        self._latest_received_time = get_latest_received_time()
+        # Prime the session dedup set
+        from shared_tools.ipc_bridge import get_processed_entry_ids
+        self._processed_entry_ids = get_processed_entry_ids()
+        self.emails_loaded.emit(emails)
+        return emails
+
+    def refresh_inbox(self, count: int = 50):
+        """Fetch new emails from Outlook and run the unified summarizer.
+        Runs in a background thread. Emits ``refresh_progress``, ``summary_ready``,
+        and ``new_emails_arrived`` when complete."""
+        t = threading.Thread(
+            target=self._do_refresh, args=(count,),
+            daemon=True, name="svc-refresh"
+        )
+        t.start()
+
+    def _do_refresh(self, count: int):
+        """Background: fetch Outlook → dedup → summarize → persist."""
+        if not self._running:
+            return
+
+        from shared_tools.outlook_tool import fetch_inbox_emails
+        from shared_tools.ipc_bridge import (
+            get_processed_entry_ids, get_latest_received_time,
+            upsert_processed_email,
+        )
+
+        def _emit(signal, *args):
+            """Emit only if still running (prevents shutdown crashes)."""
+            if self._running:
+                signal.emit(*args)
+
+        # 1. Load dedup set from DB
+        try:
+            existing_ids = get_processed_entry_ids()
+            self._processed_entry_ids |= existing_ids
+            self._latest_received_time = get_latest_received_time() or self._latest_received_time
+        except Exception:
+            pass
+
+        # 2. Fetch from Outlook
+        _emit(self.refresh_progress, 0, count, "Fetching from Outlook...")
+        try:
+            raw_emails = fetch_inbox_emails(
+                count=count, max_body=4000, unread_only=False,
+                exclude_entry_ids=self._processed_entry_ids,
+            )
+        except Exception as e:
+            _emit(self.refresh_error, f"Outlook fetch failed: {e}")
+            return
+
+        if not raw_emails:
+            _emit(self.new_emails_arrived, 0)
+            return
+
+        # 3. Filter: skip emails older than latest stored
+        new_emails = []
+        for em in raw_emails:
+            eid = em.get("entry_id", "")
+            received = em.get("received_time", "")
+            if eid in self._processed_entry_ids:
+                continue
+            if self._latest_received_time and received <= self._latest_received_time:
+                continue
+            new_emails.append(em)
+
+        total = len(new_emails)
+        if total == 0:
+            _emit(self.new_emails_arrived, 0)
+            return
+
+        # 4. Summarize each new email (single LLM pass)
+        summarized = 0
+        for i, em in enumerate(new_emails):
+            if not self._running:
+                return
+            _emit(self.refresh_progress, i + 1, total,
+                  f"Summarizing [{i+1}/{total}]: {em.get('subject', '')[:50]}...")
+            try:
+                result = self._summarize_single(em)
+                if result:
+                    entry = {
+                        "entry_id": em.get("entry_id", ""),
+                        "subject": em.get("subject", ""),
+                        "sender": em.get("sender", ""),
+                        "received_time": em.get("received_time", ""),
+                        "body": em.get("body", ""),
+                        "category": result.get("category", "General"),
+                        "urgency": result.get("urgency", "low"),
+                        "chinese_summary": result.get("chinese_summary", ""),
+                        "assignee": result.get("assignee", ""),
+                        "todos_json": json.dumps(result.get("todos", []), ensure_ascii=False),
+                        "status": "active",
+                    }
+                    upsert_processed_email(entry)
+                    self._processed_entry_ids.add(em.get("entry_id", ""))
+                    if received := em.get("received_time", ""):
+                        if not self._latest_received_time or received > self._latest_received_time:
+                            self._latest_received_time = received
+                    _emit(self.summary_ready, entry)
+                    summarized += 1
+            except Exception as e:
+                _emit(self.refresh_error, f"Summarize failed for {em.get('subject', 'Unknown')[:40]}: {e}")
+
+        _emit(self.new_emails_arrived, summarized)
+
+    def _summarize_single(self, email: dict) -> dict | None:
+        """Run the unified summarizer on a single email.
+        Returns a dict with chinese_summary, category, urgency, assignee, todos
+        or None on failure."""
+        from amail.crew import UnifiedSummarizerCrew
+        inputs = {
+            "email_subject": email.get("subject", ""),
+            "email_sender": email.get("sender", ""),
+            "email_content": email.get("body", ""),
+        }
+        with self._llm_semaphore:
+            result = UnifiedSummarizerCrew().crew().kickoff(inputs=inputs)
+        raw = result.raw if hasattr(result, 'raw') else str(result)
+
+        # Parse JSON from the output (same pattern as ASummary)
+        cleaned = raw.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("\n", 1)[-1]
+            cleaned = cleaned.rsplit("```", 1)[0]
+        if cleaned.startswith("{{") and cleaned.endswith("}}"):
+            cleaned = cleaned[1:-1]
+        try:
+            return json.loads(cleaned.strip())
+        except json.JSONDecodeError:
+            return {
+                "chinese_summary": raw[:200],
+                "category": "General",
+                "urgency": "low",
+                "assignee": "Unknown",
+                "todos": [],
+            }
+
+    def remove_email(self, entry_id: str):
+        """Soft-delete an email from the processed store."""
+        from shared_tools.ipc_bridge import remove_processed_email
+        remove_processed_email(entry_id)
+        self._processed_entry_ids.discard(entry_id)
+
+    # ── Fetch modes ────────────────────────────────────────────────────
+
+    def fetch_earlier(self, count: int = 30):
+        """Fetch UNREAD emails OLDER than the earliest stored email.
+        Fills backward gaps in the timeline."""
+        t = threading.Thread(target=self._do_fetch_earlier, args=(count,),
+                            daemon=True, name="svc-fetch-earlier")
+        t.start()
+
+    def _do_fetch_earlier(self, count: int):
+        if not self._running:
+            return
+        from shared_tools.outlook_tool import fetch_inbox_emails
+        from shared_tools.ipc_bridge import (
+            get_earliest_received_time, get_processed_entry_ids,
+            upsert_processed_email,
+        )
+
+        def _emit(sig, *args):
+            if self._running:
+                sig.emit(*args)
+
+        # Prime dedup + earliest watermark
+        existing_ids = get_processed_entry_ids()
+        self._processed_entry_ids |= existing_ids
+        earliest = get_earliest_received_time()
+
+        try:
+            if earliest is None:
+                # Empty storage — fetch oldest unread emails first (ascending)
+                _emit(self.refresh_progress, 0, count,
+                      "Storage empty — fetching oldest unread emails first...")
+                raw_emails = fetch_inbox_emails(
+                    count=count, max_body=4000, unread_only=True,
+                    exclude_entry_ids=self._processed_entry_ids,
+                    ascending=True,  # oldest first
+                )
+            else:
+                _emit(self.refresh_progress, 0, count,
+                      f"Fetching unread emails older than {earliest[:19]}...")
+                raw_emails = fetch_inbox_emails(
+                    count=count, max_body=4000, unread_only=True,
+                    exclude_entry_ids=self._processed_entry_ids,
+                    received_before=earliest,  # older than earliest stored
+                )
+        except Exception as e:
+            _emit(self.refresh_error, f"Fetch earlier failed: {e}")
+            return
+
+        if not raw_emails:
+            _emit(self.new_emails_arrived, 0)
+            return
+
+        summarized = self._summarize_batch(raw_emails, _emit)
+        _emit(self.new_emails_arrived, summarized)
+
+    def fetch_latest(self, count: int = 30):
+        """Fetch UNREAD emails NEWER than the latest stored email.
+        Same as refresh_inbox but keeps the name semantic clear."""
+        self.refresh_inbox(count=count)
+
+    def sync_inbox(self):
+        """Full reconciliation: fetch earlier → detect changes in covered range → update bodies.
+        Only operates on UNREAD emails.
+
+        1. Fetch earlier (fill backward gaps)
+        2. For the date range storage covers, find unread Outlook emails:
+           - New in Outlook but not storage → add
+           - In storage but not in Outlook's unread → remove (was read/deleted)
+        3. For remaining storage emails, update body from Outlook if missing
+        """
+        t = threading.Thread(target=self._do_sync, daemon=True, name="svc-sync")
+        t.start()
+
+    def _do_sync(self):
+        if not self._running:
+            return
+        from shared_tools.outlook_tool import fetch_inbox_emails
+        from shared_tools.ipc_bridge import (
+            get_earliest_received_time, get_latest_received_time,
+            get_processed_entry_ids, get_active_entry_ids_in_range,
+            upsert_processed_email, remove_processed_email, get_processed_emails,
+        )
+
+        def _emit(sig, *args):
+            if self._running:
+                sig.emit(*args)
+
+        added = 0
+        removed = 0
+        body_updated = 0
+
+        # 1. Fetch earlier (backward fill)
+        _emit(self.refresh_progress, 0, 1, "Step 1/4: Fetching earlier unread emails...")
+        existing_ids = get_processed_entry_ids()
+        self._processed_entry_ids |= existing_ids
+        earliest = get_earliest_received_time()
+        latest = get_latest_received_time()
+
+        if earliest:
+            try:
+                earlier_emails = fetch_inbox_emails(
+                    count=500, max_body=4000, unread_only=True,
+                    exclude_entry_ids=self._processed_entry_ids,
+                    received_before=earliest,
+                )
+                if earlier_emails:
+                    added += self._summarize_batch(earlier_emails, _emit)
+            except Exception as e:
+                _emit(self.refresh_error, f"Fetch earlier failed: {e}")
+
+        # 2. Detect changes in covered range
+        if earliest and latest:
+            _emit(self.refresh_progress, 0, 1,
+                  "Step 2/4: Checking for new unread emails in covered range...")
+
+            # 2a. Fetch UNREAD Outlook emails in range → add new ones
+            try:
+                unread_range = fetch_inbox_emails(
+                    count=2000, max_body=4000, unread_only=True,
+                    received_after=earliest, received_before=latest,
+                )
+            except Exception as e:
+                _emit(self.refresh_error, f"Range fetch failed: {e}")
+                unread_range = []
+
+            unread_ids = {e["entry_id"] for e in unread_range}
+            storage_ids = get_active_entry_ids_in_range(earliest, latest)
+
+            new_ids = unread_ids - storage_ids
+            if new_ids:
+                _emit(self.refresh_progress, 0, len(new_ids),
+                      f"Step 3/4: Adding {len(new_ids)} new emails in range...")
+                new_emails = [e for e in unread_range if e["entry_id"] in new_ids]
+                added += self._summarize_batch(new_emails, _emit)
+
+            # 2b. Detect actual deletions: fetch ALL emails (read+unread) in range
+            #     Only remove if email no longer exists in Outlook at all
+            _emit(self.refresh_progress, 0, 1,
+                  "Step 3/4: Checking for deleted emails...")
+            try:
+                all_range = fetch_inbox_emails(
+                    count=5000, max_body=100, unread_only=False,
+                    received_after=earliest, received_before=latest,
+                )
+            except Exception as e:
+                _emit(self.refresh_error, f"Deletion check failed: {e}")
+                all_range = []
+
+            all_outlook_ids = {e["entry_id"] for e in all_range}
+            removed_ids = storage_ids - all_outlook_ids  # only truly gone
+            if removed_ids:
+                for eid in removed_ids:
+                    if not self._running:
+                        break
+                    self.remove_email(eid)
+                    _emit(self.email_removed, eid)
+                    removed += 1
+
+        # 3. Update bodies for remaining active emails
+        _emit(self.refresh_progress, 0, 1, "Step 5/5: Updating email bodies...")
+        all_active = get_processed_emails(status="active", limit=0)  # unlimited
+        try:
+            import win32com.client
+            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+            for i, em in enumerate(all_active):
+                if not self._running:
+                    break
+                if not em.get("body"):
+                    try:
+                        msg = outlook.GetItemFromID(em["entry_id"])
+                        body = getattr(msg, "Body", "")[:5000]
+                        if body:
+                            em["body"] = body
+                            upsert_processed_email(em)
+                            _emit(self.email_body_updated, em["entry_id"])
+                            body_updated += 1
+                    except Exception:
+                        pass
+        except Exception:
+            pass  # Outlook not available
+
+        _emit(self.sync_complete, added, removed, body_updated)
+
+    def _summarize_batch(self, emails: list[dict], _emit) -> int:
+        """Summarize a batch of emails and persist. Returns count added."""
+        from shared_tools.ipc_bridge import upsert_processed_email
+        summarized = 0
+        total = len(emails)
+        for i, em in enumerate(emails):
+            if not self._running:
+                break
+            _emit(self.refresh_progress, i + 1, total,
+                  f"Summarizing [{i+1}/{total}]: {em.get('subject', '')[:50]}...")
+            try:
+                result = self._summarize_single(em)
+                if result:
+                    entry = {
+                        "entry_id": em.get("entry_id", ""),
+                        "subject": em.get("subject", ""),
+                        "sender": em.get("sender", ""),
+                        "received_time": em.get("received_time", ""),
+                        "body": em.get("body", ""),
+                        "category": result.get("category", "General"),
+                        "urgency": result.get("urgency", "low"),
+                        "chinese_summary": result.get("chinese_summary", ""),
+                        "assignee": result.get("assignee", ""),
+                        "todos_json": json.dumps(result.get("todos", []), ensure_ascii=False),
+                        "status": "active",
+                    }
+                    upsert_processed_email(entry)
+                    self._processed_entry_ids.add(em.get("entry_id", ""))
+                    _emit(self.summary_ready, entry)
+                    summarized += 1
+            except Exception as e:
+                _emit(self.refresh_error,
+                      f"Summarize failed for {em.get('subject', 'Unknown')[:40]}: {e}")
+        return summarized
+
+    # ── auto-refresh timer ─────────────────────────────────────────────
+
+    def _start_auto_refresh(self):
+        """Start the 10-second refresh timer (requires a running QApplication)."""
+        if not self._auto_refresh:
+            return
+        try:
+            from PyQt6.QtCore import QTimer
+            self._refresh_timer = QTimer()
+            self._refresh_timer.timeout.connect(lambda: self.refresh_inbox(count=50))
+            self._refresh_timer.start(10_000)  # 10 seconds
+        except Exception:
+            pass  # no QApplication — timer won't work (CLI mode)
+
+    def _stop_auto_refresh(self):
+        """Stop the refresh timer if active."""
+        if self._refresh_timer is not None:
+            try:
+                self._refresh_timer.stop()
+            except Exception:
+                pass
+            self._refresh_timer = None
 
     # ------------------------------------------------------------------
     # Email submission & state access
@@ -351,7 +766,8 @@ class MailService(QObject):
     def check_nav_request(self) -> str | None:
         """Check if ACalendar requested navigation to a specific email.
         Returns the target ``EntryID`` or ``None``."""
-        nav_path = Path.home() / ".crewai" / "nav_request.json"
+        from shared_tools.ipc_bridge import CREWAI_DIR
+        nav_path = CREWAI_DIR / "nav_request.json"
         if not nav_path.exists():
             return None
         try:

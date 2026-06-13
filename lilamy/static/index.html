@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lilAmy Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --base: #1e1e2e; --surface: #313244; --overlay: #45475a;
+    --text: #cdd6f4; --subtext: #a6adc8; --muted: #6c7086;
+    --blue: #89b4fa; --green: #a6e3a1; --yellow: #f9e2af;
+    --purple: #cba6f7; --red: #f38ba8; --orange: #fab387;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--base); color: var(--text); font-family: system-ui, -apple-system, sans-serif; height: 100vh; display: flex; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--base); }
+  ::-webkit-scrollbar-thumb { background: var(--overlay); border-radius: 3px; }
+
+  /* Sidebar */
+  #sidebar { width: 240px; min-width: 240px; background: #181825; border-right: 1px solid var(--overlay); display: flex; flex-direction: column; }
+  #sidebar .logo { padding: 20px 16px; border-bottom: 1px solid var(--overlay); }
+  #sidebar .module { padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.15s; font-size: 14px; }
+  #sidebar .module:hover { background: var(--surface); }
+  #sidebar .module.active { background: var(--surface); border-left-color: var(--blue); color: var(--blue); }
+  #sidebar .module.disabled { opacity: 0.4; cursor: not-allowed; }
+  #sidebar .module.disabled:hover { background: transparent; }
+  #sidebar .module .icon { font-size: 18px; width: 24px; text-align: center; }
+  #sidebar .spacer { flex: 1; }
+  #sidebar .status { padding: 12px 16px; border-top: 1px solid var(--overlay); font-size: 11px; color: var(--muted); }
+
+  /* Main workspace */
+  #workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #topbar { padding: 12px 20px; border-bottom: 1px solid var(--overlay); display: flex; align-items: center; gap: 12px; }
+  #topbar h1 { font-size: 16px; font-weight: 600; }
+  #topbar .count { font-size: 13px; color: var(--subtext); }
+  #topbar .btn { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--overlay); background: var(--surface); color: var(--text); cursor: pointer; font-size: 13px; font-weight: 500; }
+  #topbar .btn:hover { background: var(--overlay); }
+  #topbar .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Module content */
+  #module-content { flex: 1; display: flex; overflow: hidden; }
+  #card-panel { width: 420px; min-width: 360px; overflow-y: auto; border-right: 1px solid var(--overlay); padding: 12px; }
+  #detail-panel { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 14px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+  .card:hover { background: #3a3b50; border-color: var(--blue); }
+  .card.selected { background: #3a3b50; border: 2px solid var(--blue); }
+  .card .cn { color: var(--yellow); font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .card .subject { color: var(--blue); font-size: 12px; margin-top: 3px; }
+  .card .meta { display: flex; gap: 8px; margin-top: 6px; font-size: 11px; align-items: center; }
+  .card .category { color: var(--subtext); }
+  .card .urgency { font-weight: 600; }
+  .card .assignee { color: var(--green); }
+  .card .todos { color: var(--purple); font-size: 11px; margin-top: 4px; }
+  .card .time { color: var(--muted); font-size: 10px; margin-top: 4px; }
+
+  /* Detail panel */
+  .detail-subject { color: var(--blue); font-size: 18px; font-weight: 700; }
+  .detail-sender { color: var(--subtext); font-size: 14px; }
+  .detail-meta { color: var(--text); font-size: 13px; display: flex; gap: 12px; }
+  .detail-assignee { color: var(--green); font-size: 14px; font-weight: 600; }
+  .detail-todos { color: var(--purple); font-size: 13px; }
+  .section-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
+  .body-box { background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.6; max-height: 280px; overflow-y: auto; white-space: pre-wrap; color: var(--text); }
+  .reply-box { background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.6; min-height: 120px; color: var(--text); resize: vertical; font-family: inherit; width: 100%; }
+  .reply-box:focus { outline: none; border-color: var(--blue); }
+  .btn-primary { padding: 8px 18px; border-radius: 6px; border: none; background: var(--blue); color: var(--base); cursor: pointer; font-size: 13px; font-weight: 600; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--overlay); background: var(--surface); color: var(--text); cursor: pointer; font-size: 13px; }
+  .btn-secondary:hover { background: var(--overlay); }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-danger { padding: 8px 18px; border-radius: 6px; border: none; background: var(--surface); color: var(--red); cursor: pointer; font-size: 13px; }
+  .btn-danger:hover { background: var(--red); color: var(--base); }
+
+  /* Progress */
+  .progress-bar { height: 3px; background: var(--overlay); border-radius: 2px; overflow: hidden; }
+  .progress-bar .fill { height: 100%; background: var(--blue); transition: width 0.3s; }
+
+  /* Empty state */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); text-align: center; gap: 8px; }
+  .empty-state .icon { font-size: 48px; }
+
+  /* Error toast */
+  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--red); color: var(--base); padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 100; display: none; }
+
+  /* Urgency colors */
+  .urg-critical { color: var(--red); }
+  .urg-high { color: var(--orange); }
+  .urg-medium { color: var(--yellow); }
+  .urg-low { color: var(--green); }
+
+  /* Context menu */
+  .ctx-menu { position: fixed; background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 4px 0; min-width: 200px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.4); display: none; }
+  .ctx-menu .item { padding: 10px 16px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 10px; transition: background 0.1s; }
+  .ctx-menu .item:hover { background: var(--overlay); }
+  .ctx-menu .item .icon { width: 20px; text-align: center; font-size: 14px; }
+  .ctx-menu .item.danger { color: var(--red); }
+  .ctx-menu .item.danger:hover { background: var(--red); color: var(--base); }
+  .ctx-menu .divider { height: 1px; background: var(--overlay); margin: 4px 0; }
+
+  /* Primary button (Fetch Latest) */
+  .btn.primary { background: var(--blue); color: var(--base); border-color: var(--blue); font-weight: 700; }
+  .btn.primary:hover { opacity: 0.85; background: var(--blue); }
+
+  /* Modal overlay */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: var(--surface); border: 1px solid var(--overlay); border-radius: 12px; padding: 24px; max-width: 440px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .modal-box h2 { font-size: 16px; margin: 0 0 14px 0; color: var(--text); }
+  .modal-box .info { font-size: 13px; color: var(--subtext); line-height: 1.6; }
+  .modal-box .info strong { color: var(--text); }
+  .modal-box .warning { background: #3a2020; border: 1px solid var(--red); border-radius: 8px; padding: 10px 14px; margin: 14px 0; font-size: 12px; color: var(--red); }
+  .modal-box .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside id="sidebar">
+  <div class="logo">
+    <div style="font-size:18px;font-weight:700;">🤖 lilAmy</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:2px;">Construction Admin</div>
+  </div>
+  <div id="module-list"></div>
+  <div class="spacer"></div>
+  <div class="status" id="status-text">⚫ Loading...</div>
+</aside>
+
+<!-- Workspace -->
+<main id="workspace">
+  <!-- Top bar -->
+  <div id="topbar">
+    <h1 id="module-title">📧 AMail</h1>
+    <span class="count" id="email-count">0 emails</span>
+    <div style="flex:1"></div>
+    <span style="color:var(--subtext);font-size:12px;">count</span>
+    <input type="number" id="earlier-count" value="20" min="10" max="2000" step="10"
+           style="width:62px;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);text-align:center;">
+    <button class="btn" id="btn-earlier" onclick="fetchEarlier()" title="Fetch unread emails older than current storage">⬆ Earlier</button>
+    <input type="number" id="latest-count" value="20" min="10" max="2000" step="10"
+           style="width:62px;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);text-align:center;">
+    <button class="btn primary" id="btn-latest" onclick="fetchLatest()" title="Fetch unread emails newer than current storage">⬇ Latest</button>
+    <button class="btn" id="btn-sync" onclick="syncInbox()" title="Full reconciliation: fill gaps + detect changes + update bodies">🔄 Sync</button>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" id="progress-container" style="display:none">
+    <div class="fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <!-- Module content: cards + detail -->
+  <div id="module-content">
+    <!-- Left: cards -->
+    <div id="card-panel">
+      <div id="cards-container"></div>
+      <div id="cards-empty" class="empty-state" style="display:none">
+        <div class="icon">📭</div>
+        <div>No emails yet</div>
+        <div style="font-size:12px;">Click Refresh to fetch from Outlook</div>
+      </div>
+    </div>
+    <!-- Right: detail -->
+    <div id="detail-panel">
+      <div class="empty-state" id="detail-empty">
+        <div class="icon">📧</div>
+        <div>Select an email to view details</div>
+      </div>
+      <div id="detail-content" style="display:none;flex-direction:column;gap:14px;">
+        <div class="detail-subject" id="det-subject"></div>
+        <div class="detail-sender" id="det-sender"></div>
+        <div class="detail-meta" id="det-meta"></div>
+        <div class="detail-assignee" id="det-assignee"></div>
+        <div class="detail-todos" id="det-todos"></div>
+        <div class="section-label">Email Body</div>
+        <div class="body-box" id="det-body"></div>
+        <div class="section-label">Draft Reply</div>
+        <textarea class="reply-box" id="det-reply" placeholder="Click 'Draft Reply' to generate..."></textarea>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-primary" id="btn-draft" onclick="draftReply()">✏️ Draft Reply</button>
+          <button class="btn-secondary" id="btn-refine" onclick="showRefine()" disabled>✨ Refine</button>
+          <button class="btn-secondary" id="btn-copy" onclick="copyReply()" disabled>📋 Copy</button>
+          <div style="flex:1"></div>
+          <button class="btn-danger" id="btn-remove" onclick="removeEmail()">🗑 Remove</button>
+        </div>
+        <div id="refine-row" style="display:none;display:flex;gap:8px;">
+          <input type="text" id="refine-input" placeholder="Edit instructions: make it shorter, more formal..."
+                 style="flex:1;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);"
+                 onkeydown="if(event.key==='Enter')doRefine()">
+          <button class="btn btn-secondary" onclick="doRefine()">✨ Refine</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Sync confirmation modal -->
+<div class="modal-overlay" id="sync-modal">
+  <div class="modal-box">
+    <h2>🔄 Sync Inbox</h2>
+    <div class="info" id="sync-info">Calculating...</div>
+    <div class="warning">
+      ⚠️ This will refetch and reconcile all emails between the dates above.
+      Existing emails will be checked against Outlook — removed emails stay gone,
+      new unread emails will be added. This may take several minutes.
+    </div>
+    <div class="row">
+      <button class="btn" onclick="closeSyncModal()">Cancel</button>
+      <button class="btn" id="btn-sync-confirm" onclick="doSync()" style="background:var(--yellow);color:var(--base);border-color:var(--yellow);">🔄 Start Sync</button>
+    </div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div class="ctx-menu" id="ctx-menu">
+  <div class="item" onclick="ctxOpenOutlook()"><span class="icon">📧</span> Open in Outlook</div>
+  <div class="divider"></div>
+  <div class="item danger" onclick="ctxRemove()"><span class="icon">🗑</span> Remove</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

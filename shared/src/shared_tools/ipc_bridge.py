@@ -2,9 +2,13 @@
 
 Provides:
   - Lock-file presence detection so agents can see each other's running status.
-  - Shared SQLite database at ~/.crewai/shared_data.db for data exchange.
+  - Shared SQLite database at <LILAMY_DATA_DIR>/mail_history.db for data exchange.
 
 No networking — everything goes through the filesystem.
+
+Data directory resolution (in order):
+  1. LILAMY_DATA_DIR env var (if set)
+  2. <project_root>/data/ (default — gitignored)
 """
 import json
 import os
@@ -13,8 +17,18 @@ import sqlite3
 import time
 from pathlib import Path
 
-CREWAI_DIR = Path.home() / ".crewai"
-DB_PATH = CREWAI_DIR / "shared_data.db"
+
+def _resolve_data_dir() -> Path:
+    """Resolve the data directory from env var or fall back to project_root/data."""
+    if "LILAMY_DATA_DIR" in os.environ:
+        return Path(os.environ["LILAMY_DATA_DIR"])
+    # ipc_bridge.py is at shared/src/shared_tools/ipc_bridge.py → 4 levels up to project root
+    project_root = Path(__file__).resolve().parent.parent.parent.parent
+    return project_root / "data"
+
+
+CREWAI_DIR = _resolve_data_dir()
+DB_PATH = CREWAI_DIR / "mail_history.db"
 
 
 # =============================================================================
@@ -153,6 +167,28 @@ def init_shared_db() -> None:
                 events_json TEXT,
                 sent_at TEXT DEFAULT (datetime('now'))
             );
+
+            CREATE TABLE IF NOT EXISTS processed_emails (
+                entry_id TEXT PRIMARY KEY,
+                subject TEXT,
+                sender TEXT,
+                received_time TEXT,
+                body TEXT,
+                category TEXT,
+                urgency TEXT,
+                chinese_summary TEXT,
+                assignee TEXT,
+                todos_json TEXT,
+                reply_draft TEXT,
+                status TEXT DEFAULT 'active',
+                processed_at TEXT DEFAULT (datetime('now')),
+                updated_at TEXT DEFAULT (datetime('now'))
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_processed_emails_status
+                ON processed_emails(status);
+            CREATE INDEX IF NOT EXISTS idx_processed_emails_received
+                ON processed_emails(received_time DESC);
         """)
         conn.commit()
     finally:
@@ -356,5 +392,189 @@ def resolve_conflict(conflict_id: int) -> bool:
     except Exception as e:
         print(f"Error resolving conflict: {e}")
         return False
+    finally:
+        conn.close()
+
+
+# =============================================================================
+# Processed Emails — the unified AMail store
+# =============================================================================
+
+def upsert_processed_email(email_data: dict) -> bool:
+    """Insert or update a processed email in the unified store.
+    Used by MailService after single-pass summarization.
+    Returns True on success."""
+    conn = _get_connection()
+    try:
+        conn.execute(
+            """INSERT INTO processed_emails
+               (entry_id, subject, sender, received_time, body, category, urgency,
+                chinese_summary, assignee, todos_json, reply_draft, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(entry_id) DO UPDATE SET
+                subject = excluded.subject,
+                sender = excluded.sender,
+                received_time = excluded.received_time,
+                body = excluded.body,
+                category = excluded.category,
+                urgency = excluded.urgency,
+                chinese_summary = excluded.chinese_summary,
+                assignee = excluded.assignee,
+                todos_json = excluded.todos_json,
+                reply_draft = excluded.reply_draft,
+                status = excluded.status,
+                updated_at = datetime('now')""",
+            (
+                email_data.get("entry_id", ""),
+                email_data.get("subject", ""),
+                email_data.get("sender", ""),
+                email_data.get("received_time", ""),
+                email_data.get("body", ""),
+                email_data.get("category", ""),
+                email_data.get("urgency", ""),
+                email_data.get("chinese_summary", ""),
+                email_data.get("assignee", ""),
+                email_data.get("todos_json", "[]"),
+                email_data.get("reply_draft", ""),
+                email_data.get("status", "active"),
+            ),
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error upserting processed email: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def get_processed_emails(status: str = "active", limit: int = 0) -> list[dict]:
+    """Return processed emails from the unified store, newest first.
+    Falls back to categorized_emails for body if not stored locally.
+    Set limit=0 for unlimited."""
+    conn = _get_connection()
+    try:
+        if limit > 0:
+            rows = conn.execute(
+                """SELECT pe.*,
+                          COALESCE(pe.body, ce.email_body, '') AS body
+                   FROM processed_emails pe
+                   LEFT JOIN categorized_emails ce
+                     ON pe.entry_id = ce.email_entry_id
+                   WHERE pe.status = ?
+                   ORDER BY pe.received_time DESC
+                   LIMIT ?""",
+                (status, limit),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """SELECT pe.*,
+                          COALESCE(pe.body, ce.email_body, '') AS body
+                   FROM processed_emails pe
+                   LEFT JOIN categorized_emails ce
+                     ON pe.entry_id = ce.email_entry_id
+                   WHERE pe.status = ?
+                   ORDER BY pe.received_time DESC""",
+                (status,),
+            ).fetchall()
+        results = []
+        for r in rows:
+            d = dict(r)
+            # Ensure body is set from the COALESCE
+            if not d.get("body"):
+                d["body"] = r["body"] if r["body"] else ""
+            results.append(d)
+        return results
+    except Exception as e:
+        print(f"Error reading processed emails: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def get_processed_entry_ids() -> set[str]:
+    """Return the set of active EntryIDs (for dedup).
+    Removed emails are excluded so they can be re-fetched."""
+    conn = _get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT entry_id FROM processed_emails WHERE status = 'active'"
+        ).fetchall()
+        return {r["entry_id"] for r in rows}
+    except Exception:
+        return set()
+    finally:
+        conn.close()
+
+
+def get_latest_received_time() -> str | None:
+    """Return the received_time of the newest processed email, or None."""
+    conn = _get_connection()
+    try:
+        row = conn.execute(
+            "SELECT received_time FROM processed_emails ORDER BY received_time DESC LIMIT 1"
+        ).fetchone()
+        return row["received_time"] if row else None
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
+def get_earliest_received_time() -> str | None:
+    """Return the received_time of the oldest processed email, or None."""
+    conn = _get_connection()
+    try:
+        row = conn.execute(
+            "SELECT received_time FROM processed_emails WHERE status = 'active' ORDER BY received_time ASC LIMIT 1"
+        ).fetchone()
+        return row["received_time"] if row else None
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
+def get_active_entry_ids_in_range(since: str, until: str) -> set[str]:
+    """Return the set of active processed email EntryIDs in a date range."""
+    conn = _get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT entry_id FROM processed_emails WHERE status = 'active' AND received_time >= ? AND received_time <= ?",
+            (since, until),
+        ).fetchall()
+        return {r["entry_id"] for r in rows}
+    except Exception:
+        return set()
+    finally:
+        conn.close()
+
+
+def remove_processed_email(entry_id: str) -> bool:
+    """Soft-delete: mark status = 'removed'."""
+    conn = _get_connection()
+    try:
+        conn.execute(
+            "UPDATE processed_emails SET status = 'removed', updated_at = datetime('now') WHERE entry_id = ?",
+            (entry_id,),
+        )
+        conn.commit()
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+
+def get_processed_email(entry_id: str) -> dict | None:
+    """Return a single processed email by EntryID, or None."""
+    conn = _get_connection()
+    try:
+        row = conn.execute(
+            "SELECT * FROM processed_emails WHERE entry_id = ?", (entry_id,)
+        ).fetchone()
+        return dict(row) if row else None
+    except Exception:
+        return None
     finally:
         conn.close()

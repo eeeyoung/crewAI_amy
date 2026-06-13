@@ -24,9 +24,9 @@ lilamy/
 
 ### Inter-App Communication (the five improvements)
 
-Both apps connect through a **shared SQLite database** at `~/.crewai/shared_data.db`.
+Both apps connect through a **shared SQLite database** at `<project_root>/data/mail_history.db`.
 There is no local HTTP server, no port conflicts, no firewall issues. Each app reads and
-writes independently. Presence is detected via lock files at `~/.crewai/<app>.lock`.
+writes independently. Presence is detected via lock files at `<data_dir>/<app>.lock`.
 
 ```
 ┌──────────────────────────┐          ┌──────────────────────────┐
@@ -50,8 +50,8 @@ writes independently. Presence is detected via lock files at `~/.crewai/<app>.lo
          │                                     │
          └───────────┬─────────────────────────┘
                      │
-          ~/.crewai/
-          ├── shared_data.db      SQLite database
+          data/
+          ├── mail_history.db      SQLite database
           ├── amail.lock           PID + timestamp + status
           └── acalendar.lock       PID + timestamp + status
 ```
@@ -67,7 +67,7 @@ writes independently. Presence is detected via lock files at `~/.crewai/<app>.lo
 
 ## 2. Shared Database Schema
 
-Located at `~/.crewai/shared_data.db`. Created automatically on first access.
+Located at `<project_root>/data/mail_history.db`. Created automatically on first access.
 
 ```sql
 -- Written by AMail after triage
@@ -166,8 +166,8 @@ import sqlite3
 import time
 from pathlib import Path
 
-CREWAI_DIR = Path.home() / ".crewai"
-DB_PATH = CREWAI_DIR / "shared_data.db"
+CREWAI_DIR = _resolve_data_dir()  # project_root/data or LILAMY_DATA_DIR
+DB_PATH = CREWAI_DIR / "mail_history.db"
 
 # ── Presence ──────────────────────────────────────────────
 
@@ -504,7 +504,7 @@ Key flags:
 Output: `dist/AMail.exe` and `dist/ACalendar.exe` — drop on desktop.
 
 The `.env` file cannot be bundled (contains secrets). Each app should check for
-`~/.crewai/.env` on startup, and if not found, show a first-run dialog asking for
+`data/.env` on startup, and if not found, show a first-run dialog asking for
 API keys. This is already the pattern — just needs the code to check the home
 directory location.
 
