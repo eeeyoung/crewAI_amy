@@ -1,9 +1,93 @@
 # PROGRESS.md — lilAmy Platform Development
 
-**Latest session:** 2026-06-14
-**Previous:** 2026-06-13 ([AMail Redesign & lilAmy Platform](#session-2026-06-13--amail-redesign--lilamy-platform))
+**Latest session:** 2026-06-15
+**Previous:** 2026-06-14 ([Habit Learner Integration](#session-2026-06-14--habit-learner-integration--bug-fixes))
 **Branch:** `main`
 **Git user:** `eeeyoung`
+
+---
+
+## Session 2026-06-15 — Client Variation Workflow (v2 Project-Based)
+
+### What We Built
+
+#### 1. Dedicated Variation Database — **DONE**
+
+New `variations.db` at `<LILAMY_DATA_DIR>/variations.db` — completely separate from `mail_history.db`:
+- `projects` — project containers with name, job#, location, base contract, xlsx_path
+- `variations` — VOs with status, approval values, bank/client routing
+- `variation_items` — line items with qty, rate, cost, credit
+- `variation_templates` — per-project template mappings
+
+Auto-migration copies existing data from `mail_history.db` on first init.
+
+#### 2. Project-Based Architecture — **DONE**
+
+Projects are first-class containers. One xlsx per project containing ALL VOs + Registers:
+- **Import**: Parse existing xlsx → extract project info + all VO sheets + line items + both Registers
+- **PUSH**: Compile all VOs + Registers into single xlsx with timestamped backup
+- **Config**: Project-level properties (name, job#, location, base contract) managed via ⚙️ Config modal
+- **Delete Project**: Removes project + all VOs from DB
+
+#### 3. Variation Template Engine — **DONE**
+
+`variation_template.py`: config-driven Excel generation using YAML cell mapping:
+- `TemplateMapping`: logical field → cell coordinate, decoupled from code
+- `VariationExcelBuilder`: fill VO sheets, write formulas (cost=qty×rate, subtotal, margin, GST), Register, Internal VO Register
+- `import_project_from_xlsx()`: parse existing xlsx into project + variations
+- `compile_project_to_xlsx()`: compile all VOs + Registers → xlsx with backup
+
+#### 4. REST API — **DONE**
+
+| Module | Endpoints |
+|---|---|
+| `/api/projects/*` | CRUD, import, import-upload, push, register, internal-register, export-pdf |
+| `/api/variations/*` | Project-scoped CRUD, items, calculate, generate-email, send, restore, permanent-delete |
+
+#### 5. WebUI — **DONE**
+
+- **Project selector** dropdown with New/Import/Config/Delete actions
+- **VO card list** with status filter buttons (All, Draft, Submitted, Approved, Void)
+- **VO editing wizard**: project setup (read-only), line items grid (qty, rate, cost, credit), export, submission email
+- **Live cost calculation**: qty × rate = cost, subtotal - credits = nett, +10% margin, +10% GST
+- **Register + Internal VO Register**: collapsible summary cards, auto-updating
+- **Bank/Client Approved selector**: routes approved values to correct Internal Register column
+- **Multi-select**: Shift+Click range, Ctrl+Click toggle, right-click context menu per module
+- **Status system**: Submitted, Approved, Approved for Signing, Not Approved, Void
+- **Auto-save**: debounced 600ms on all fields, silent reload for VO list, immediate register refresh
+
+#### 6. Excel Output — **DONE**
+
+- VOs before Registers, numerically sorted
+- VOXX template sheet removed from output
+- Stale template rows cleared from both Registers
+- Status column: left-aligned with color fills (green=approved, yellow=submitted, red=not-approved)
+- Internal VO Register: sequential numbering, Bank/Client columns, number formatting
+- Sheet names derived from VO title prefix (e.g., "VO3 - Desc" → sheet "VO3")
+- Voided VOs excluded from push
+
+### Files Created
+
+| File | Purpose |
+|---|---|
+| `shared/src/shared_tools/variation_db.py` | Dedicated variations database (4 tables + 20 CRUD functions) |
+| `shared/src/shared_tools/variation_service.py` | VariationService QObject (import, push, register, email, PDF) |
+| `shared/src/shared_tools/variation_template.py` | TemplateMapping + VariationExcelBuilder + import/compile |
+| `lilamy/modules/variation_routes.py` | 18 REST endpoints for VO CRUD |
+| `lilamy/modules/project_routes.py` | Project CRUD + import/upload + push + register endpoints |
+| `knowledge/variation_template.xlsx` | Cleaned-up Welink template |
+| `knowledge/variation_template_mapping.yaml` | Cell mapping config |
+| `coding_plans/VARIATION_WORKFLOW_PLAN.md` | Architecture & implementation plan |
+
+### Files Modified
+
+| File | Change |
+|---|---|
+| `shared/src/shared_tools/ipc_bridge.py` | Removed variation tables/CRUD (486 lines) — migrated to `variation_db.py` |
+| `lilamy/modules/registry.py` | Registered Variations module with extra_routers |
+| `lilamy/web_server.py` | Support for `extra_routers` per module |
+| `lilamy/static/index.html` | Variation view: project selector, VO wizard, register cards, modals |
+| `lilamy/static/app.js` | ~3,800 lines added: project mgmt, VO CRUD, auto-save, register rendering, context menus |
 
 ---
 
