@@ -1,9 +1,97 @@
 # PROGRESS.md — lilAmy Platform Development
 
-**Latest session:** 2026-06-13
-**Previous:** 2026-06-11 to 2026-06-12 ([see recap](2026-06-12-session-recap.md))
+**Latest session:** 2026-06-14
+**Previous:** 2026-06-13 ([AMail Redesign & lilAmy Platform](#session-2026-06-13--amail-redesign--lilamy-platform))
 **Branch:** `main`
 **Git user:** `eeeyoung`
+
+---
+
+## Session 2026-06-14 — Habit Learner Integration & Bug Fixes
+
+### What We Did
+
+#### 1. WebUI Reply Agent Info Panel — **DONE**
+
+New collapsible panel below the reply textbox showing real-time behavioral data used by the reply agent:
+
+- **👤 Sender Profile** — name, email, tier, reply rate, latency, greeting, signoff, top intent
+- **🎯 Predicted Intent** — classified intent label
+- **🎨 Recommended Style** — structure, formality, greeting, signoff, sample count
+- **📝 Behavioral Context** — raw text injected into the LLM prompt (click to expand)
+- **📚 Matched Examples** — count of historical examples used
+- **Confidence badge** — green (>60%), yellow (30-60%), red (<30%)
+
+Files: `lilamy/modules/amail_routes.py` (+`agent_info` in response), `lilamy/static/index.html` (+panel HTML), `lilamy/static/app.js` (+`renderAgentInfo`, `showAgentInfoLoading`, `hideAgentInfo`, `toggleAgentContext`)
+
+#### 2. Habit Learner Integration Bug Fixes — **DONE**
+
+**Bug: Reply rate always 100%.**
+`_compute_sender_profile` only counted `reply_pairs` — which by definition are all matched. Never queried `received_messages` for unreplied emails.
+
+Fix: Added `get_sender_received_stats(sender_email)` DB function → queries `received_messages` for real total_received + total_replied counts.
+
+**Bug: Confidence always 100%.**
+`infer()` formula: `0.5 + 0.2 + 0.2 + 0.1 = 1.0` — saturated immediately.
+
+Fix: New formula scales with data:
+- Base 0.15 + exact match 0.25 + sample bonus (0→0.35 for 0→50 emails) + style bonus (0→0.15 for 0→20 samples) + examples 0.05
+- Domain-only match gets halved bonus
+- Capped at 0.90 — never claims 100%
+
+**Bug: Behavioral context text was vague/empty.**
+- Examples section said "3 examples available" but showed NO content
+- Examples matched on category="General" alone (score 4/11) — effectively random
+- Style params for tier×category had no quality gate
+
+Fixes:
+- `to_injection_text()` now includes actual example content (subject, intent, reply snippet) with a separator and instruction to match tone/length/structure
+- `_select_examples()` now requires minimum score 5 (same-domain+same-category or direct sender match)
+- Low-confidence guard: when confidence < 40%, injection text warns to fall back to standard style blueprint
+
+**Bug: WebUI Draft Reply 500 error.**
+`reply_tasks.yaml` required `{behavioral_context}` but `generate_reply` endpoint didn't provide it.
+
+Fix: Added behavioral context injection + `email_urgency`, `relevant_schedule`, `email_cc` to the endpoint's inputs dict (matching `MailService._run_reply_loop()`)
+
+**Bug: Agent info panel disappeared on render.**
+`showAgentInfoLoading()` used `panel.innerHTML = ...` destroying all DOM elements that `renderAgentInfo()` later tried to populate → `Cannot set properties of null`.
+
+Fix: Added dedicated `#agent-loading` element in HTML, `showAgentInfoLoading()` now only toggles visibility. Added `setText()` safe DOM setter as defense-in-depth.
+
+#### 3. Terminal Logging — **DONE**
+
+Both WebUI (`amail_routes.py`) and Desktop (`mail_service.py`) reply paths now print structured logs:
+- Email being replied to (subject, sender, category, urgency)
+- Habit learner: sender email, profile found?, tier, reply rate, greeting, signoff, predicted intent, style params, confidence
+- Injected behavioral context text
+- LLM call status + draft preview
+
+#### 4. `fetch_sent_emails()` — **STILL MISSING** ⚠️
+
+Function is imported and called in `habit_learner_service.py` but NOT defined in `outlook_tool.py`. Without it, Stage 0 (FETCH) can only pull inbox — sent items fetch will crash. This is a **Phase A incomplete item**.
+
+### Files Changed This Session
+
+| File | Status | Change |
+|---|---|---|
+| `shared/src/shared_tools/habit_learner_db.py` | Modified | +`get_sender_received_stats()` for real reply_rate |
+| `shared/src/shared_tools/habit_learner_service.py` | Modified | Fixed `_compute_sender_profile` (real reply_rate), `infer()` (honest confidence), `to_injection_text()` (real example content), `_select_examples()` (min score threshold), low-confidence guard |
+| `shared/src/shared_tools/mail_service.py` | Modified | +terminal logging in `_run_reply_loop` |
+| `lilamy/modules/amail_routes.py` | Modified | +`behavioral_context` in reply inputs, +`agent_info` in response, +terminal logging |
+| `lilamy/static/index.html` | Modified | +agent info panel HTML, +CSS styles |
+| `lilamy/static/app.js` | Modified | +agent info rendering, +safe DOM setter, +loading state |
+
+### Remaining Work
+
+| Item | Priority | Effort |
+|---|---|---|
+| `fetch_sent_emails()` in `outlook_tool.py` | **HIGH** — blocks Stage 0 | ~1 hour |
+| Desktop training dialog (`habit_learner_dialog.py`) | Medium — Phase C | ~3 hours |
+| WebUI habit learner routes + page | Medium — Phase C | ~3 hours |
+| Unit tests (`test_habit_learner.py`) | Medium | ~2 hours |
+| `record_feedback()` online learning implementation | Low — stub exists | ~2 hours |
+| Habit learner module registry entry | Low | ~5 minutes |
 
 ---
 
