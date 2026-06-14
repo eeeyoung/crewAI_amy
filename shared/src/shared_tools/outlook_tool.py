@@ -8,7 +8,8 @@ from pydantic import Field
 def fetch_inbox_emails(count=100, max_body=4000, unread_only=False,
                       exclude_entry_ids: set = None,
                       received_after: str = None, received_before: str = None,
-                      ascending: bool = False):
+                      ascending: bool = False,
+                      focused_only: bool = False):
     """Fetch emails from Outlook Inbox.
 
     Args:
@@ -19,12 +20,15 @@ def fetch_inbox_emails(count=100, max_body=4000, unread_only=False,
         received_after: ISO datetime string — only emails received AFTER this.
         received_before: ISO datetime string — only emails received BEFORE this.
         ascending: If True, sort oldest-first (for fetch_earlier).
+        focused_only: If True, only fetch Focused inbox emails (skip Other tab).
+                      Default False = fetch ALL inbox emails.
     """
     if exclude_entry_ids is None:
         exclude_entry_ids = set()
     if platform.system() == "Windows":
         return _fetch_inbox_emails_windows(count, max_body, unread_only, exclude_entry_ids,
-                                           received_after, received_before, ascending)
+                                           received_after, received_before, ascending,
+                                           focused_only)
     elif platform.system() == "Darwin":
         return _fetch_inbox_emails_macos(count, max_body, unread_only, exclude_entry_ids,
                                          received_after, received_before, ascending)
@@ -34,7 +38,15 @@ def fetch_inbox_emails(count=100, max_body=4000, unread_only=False,
 def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False,
                                 exclude_entry_ids: set = None,
                                 received_after: str = None, received_before: str = None,
-                                ascending: bool = False):
+                                ascending: bool = False,
+                                focused_only: bool = False):
+    """Fetch emails from Outlook Inbox.
+
+    IMPORTANT: Callers must call ``pythoncom.CoInitialize()`` before calling
+    this function (all service methods in mail_service.py and
+    habit_learner_service.py already do).  This function does NOT manage
+    COM apartments — it assumes the caller owns that lifecycle.
+    """
     import win32com.client
 
     if exclude_entry_ids is None:
@@ -43,87 +55,159 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False,
     outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
     inbox = outlook.GetDefaultFolder(6)  # 6 = olFolderInbox
     messages = inbox.Items
-    if unread_only:
-        messages = messages.Restrict("[UnRead] = True")
-    messages.Sort("[ReceivedTime]", not ascending)  # True=DESC (newest first), False=ASC (oldest first)
 
-    # Parse date filters
+    # ── Build Outlook-native DASL Restrict filter ──────────────────
+    # Push filtering into Outlook's SQL engine so we never materialize
+    # COM objects for emails outside the target range.  This is the #1
+    # fix for RPC channel exhaustion ("用完了所有的共享数据资源").
+    restrict_parts = []
+    if unread_only:
+        restrict_parts.append("[UnRead] = True")
+    if received_after:
+        # DASL datetime format: yyyy-mm-ddThh:mm:ss (no timezone)
+        restrict_parts.append(
+            '"urn:schemas:httpmail:datereceived" >= \''
+            + received_after[:19].replace(' ', 'T') + '\''
+        )
+    if received_before:
+        restrict_parts.append(
+            '"urn:schemas:httpmail:datereceived" <= \''
+            + received_before[:19].replace(' ', 'T') + '\''
+        )
+
+    # ── Safety net: if NO filter is provided, add a default 30-day
+    # window to prevent iterating the entire mailbox (10k+ items).
+    # Callers that need all-time access must pass explicit date range.
+    if not restrict_parts and not unread_only:
+        from datetime import datetime, timedelta
+        default_after = (datetime.utcnow() - timedelta(days=30)).strftime(
+            '%Y-%m-%dT00:00:00'
+        )
+        restrict_parts.append(
+            '"urn:schemas:httpmail:datereceived" >= \'' + default_after + '\''
+        )
+
+    # ── Apply Restrict ──────────────────────────────────────────────
+    # DASL date filtering is the #1 fix for RPC exhaustion, but it can
+    # silently return zero on non-Exchange mailboxes (PST, IMAP) or with
+    # locale-mismatched date formats.  If it throws, we fall back to
+    # iteration with a hard scan cap.  We DON'T try to detect silent
+    # failures (Items.Count is itself expensive and unreliable on
+    # restricted collections) — the 2000 cap + Python-side date check
+    # is the safety net.
+    if restrict_parts:
+        dasl_filter = "@SQL=(" + " AND ".join(restrict_parts) + ")"
+        try:
+            messages = messages.Restrict(dasl_filter)
+        except Exception:
+            # DASL may fail on non-Exchange mailboxes; fall back to
+            # simple unread-only restriction if applicable.  Date
+            # filtering will happen Python-side with the 2000 cap.
+            if unread_only:
+                messages = messages.Restrict("[UnRead] = True")
+
+    messages.Sort("[ReceivedTime]", not ascending)
+
+    # Python-side date parsing for boundary precision around the DASL filter
     from datetime import datetime
-    after_dt = datetime.fromisoformat(received_after) if received_after else None
-    before_dt = datetime.fromisoformat(received_before) if received_before else None
+    def _parse_dt(ts: str):
+        if not ts:
+            return None
+        dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+        return dt.replace(tzinfo=None)
+    after_dt = _parse_dt(received_after)
+    before_dt = _parse_dt(received_before)
 
     emails = []
     fetched = 0
+    scanned = 0
+    _MAX_SCAN = 2000  # hard safety cap — never iterate more than this
 
     for message in messages:
+        scanned += 1
         if fetched >= count:
             break
+        if scanned > _MAX_SCAN:
+            break  # safety valve — don't burn RPC channels forever
+
         try:
             if message.Class != 43:  # 43 = olMail
                 continue
 
-            # Skip if EntryID is in the session blocklist
             entry_id = getattr(message, "EntryID", "")
             if entry_id and entry_id in exclude_entry_ids:
                 continue
 
-            # Skip emails from the "Other" tab (Focused Inbox only)
-            try:
-                is_focused = message.PropertyAccessor.GetProperty(
-                    "http://schemas.microsoft.com/mapi/proptag/0x10820003"
-                )
-                if is_focused == 0:  # 0 = Other, 1 = Focused
-                    continue
-            except Exception:
-                pass  # Property not available; include the email
+            # Focused Inbox filter (must be Python-side — no DASL property)
+            if focused_only:
+                try:
+                    is_focused = message.PropertyAccessor.GetProperty(
+                        "http://schemas.microsoft.com/mapi/proptag/0x10820003"
+                    )
+                    if is_focused == 0:
+                        continue
+                except Exception:
+                    pass
 
-            # Date range filtering
+            # Python-side date boundary check (belt + suspenders around DASL)
             if after_dt or before_dt:
                 try:
                     msg_time = message.ReceivedTime
-                    # Outlook returns a pywintypes datetime; strip tz for comparison
                     msg_dt = datetime(
                         msg_time.year, msg_time.month, msg_time.day,
                         msg_time.hour, msg_time.minute, msg_time.second
                     )
-                    if after_dt and msg_dt <= after_dt:
+                    if after_dt and msg_dt < after_dt:
                         continue
-                    if before_dt and msg_dt >= before_dt:
+                    if before_dt and msg_dt > before_dt:
                         continue
                 except Exception:
-                    pass  # if we can't parse the date, include the email
+                    pass
 
             sender_name = getattr(message, "SenderName", "Unknown")
             sender_email = getattr(message, "SenderEmailAddress", "Unknown")
             if sender_email and sender_email.upper().startswith("/O="):
                 try:
-                    sender_email = message.Sender.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
+                    sender_email = message.Sender.PropertyAccessor.GetProperty(
+                        "http://schemas.microsoft.com/mapi/proptag/0x39FE001E"
+                    )
                 except Exception:
                     try:
                         exch_user = message.Sender.GetExchangeUser()
-                        if exch_user: sender_email = exch_user.PrimarySmtpAddress
+                        if exch_user:
+                            sender_email = exch_user.PrimarySmtpAddress
                     except Exception:
                         pass
 
             # Resolve CC addresses
-            cc_list = []
+            cc_str = ""
             try:
+                cc_list = []
                 for rec in message.Recipients:
-                    if rec.Type == 2:  # 2 = olCC
+                    if rec.Type == 2:  # olCC
                         rec_email = rec.Address
                         if rec_email and rec_email.upper().startswith("/O="):
                             try:
-                                rec_email = rec.PropertyAccessor.GetProperty("http://schemas.microsoft.com/mapi/proptag/0x39FE001E")
+                                rec_email = rec.PropertyAccessor.GetProperty(
+                                    "http://schemas.microsoft.com/mapi/proptag/0x39FE001E"
+                                )
                             except Exception:
                                 try:
                                     exch_user = rec.AddressEntry.GetExchangeUser()
-                                    if exch_user: rec_email = exch_user.PrimarySmtpAddress
+                                    if exch_user:
+                                        rec_email = exch_user.PrimarySmtpAddress
                                 except Exception:
                                     pass
                         cc_list.append(f"{rec.Name} <{rec_email}>")
                 cc_str = "; ".join(cc_list)
             except Exception:
                 cc_str = getattr(message, "CC", "")
+
+            conversation_id = ""
+            try:
+                conversation_id = str(getattr(message, "ConversationID", "") or "")
+            except Exception:
+                pass
 
             emails.append({
                 "entry_id": entry_id,
@@ -132,10 +216,29 @@ def _fetch_inbox_emails_windows(count=10, max_body=4000, unread_only=False,
                 "cc": cc_str,
                 "received_time": str(getattr(message, "ReceivedTime", "Unknown Date")),
                 "body": getattr(message, "Body", "")[:max_body],
+                "conversation_id": conversation_id,
             })
             fetched += 1
         except Exception:
             continue
+        finally:
+            # Release COM reference each iteration so RPC channels
+            # don't accumulate across the loop
+            message = None
+
+    # Explicitly release Outlook objects
+    try:
+        del messages
+    except Exception:
+        pass
+    try:
+        del inbox
+    except Exception:
+        pass
+    try:
+        del outlook
+    except Exception:
+        pass
 
     return emails
 
@@ -567,6 +670,8 @@ def create_calendar_event(
         return "Error: Calendar operations are only supported on Windows."
 
     try:
+        import pythoncom
+        pythoncom.CoInitialize()
         import win32com.client
         from datetime import datetime
 

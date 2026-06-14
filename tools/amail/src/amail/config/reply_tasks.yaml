@@ -31,6 +31,15 @@ generate_reply_task:
       recipient's name as your own. You are NOT Mark, John, or any other person
       — you are ONLY {amy_name}.
 
+    BEHAVIORAL CONTEXT — How Amy typically handles emails like this one:
+    {behavioral_context}
+
+    If behavioral context is provided above, use it to guide your tone, length,
+    structure, greeting, and sign-off choices. The context describes how Amy
+    actually replies to similar emails from similar senders — match it.
+    If the behavioral context is empty, fall back to the standard style blueprint.
+    The context is authoritative for greeting, sign-off, and formality choices.
+
     STANDARD REPLY STRUCTURE (use only when you are the direct recipient):
 
     1. ACKNOWLEDGE — Confirm receipt of the sender's email. Reference their specific

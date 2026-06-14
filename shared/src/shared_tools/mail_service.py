@@ -79,6 +79,18 @@ class MailService(QObject):
         self._processed_entry_ids: set[str] = set()
         self._skipped_indices: set[int] = set()
 
+        # ---- fetch progress (thread-safe, polled by WebUI) ----
+        self._fetch_status_lock = threading.Lock()
+        self._fetch_status: dict = {
+            "phase": "idle",       # idle | fetching | summarizing | complete | error
+            "total": 0,
+            "done": 0,
+            "current": "",         # current email subject
+            "message": "",
+            "error": "",
+            "added": 0,            # emails successfully added
+        }
+
         # ---- queues ----
         self._filter_queue: queue.Queue = queue.Queue()
         self._triage_queue: queue.Queue = queue.Queue()
@@ -167,6 +179,7 @@ class MailService(QObject):
         if not self._running:
             return
 
+        import pythoncom; pythoncom.CoInitialize()
         from shared_tools.outlook_tool import fetch_inbox_emails
         from shared_tools.ipc_bridge import (
             get_processed_entry_ids, get_latest_received_time,
@@ -187,7 +200,10 @@ class MailService(QObject):
             pass
 
         # 2. Fetch from Outlook
+        self._update_fetch_status(phase="fetching", total=0, done=0,
+                                  added=0, current="", message="Connecting to Outlook...")
         _emit(self.refresh_progress, 0, count, "Fetching from Outlook...")
+        print(f"[FETCH] _do_refresh: fetching count={count}, exclude_ids={len(self._processed_entry_ids)}, latest_received={self._latest_received_time}")
         try:
             raw_emails = fetch_inbox_emails(
                 count=count, max_body=4000, unread_only=False,
@@ -195,10 +211,15 @@ class MailService(QObject):
             )
         except Exception as e:
             _emit(self.refresh_error, f"Outlook fetch failed: {e}")
+            self._update_fetch_status(phase="error", error=str(e))
+            print(f"[FETCH] _do_refresh ERROR: {e}")
             return
 
+        print(f"[FETCH] _do_refresh: Outlook returned {len(raw_emails)} emails")
         if not raw_emails:
             _emit(self.new_emails_arrived, 0)
+            self._update_fetch_status(phase="complete", total=0, done=0,
+                                      added=0, message="No new emails found")
             return
 
         # 3. Filter: skip emails older than latest stored
@@ -212,9 +233,12 @@ class MailService(QObject):
                 continue
             new_emails.append(em)
 
+        print(f"[FETCH] _do_refresh: after filtering: {len(new_emails)} new emails (out of {len(raw_emails)} raw)")
         total = len(new_emails)
         if total == 0:
             _emit(self.new_emails_arrived, 0)
+            self._update_fetch_status(phase="complete", total=0, done=0,
+                                      added=0, message="No new emails (all already processed)")
             return
 
         # 4. Summarize each new email (single LLM pass)
@@ -222,11 +246,14 @@ class MailService(QObject):
         for i, em in enumerate(new_emails):
             if not self._running:
                 return
+            subj = em.get('subject', '')[:60]
             _emit(self.refresh_progress, i + 1, total,
-                  f"Summarizing [{i+1}/{total}]: {em.get('subject', '')[:50]}...")
+                  f"Summarizing [{i+1}/{total}]: {subj}...")
+            print(f"[FETCH] Summarizing [{i+1}/{total}]: {subj}")
             try:
                 result = self._summarize_single(em)
                 if result:
+                    print(f"[FETCH]   → OK: category={result.get('category')}, urgency={result.get('urgency')}, todos={len(result.get('todos',[]))}, deadlines={len(result.get('deadlines',[]))}")
                     entry = {
                         "entry_id": em.get("entry_id", ""),
                         "subject": em.get("subject", ""),
@@ -238,6 +265,7 @@ class MailService(QObject):
                         "chinese_summary": result.get("chinese_summary", ""),
                         "assignee": result.get("assignee", ""),
                         "todos_json": json.dumps(result.get("todos", []), ensure_ascii=False),
+                        "deadlines_json": json.dumps(result.get("deadlines", []), ensure_ascii=False),
                         "status": "active",
                     }
                     upsert_processed_email(entry)
@@ -247,14 +275,20 @@ class MailService(QObject):
                             self._latest_received_time = received
                     _emit(self.summary_ready, entry)
                     summarized += 1
+                else:
+                    print(f"[FETCH]   → FAILED (summarizer returned None)")
             except Exception as e:
                 _emit(self.refresh_error, f"Summarize failed for {em.get('subject', 'Unknown')[:40]}: {e}")
+                print(f"[FETCH]   → ERROR: {e}")
 
+        print(f"[FETCH] _do_refresh COMPLETE: {summarized} summarized of {total} new")
+        self._update_fetch_status(phase="complete", added=summarized,
+                                  message=f"{summarized} new email(s) processed")
         _emit(self.new_emails_arrived, summarized)
 
     def _summarize_single(self, email: dict) -> dict | None:
         """Run the unified summarizer on a single email.
-        Returns a dict with chinese_summary, category, urgency, assignee, todos
+        Returns a dict with chinese_summary, category, urgency, assignee, todos, deadlines
         or None on failure."""
         from amail.crew import UnifiedSummarizerCrew
         inputs = {
@@ -282,6 +316,7 @@ class MailService(QObject):
                 "urgency": "low",
                 "assignee": "Unknown",
                 "todos": [],
+                "deadlines": [],
             }
 
     def remove_email(self, entry_id: str):
@@ -302,6 +337,7 @@ class MailService(QObject):
     def _do_fetch_earlier(self, count: int):
         if not self._running:
             return
+        import pythoncom; pythoncom.CoInitialize()
         from shared_tools.outlook_tool import fetch_inbox_emails
         from shared_tools.ipc_bridge import (
             get_earliest_received_time, get_processed_entry_ids,
@@ -344,6 +380,8 @@ class MailService(QObject):
             return
 
         summarized = self._summarize_batch(raw_emails, _emit)
+        self._update_fetch_status(phase="complete", added=summarized,
+                                  message=f"{summarized} earlier email(s) processed")
         _emit(self.new_emails_arrived, summarized)
 
     def fetch_latest(self, count: int = 30):
@@ -351,107 +389,79 @@ class MailService(QObject):
         Same as refresh_inbox but keeps the name semantic clear."""
         self.refresh_inbox(count=count)
 
-    def sync_inbox(self):
-        """Full reconciliation: fetch earlier → detect changes in covered range → update bodies.
-        Only operates on UNREAD emails.
-
-        1. Fetch earlier (fill backward gaps)
-        2. For the date range storage covers, find unread Outlook emails:
-           - New in Outlook but not storage → add
-           - In storage but not in Outlook's unread → remove (was read/deleted)
-        3. For remaining storage emails, update body from Outlook if missing
-        """
-        t = threading.Thread(target=self._do_sync, daemon=True, name="svc-sync")
+    def sync_inbox(self, from_date: str = None, to_date: str = None):
+        """Fill gaps between from_date and to_date. Uses storage range if not provided."""
+        t = threading.Thread(target=self._do_sync, args=(from_date, to_date),
+                           daemon=True, name="svc-sync")
         t.start()
 
-    def _do_sync(self):
+    def _do_sync(self, from_date: str = None, to_date: str = None):
+        """Fill gaps: find unread Outlook emails in the date range
+        that aren't in storage yet, and add them."""
         if not self._running:
             return
+        import pythoncom
+        pythoncom.CoInitialize()
         from shared_tools.outlook_tool import fetch_inbox_emails
         from shared_tools.ipc_bridge import (
             get_earliest_received_time, get_latest_received_time,
             get_processed_entry_ids, get_active_entry_ids_in_range,
-            upsert_processed_email, remove_processed_email, get_processed_emails,
+            upsert_processed_email, get_processed_emails,
         )
 
         def _emit(sig, *args):
-            if self._running:
+            if not self._running:
+                return
+            try:
                 sig.emit(*args)
+            except Exception:
+                pass
 
         added = 0
-        removed = 0
         body_updated = 0
 
-        # 1. Fetch earlier (backward fill)
-        _emit(self.refresh_progress, 0, 1, "Step 1/4: Fetching earlier unread emails...")
+        # 1. Determine date range: use custom if provided, else storage range
+        print("[SYNC] Step 1/2: Loading storage state...")
         existing_ids = get_processed_entry_ids()
         self._processed_entry_ids |= existing_ids
-        earliest = get_earliest_received_time()
-        latest = get_latest_received_time()
+        active_count = len(get_processed_emails(status="active", limit=0))
+        removed_count = len(get_processed_emails(status="removed", limit=0))
+        print(f"[SYNC]   Active: {active_count}, Removed: {removed_count}")
 
-        if earliest:
-            try:
-                earlier_emails = fetch_inbox_emails(
-                    count=500, max_body=4000, unread_only=True,
-                    exclude_entry_ids=self._processed_entry_ids,
-                    received_before=earliest,
-                )
-                if earlier_emails:
-                    added += self._summarize_batch(earlier_emails, _emit)
-            except Exception as e:
-                _emit(self.refresh_error, f"Fetch earlier failed: {e}")
+        if from_date and to_date:
+            earliest = from_date
+            latest = to_date
+            print(f"[SYNC]   Custom range: {earliest[:19]} → {latest[:19]}")
+        else:
+            earliest = get_earliest_received_time()
+            latest = get_latest_received_time()
+            print(f"[SYNC]   Storage range: {earliest[:19] if earliest else 'N/A'} → {latest[:19] if latest else 'N/A'}")
 
-        # 2. Detect changes in covered range
+        # 2. Fill gaps
         if earliest and latest:
-            _emit(self.refresh_progress, 0, 1,
-                  "Step 2/4: Checking for new unread emails in covered range...")
-
-            # 2a. Fetch UNREAD Outlook emails in range → add new ones
+            print("[SYNC] Step 2/2: Filling gaps...")
             try:
-                unread_range = fetch_inbox_emails(
-                    count=2000, max_body=4000, unread_only=True,
+                storage_ids = get_active_entry_ids_in_range(earliest, latest) if not from_date else get_processed_entry_ids()
+                print(f"[SYNC]   Active IDs in range: {len(storage_ids)}")
+                gap_emails = fetch_inbox_emails(
+                    count=200, max_body=4000, unread_only=True,
+                    exclude_entry_ids=storage_ids,
                     received_after=earliest, received_before=latest,
                 )
+                print(f"[SYNC]   Unread emails found in range: {len(gap_emails)}")
+                if gap_emails:
+                    added += self._summarize_batch(gap_emails, _emit)
+                    print(f"[SYNC]   Added {added} new emails to storage")
+                else:
+                    print("[SYNC]   No new emails to add — storage is up to date")
             except Exception as e:
-                _emit(self.refresh_error, f"Range fetch failed: {e}")
-                unread_range = []
+                print(f"[SYNC]   ERROR: {e}")
+        else:
+            print("[SYNC] Step 2/2: Skipped — no date range to fill")
 
-            unread_ids = {e["entry_id"] for e in unread_range}
-            storage_ids = get_active_entry_ids_in_range(earliest, latest)
-
-            new_ids = unread_ids - storage_ids
-            if new_ids:
-                _emit(self.refresh_progress, 0, len(new_ids),
-                      f"Step 3/4: Adding {len(new_ids)} new emails in range...")
-                new_emails = [e for e in unread_range if e["entry_id"] in new_ids]
-                added += self._summarize_batch(new_emails, _emit)
-
-            # 2b. Detect actual deletions: fetch ALL emails (read+unread) in range
-            #     Only remove if email no longer exists in Outlook at all
-            _emit(self.refresh_progress, 0, 1,
-                  "Step 3/4: Checking for deleted emails...")
-            try:
-                all_range = fetch_inbox_emails(
-                    count=5000, max_body=100, unread_only=False,
-                    received_after=earliest, received_before=latest,
-                )
-            except Exception as e:
-                _emit(self.refresh_error, f"Deletion check failed: {e}")
-                all_range = []
-
-            all_outlook_ids = {e["entry_id"] for e in all_range}
-            removed_ids = storage_ids - all_outlook_ids  # only truly gone
-            if removed_ids:
-                for eid in removed_ids:
-                    if not self._running:
-                        break
-                    self.remove_email(eid)
-                    _emit(self.email_removed, eid)
-                    removed += 1
-
-        # 3. Update bodies for remaining active emails
-        _emit(self.refresh_progress, 0, 1, "Step 5/5: Updating email bodies...")
-        all_active = get_processed_emails(status="active", limit=0)  # unlimited
+        # 3. Update bodies
+        print("[SYNC] Updating email bodies...")
+        all_active = get_processed_emails(status="active", limit=0)
         try:
             import win32com.client
             outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
@@ -470,20 +480,40 @@ class MailService(QObject):
                     except Exception:
                         pass
         except Exception:
-            pass  # Outlook not available
+            pass
 
-        _emit(self.sync_complete, added, removed, body_updated)
+        _emit(self.sync_complete, added, 0, body_updated)
+
+    def get_fetch_status(self) -> dict:
+        """Thread-safe read of current fetch progress. Polled by WebUI."""
+        with self._fetch_status_lock:
+            return dict(self._fetch_status)
+
+    def _update_fetch_status(self, **kwargs):
+        """Thread-safe update of fetch progress."""
+        with self._fetch_status_lock:
+            self._fetch_status.update(kwargs)
 
     def _summarize_batch(self, emails: list[dict], _emit) -> int:
         """Summarize a batch of emails and persist. Returns count added."""
         from shared_tools.ipc_bridge import upsert_processed_email
         summarized = 0
         total = len(emails)
+
+        self._update_fetch_status(phase="summarizing", total=total, done=0,
+                                  added=0, current="", message="")
+
         for i, em in enumerate(emails):
             if not self._running:
                 break
+            subject = em.get('subject', '')[:50]
             _emit(self.refresh_progress, i + 1, total,
-                  f"Summarizing [{i+1}/{total}]: {em.get('subject', '')[:50]}...")
+                  f"Summarizing [{i+1}/{total}]: {subject}...")
+            self._update_fetch_status(
+                done=i + 1,
+                current=subject,
+                message=f"Summarizing [{i+1}/{total}]"
+            )
             try:
                 result = self._summarize_single(em)
                 if result:
@@ -498,28 +528,33 @@ class MailService(QObject):
                         "chinese_summary": result.get("chinese_summary", ""),
                         "assignee": result.get("assignee", ""),
                         "todos_json": json.dumps(result.get("todos", []), ensure_ascii=False),
+                        "deadlines_json": json.dumps(result.get("deadlines", []), ensure_ascii=False),
                         "status": "active",
                     }
                     upsert_processed_email(entry)
                     self._processed_entry_ids.add(em.get("entry_id", ""))
+                    if received := em.get("received_time", ""):
+                        if not self._latest_received_time or received > self._latest_received_time:
+                            self._latest_received_time = received
                     _emit(self.summary_ready, entry)
                     summarized += 1
             except Exception as e:
                 _emit(self.refresh_error,
                       f"Summarize failed for {em.get('subject', 'Unknown')[:40]}: {e}")
+        self._update_fetch_status(added=summarized)
         return summarized
 
     # ── auto-refresh timer ─────────────────────────────────────────────
 
     def _start_auto_refresh(self):
-        """Start the 10-second refresh timer (requires a running QApplication)."""
+        """Start the 10-minute refresh timer (requires a running QApplication)."""
         if not self._auto_refresh:
             return
         try:
             from PyQt6.QtCore import QTimer
             self._refresh_timer = QTimer()
             self._refresh_timer.timeout.connect(lambda: self.refresh_inbox(count=50))
-            self._refresh_timer.start(10_000)  # 10 seconds
+            self._refresh_timer.start(600_000)  # 10 minutes
         except Exception:
             pass  # no QApplication — timer won't work (CLI mode)
 
@@ -927,6 +962,14 @@ class MailService(QObject):
             if idx in self._skipped_indices:
                 continue
 
+            print(f"\n{'═'*70}")
+            print(f"📧 REPLY AGENT — Desktop (email #{idx})")
+            print(f"{'═'*70}")
+            print(f"  Email: {email.get('subject', '(no subject)')[:80]}")
+            print(f"  Sender: {email.get('sender', 'unknown')}")
+            print(f"  Category: {category}")
+            print(f"  Urgency: {urgency}")
+
             facts = self._search_facts(email["subject"], filtered_body, category)
             facts_text = "\n".join(
                 f"- [{f['project']}] {f['topic']}: {f['detail']}" for f in facts
@@ -945,6 +988,40 @@ class MailService(QObject):
             except Exception:
                 pass
 
+            # Behavioral context from Habit Learner (graceful degradation)
+            behavioral_text = ""
+            print(f"\n  ── Habit Learner ──────────────────────────────────────")
+            try:
+                from shared_tools.habit_learner_service import get_habit_service
+                habit_svc = get_habit_service()
+                sender_raw = email.get("sender", "")
+                from shared_tools.email_parser import extract_sender_email
+                sender_email = extract_sender_email(sender_raw)
+                print(f"  Sender email: {sender_email or '(not extractable)'}")
+
+                ctx = habit_svc.infer(email)
+                if ctx:
+                    print(f"  Profile found:  {'YES' if ctx.sender_profile else 'NO'}")
+                    if ctx.sender_profile:
+                        sp = ctx.sender_profile
+                        print(f"    Tier:         {sp.get('tier_label', '?')} (level {sp.get('tier', '?')})")
+                        print(f"    Reply rate:   {sp.get('reply_rate', 0):.0%}")
+                        print(f"    Top intent:   {sp.get('top_intent', 'N/A')}")
+                        print(f"    Greeting:     \"{sp.get('preferred_greeting', 'N/A')}\"")
+                        print(f"    Sign-off:     \"{sp.get('signoff_preference', 'N/A')}\"")
+                    print(f"  Predicted intent: {ctx.predicted_intent}")
+                    print(f"  Confidence:  {ctx.confidence:.0%}")
+                    behavioral_text = ctx.to_injection_text()
+                    if behavioral_text:
+                        for line in behavioral_text.split("\n")[:6]:
+                            print(f"  | {line}")
+                        if len(behavioral_text.split("\n")) > 6:
+                            print(f"  | ... ({len(behavioral_text.split(chr(10)))} lines total)")
+                else:
+                    print(f"  Result: No profiles loaded — infer() returned None")
+            except Exception as e:
+                print(f"  Habit Learner: skipped ({e})")
+
             inputs = {
                 "email_subject": email["subject"],
                 "email_content": filtered_body,
@@ -953,6 +1030,7 @@ class MailService(QObject):
                 "email_context": extra_info,
                 "relevant_facts": facts_text,
                 "relevant_schedule": cal_ctx,
+                "behavioral_context": behavioral_text,
                 "email_sender": email["sender"],
                 "email_cc": email.get("cc", ""),
                 "amy_name": os.environ.get("AMY_NAME", "Amy Chen"),
@@ -962,10 +1040,19 @@ class MailService(QObject):
             try:
                 with self._llm_semaphore:
                     from amail.crew import ReplyGeneratorCrew
+                    print(f"\n  ── LLM Call ─────────────────────────────────────────")
+                    print(f"  behavioral_context: {len(behavioral_text)} chars")
+                    print(f"  relevant_facts: {len(facts_text)} chars")
+                    print(f"  Calling ReplyGeneratorCrew.kickoff()...")
                     result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
                 draft = result.raw if hasattr(result, "raw") else str(result)
+                print(f"  ✅ LLM call complete — draft: {len(draft)} chars")
+                print(f"  Draft preview: {draft[:200]}...")
+                print(f"{'═'*70}\n")
             except Exception as e:
                 draft = f"Error generating reply: {e}"
+                print(f"  ❌ LLM call failed: {e}")
+                print(f"{'═'*70}\n")
 
             if idx in self._skipped_indices:
                 continue

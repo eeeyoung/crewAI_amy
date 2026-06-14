@@ -28,14 +28,26 @@ unified_summarize_task:
     5. todos: List of 1-3 Chinese action items starting with verbs
        (e.g., "审核RFI并回复承包商"). Empty list if purely informational.
 
+    6. deadlines: List of date/time references found in the email. For each:
+       - description: Short description in Chinese or English of the event/deadline
+       - date_type: "exact" | "approximate" | "range" | "deadline" | "tbd"
+       - start_date: ISO datetime string (e.g., "2026-06-15T14:00") or null
+       - end_date: ISO datetime string for date ranges, or null
+       - confidence: 0.0 to 1.0 based on how specific the date is
+       Resolve relative dates ("next Tuesday", "in 2 weeks") to actual dates.
+       Empty list if no dates mentioned.
+
     Return ONLY a JSON object (no markdown, no extra text):
     {{
       "chinese_summary": "string",
       "category": "string",
       "urgency": "string",
       "assignee": "string",
-      "todos": ["string", ...]
+      "todos": ["string", ...],
+      "deadlines": [{{"description": "string", "date_type": "string",
+                      "start_date": "string|null", "end_date": "string|null",
+                      "confidence": float}}, ...]
     }}
   expected_output: >
-    A JSON object with chinese_summary, category, urgency, assignee, and todos fields.
+    A JSON object with chinese_summary, category, urgency, assignee, todos, and deadlines fields.
   agent: unified_summarizer

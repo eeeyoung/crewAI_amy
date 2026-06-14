@@ -27,4 +27,10 @@ unified_summarizer:
       安全负责人, Amy Chen, or the sender's name if it's an external email.
     - todos: 1-3 concrete action items in Chinese, each starting with a
       verb. Empty array if purely informational.
+    - deadlines: List of date/time references extracted from the email.
+      Each has: description (short Chinese or English), date_type (one of
+      exact/approximate/range/deadline/tbd), start_date (ISO datetime or
+      null), end_date (ISO datetime or null), confidence (0.0-1.0).
+      Resolve relative dates ("next Tuesday", "in 2 weeks") to actual
+      calendar dates. Empty list if no dates mentioned.
   llm: gemini/gemini-2.5-flash

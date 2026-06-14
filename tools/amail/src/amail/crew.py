@@ -16,6 +16,15 @@ class StyleBlueprint(BaseModel):
     reasoning_logic: str
 
 
+class DeadlineItem(BaseModel):
+    """A single deadline/date reference extracted from an email."""
+    description: str
+    date_type: str          # exact | approximate | range | deadline | tbd
+    start_date: str | None  # ISO date string or None
+    end_date: str | None    # ISO date string for ranges, or None
+    confidence: float       # 0.0 to 1.0
+
+
 class UnifiedEmailOutput(BaseModel):
     """Single-pass structured output from the unified summarizer.
     Replaces the old 6-stage pipeline for initial triage."""
@@ -24,6 +33,7 @@ class UnifiedEmailOutput(BaseModel):
     urgency: str          # low | medium | high | critical
     assignee: str
     todos: list[str]
+    deadlines: list[DeadlineItem]
 
 
 @CrewBase
@@ -308,7 +318,7 @@ class GrammarPolisherCrew():
 @CrewBase
 class UnifiedSummarizerCrew():
     """Single-pass summarizer — one LLM call replacing the old 6-stage pipeline.
-    Produces: chinese_summary, category, urgency, assignee, todos."""
+    Produces: chinese_summary, category, urgency, assignee, todos, deadlines."""
     agents_config = 'config/summarizer_agents.yaml'
     tasks_config = 'config/summarizer_tasks.yaml'
 

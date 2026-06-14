@@ -26,6 +26,8 @@ amail = "amail.main:run"
 run_crew = "amail.main:run"
 run_triage = "amail.main:run_triage"
 extract_style = "amail.main:extract_style"
+build_habits = "amail.main:build_habits"
+view_habits = "amail.main:view_habits"
 view_facts = "amail.main:view_facts"
 
 [build-system]
