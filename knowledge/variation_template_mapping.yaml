@@ -1,0 +1,81 @@
+# Variation Template Mapping — Welink Construction (default)
+#
+# Maps logical fields to Excel cell coordinates for the Client Variation
+# template. Edit this file to adapt to a different company's template
+# without changing any Python code.
+#
+# Template file: knowledge/variation_template.xlsx
+# Based on: "YYYYMMDD XXXX - Welink Construction Client Variations.xlsx"
+
+template:
+  blank_sheet: "VOXX"
+  register_sheet: "Register"
+
+# ── VO Breakdown Sheet ────────────────────────────────────────────────
+vo_sheet:
+  # Fixed fields (cell reference)
+  title_cell: "A4"               # "CONTRACT VARIATION" / "- ESTIMATE"
+  project_name: "B6"
+  date_issued: "G6"
+  company_name: "B7"
+  site_instruction_ref: "F7"
+  site_address: "B8"
+  job_number: "B9"
+  vo_title: "B11"                # e.g., "VO1 - Client's Tree Removal"
+
+  # Line items area
+  items_header_row: 12           # "Item | Description | Qty | Unit | Rate | Cost | Credit"
+  items_start_row: 14            # First data row
+  items_max_rows: 50             # Max line items before totals (supports complex VOs like client upgrade schedules)
+
+  # Column mapping for line items
+  items_columns:
+    item: "A"
+    description: "B"
+    qty: "C"
+    unit: "D"
+    rate: "E"
+    cost: "F"                    # Formula: =C{row}*E{row}
+    credit: "G"
+
+  # Totals labels — used for row detection (case-insensitive partial match)
+  totals_labels:
+    sub_total: "SUB TOTAL"
+    nett_cost: "NETT VARIATION COST"
+    margin: "MARGIN AND OVERHEAD COSTS"
+    excl_gst: "VARIATION COST EXCLUDING GST"
+    gst: "GST"
+    total: "TOTAL INCLUDING GST"
+    raised_by: "Variation Raised By:"
+
+  # Column for Variation Raised By initials
+  raised_by_value_col: "F"
+
+# ── Register Sheet ────────────────────────────────────────────────────
+register_sheet:
+  title_row: 1
+
+  # Project info
+  job_number: "B3"
+  base_contract_amount: "G3"
+  project_name: "B4"
+  project_location: "B5"
+
+  # VO table
+  vo_table_start_row: 12         # Header row
+  vo_table_first_data_row: 13    # First VO row
+
+  vo_table_columns:
+    vo_number: "A"
+    description: "B"
+    date_issued: "C"
+    variation_value: "D"
+    pending_approval: "E"
+    not_approved: "F"
+    total_approved: "G"
+    not_proceeding: "H"
+    in_dispute: "I"
+    nod_eot: "J"
+    status: "K"
+    notes: "L"
+    action: "M"
