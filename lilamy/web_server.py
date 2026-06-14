@@ -46,13 +46,18 @@ async def serve_spa():
 # ── Module routes ────────────────────────────────────────────────────
 
 for mod in get_enabled_modules():
-    router_path = mod.get("router_path")
-    if router_path:
-        import importlib
-        mod_path, attr = router_path.rsplit(":", 1)
-        module = importlib.import_module(mod_path)
-        router = getattr(module, attr)
-        app.include_router(router)
+    router_paths = [mod.get("router_path")]
+    # Support additional routers per module (e.g., project routes under variations)
+    for extra in mod.get("extra_routers", []):
+        router_paths.append(extra)
+
+    for router_path in router_paths:
+        if router_path:
+            import importlib
+            mod_path, attr = router_path.rsplit(":", 1)
+            module = importlib.import_module(mod_path)
+            router = getattr(module, attr)
+            app.include_router(router)
 
 
 # ── Platform endpoints ──────────────────────────────────────────────

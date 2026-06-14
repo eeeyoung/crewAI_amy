@@ -18,11 +18,29 @@ MODULES = {
         "enabled": True,
         "router_path": "lilamy.modules.amail_routes:router",
     },
+    "todo": {
+        "id": "todo",
+        "name": "To-Do List",
+        "icon": "📋",
+        "description": "Action items, deadlines, progress tracking",
+        "enabled": True,
+        "router_path": "lilamy.modules.todo_routes:router",
+    },
+    "variations": {
+        "id": "variations",
+        "name": "Variations",
+        "icon": "📝",
+        "description": "Client variation workflow — Excel, PDF, submission",
+        "enabled": True,
+        "router_path": "lilamy.modules.variation_routes:router",
+        "extra_routers": ["lilamy.modules.project_routes:router"],
+    },
+    # DEPRECATED — superseded by the To-Do List module above
     "acalendar": {
         "id": "acalendar",
         "name": "ACalendar",
         "icon": "📅",
-        "description": "Schedule tracking, deadlines, conflicts",
+        "description": "Schedule tracking, deadlines, conflicts (deprecated)",
         "enabled": False,
     },
     "adocuments": {
