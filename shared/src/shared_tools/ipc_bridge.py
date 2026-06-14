@@ -179,6 +179,7 @@ def init_shared_db() -> None:
                 chinese_summary TEXT,
                 assignee TEXT,
                 todos_json TEXT,
+                deadlines_json TEXT,
                 reply_draft TEXT,
                 status TEXT DEFAULT 'active',
                 processed_at TEXT DEFAULT (datetime('now')),
@@ -189,10 +190,49 @@ def init_shared_db() -> None:
                 ON processed_emails(status);
             CREATE INDEX IF NOT EXISTS idx_processed_emails_received
                 ON processed_emails(received_time DESC);
+
+            CREATE TABLE IF NOT EXISTS todo_items (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                entry_id        TEXT UNIQUE NOT NULL,
+                source_email_id TEXT,
+                description     TEXT NOT NULL,
+                category        TEXT DEFAULT 'General',
+                urgency         TEXT DEFAULT 'low',
+                assignee        TEXT DEFAULT '',
+                status          TEXT DEFAULT 'pending',
+                deadline_date   TEXT,
+                deadline_time   TEXT,
+                deadline_type   TEXT DEFAULT 'tbd',
+                project         TEXT DEFAULT '',
+                created_at      TEXT DEFAULT (datetime('now')),
+                updated_at      TEXT DEFAULT (datetime('now'))
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_todo_items_status
+                ON todo_items(status);
+            CREATE INDEX IF NOT EXISTS idx_todo_items_source
+                ON todo_items(source_email_id);
+            CREATE INDEX IF NOT EXISTS idx_todo_items_deadline
+                ON todo_items(deadline_date);
         """)
         conn.commit()
+
+        # ── Migrations: add columns/tables that may not exist in older DBs ──
+        _migrate_add_column(conn, "processed_emails", "deadlines_json", "TEXT")
+        _migrate_add_column(conn, "todo_items", "deadline_time", "TEXT")
+
     finally:
         conn.close()
+
+
+def _migrate_add_column(conn, table: str, column: str, col_type: str) -> bool:
+    """Add a column to a table if it doesn't already exist. Returns True if added."""
+    cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+    if column not in cols:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+        conn.commit()
+        return True
+    return False
 
 
 # =============================================================================
@@ -409,8 +449,8 @@ def upsert_processed_email(email_data: dict) -> bool:
         conn.execute(
             """INSERT INTO processed_emails
                (entry_id, subject, sender, received_time, body, category, urgency,
-                chinese_summary, assignee, todos_json, reply_draft, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                chinese_summary, assignee, todos_json, deadlines_json, reply_draft, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                ON CONFLICT(entry_id) DO UPDATE SET
                 subject = excluded.subject,
                 sender = excluded.sender,
@@ -421,6 +461,7 @@ def upsert_processed_email(email_data: dict) -> bool:
                 chinese_summary = excluded.chinese_summary,
                 assignee = excluded.assignee,
                 todos_json = excluded.todos_json,
+                deadlines_json = excluded.deadlines_json,
                 reply_draft = excluded.reply_draft,
                 status = excluded.status,
                 updated_at = datetime('now')""",
@@ -435,6 +476,7 @@ def upsert_processed_email(email_data: dict) -> bool:
                 email_data.get("chinese_summary", ""),
                 email_data.get("assignee", ""),
                 email_data.get("todos_json", "[]"),
+                email_data.get("deadlines_json", "[]"),
                 email_data.get("reply_draft", ""),
                 email_data.get("status", "active"),
             ),
@@ -508,11 +550,12 @@ def get_processed_entry_ids() -> set[str]:
 
 
 def get_latest_received_time() -> str | None:
-    """Return the received_time of the newest processed email, or None."""
+    """Return the received_time of the newest ACTIVE processed email, or None.
+    Excludes removed emails so re-fetching can fill gaps after removals."""
     conn = _get_connection()
     try:
         row = conn.execute(
-            "SELECT received_time FROM processed_emails ORDER BY received_time DESC LIMIT 1"
+            "SELECT received_time FROM processed_emails WHERE status = 'active' ORDER BY received_time DESC LIMIT 1"
         ).fetchone()
         return row["received_time"] if row else None
     except Exception:
@@ -578,3 +621,157 @@ def get_processed_email(entry_id: str) -> dict | None:
         return None
     finally:
         conn.close()
+
+
+# =============================================================================
+# To-Do Items — unified task/action-item store
+# =============================================================================
+
+def upsert_todo_item(data: dict) -> bool:
+    """Insert or replace a to-do item by entry_id (UUID). Returns True on success."""
+    conn = _get_connection()
+    try:
+        conn.execute(
+            """INSERT OR REPLACE INTO todo_items
+               (entry_id, source_email_id, description, category, urgency, assignee,
+                status, deadline_date, deadline_time, deadline_type, project, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))""",
+            (
+                data.get("entry_id", ""),
+                data.get("source_email_id"),
+                data.get("description", ""),
+                data.get("category", "General"),
+                data.get("urgency", "low"),
+                data.get("assignee", ""),
+                data.get("status", "pending"),
+                data.get("deadline_date"),
+                data.get("deadline_time"),
+                data.get("deadline_type", "tbd"),
+                data.get("project", ""),
+            ),
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error upserting todo item: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def get_todo_items(status: str | None = None, limit: int = 0) -> list[dict]:
+    """Return to-do items, newest first. Optional status filter (pending/done/cancelled).
+    When status is None (All), excludes cancelled items (trash).
+    Set status='cancelled' to see trash. Set limit=0 for unlimited."""
+    conn = _get_connection()
+    try:
+        if status:
+            if limit > 0:
+                rows = conn.execute(
+                    "SELECT * FROM todo_items WHERE status = ? ORDER BY created_at DESC LIMIT ?",
+                    (status, limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT * FROM todo_items WHERE status = ? ORDER BY created_at DESC",
+                    (status,),
+                ).fetchall()
+        else:
+            # "All" = pending + done only (exclude cancelled/trash)
+            if limit > 0:
+                rows = conn.execute(
+                    "SELECT * FROM todo_items WHERE status != 'cancelled' ORDER BY created_at DESC LIMIT ?",
+                    (limit,),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT * FROM todo_items WHERE status != 'cancelled' ORDER BY created_at DESC"
+                ).fetchall()
+        return [dict(r) for r in rows]
+    except Exception as e:
+        print(f"Error reading todo items: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def get_todo_item(entry_id: str) -> dict | None:
+    """Return a single to-do item by its UUID entry_id, or None."""
+    conn = _get_connection()
+    try:
+        row = conn.execute(
+            "SELECT * FROM todo_items WHERE entry_id = ?", (entry_id,)
+        ).fetchone()
+        return dict(row) if row else None
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
+def update_todo_item(entry_id: str, **fields) -> bool:
+    """Update fields of a to-do item by entry_id.
+    Automatically sets updated_at to now. Returns True on success."""
+    if not fields:
+        return False
+    conn = _get_connection()
+    try:
+        set_clause = ", ".join(f"{k} = ?" for k in fields.keys())
+        values = list(fields.values()) + [entry_id]
+        conn.execute(
+            f"UPDATE todo_items SET {set_clause}, updated_at = datetime('now') WHERE entry_id = ?",
+            values,
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error updating todo item: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def delete_todo_item(entry_id: str) -> bool:
+    """Soft-delete a to-do item: set status = 'cancelled' (moves to trash)."""
+    conn = _get_connection()
+    try:
+        conn.execute(
+            "UPDATE todo_items SET status = 'cancelled', updated_at = datetime('now') WHERE entry_id = ?",
+            (entry_id,),
+        )
+        conn.commit()
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+
+def hard_delete_todo_item(entry_id: str) -> bool:
+    """Permanently delete a to-do item row from the database."""
+    conn = _get_connection()
+    try:
+        conn.execute("DELETE FROM todo_items WHERE entry_id = ?", (entry_id,))
+        conn.commit()
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+
+def restore_todo_item(entry_id: str) -> bool:
+    """Restore a cancelled to-do item back to pending status."""
+    conn = _get_connection()
+    try:
+        conn.execute(
+            "UPDATE todo_items SET status = 'pending', updated_at = datetime('now') WHERE entry_id = ?",
+            (entry_id,),
+        )
+        conn.commit()
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
