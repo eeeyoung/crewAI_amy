@@ -1,228 +1,1617 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lilAmy Platform</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  :root {
-    --base: #1e1e2e; --surface: #313244; --overlay: #45475a;
-    --text: #cdd6f4; --subtext: #a6adc8; --muted: #6c7086;
-    --blue: #89b4fa; --green: #a6e3a1; --yellow: #f9e2af;
-    --purple: #cba6f7; --red: #f38ba8; --orange: #fab387;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--base); color: var(--text); font-family: system-ui, -apple-system, sans-serif; height: 100vh; display: flex; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--base); }
-  ::-webkit-scrollbar-thumb { background: var(--overlay); border-radius: 3px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lilAmy Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --base: #1e1e2e;
+      --surface: #313244;
+      --overlay: #45475a;
+      --text: #cdd6f4;
+      --subtext: #a6adc8;
+      --muted: #6c7086;
+      --blue: #89b4fa;
+      --green: #a6e3a1;
+      --yellow: #f9e2af;
+      --purple: #cba6f7;
+      --red: #f38ba8;
+      --orange: #fab387;
+    }
 
-  /* Sidebar */
-  #sidebar { width: 240px; min-width: 240px; background: #181825; border-right: 1px solid var(--overlay); display: flex; flex-direction: column; }
-  #sidebar .logo { padding: 20px 16px; border-bottom: 1px solid var(--overlay); }
-  #sidebar .module { padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.15s; font-size: 14px; }
-  #sidebar .module:hover { background: var(--surface); }
-  #sidebar .module.active { background: var(--surface); border-left-color: var(--blue); color: var(--blue); }
-  #sidebar .module.disabled { opacity: 0.4; cursor: not-allowed; }
-  #sidebar .module.disabled:hover { background: transparent; }
-  #sidebar .module .icon { font-size: 18px; width: 24px; text-align: center; }
-  #sidebar .spacer { flex: 1; }
-  #sidebar .status { padding: 12px 16px; border-top: 1px solid var(--overlay); font-size: 11px; color: var(--muted); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* Main workspace */
-  #workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  #topbar { padding: 12px 20px; border-bottom: 1px solid var(--overlay); display: flex; align-items: center; gap: 12px; }
-  #topbar h1 { font-size: 16px; font-weight: 600; }
-  #topbar .count { font-size: 13px; color: var(--subtext); }
-  #topbar .btn { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--overlay); background: var(--surface); color: var(--text); cursor: pointer; font-size: 13px; font-weight: 500; }
-  #topbar .btn:hover { background: var(--overlay); }
-  #topbar .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    body {
+      background: var(--base);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      display: flex;
+    }
 
-  /* Module content */
-  #module-content { flex: 1; display: flex; overflow: hidden; }
-  #card-panel { width: 420px; min-width: 360px; overflow-y: auto; border-right: 1px solid var(--overlay); padding: 12px; }
-  #detail-panel { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
 
-  /* Cards */
-  .card { background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 14px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
-  .card:hover { background: #3a3b50; border-color: var(--blue); }
-  .card.selected { background: #3a3b50; border: 2px solid var(--blue); }
-  .card .cn { color: var(--yellow); font-size: 14px; font-weight: 600; line-height: 1.3; }
-  .card .subject { color: var(--blue); font-size: 12px; margin-top: 3px; }
-  .card .meta { display: flex; gap: 8px; margin-top: 6px; font-size: 11px; align-items: center; }
-  .card .category { color: var(--subtext); }
-  .card .urgency { font-weight: 600; }
-  .card .assignee { color: var(--green); }
-  .card .todos { color: var(--purple); font-size: 11px; margin-top: 4px; }
-  .card .time { color: var(--muted); font-size: 10px; margin-top: 4px; }
+    ::-webkit-scrollbar-track {
+      background: var(--base);
+    }
 
-  /* Detail panel */
-  .detail-subject { color: var(--blue); font-size: 18px; font-weight: 700; }
-  .detail-sender { color: var(--subtext); font-size: 14px; }
-  .detail-meta { color: var(--text); font-size: 13px; display: flex; gap: 12px; }
-  .detail-assignee { color: var(--green); font-size: 14px; font-weight: 600; }
-  .detail-todos { color: var(--purple); font-size: 13px; }
-  .section-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
-  .body-box { background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.6; max-height: 280px; overflow-y: auto; white-space: pre-wrap; color: var(--text); }
-  .reply-box { background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.6; min-height: 120px; color: var(--text); resize: vertical; font-family: inherit; width: 100%; }
-  .reply-box:focus { outline: none; border-color: var(--blue); }
-  .btn-primary { padding: 8px 18px; border-radius: 6px; border: none; background: var(--blue); color: var(--base); cursor: pointer; font-size: 13px; font-weight: 600; }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-secondary { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--overlay); background: var(--surface); color: var(--text); cursor: pointer; font-size: 13px; }
-  .btn-secondary:hover { background: var(--overlay); }
-  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-danger { padding: 8px 18px; border-radius: 6px; border: none; background: var(--surface); color: var(--red); cursor: pointer; font-size: 13px; }
-  .btn-danger:hover { background: var(--red); color: var(--base); }
+    ::-webkit-scrollbar-thumb {
+      background: var(--overlay);
+      border-radius: 3px;
+    }
 
-  /* Progress */
-  .progress-bar { height: 3px; background: var(--overlay); border-radius: 2px; overflow: hidden; }
-  .progress-bar .fill { height: 100%; background: var(--blue); transition: width 0.3s; }
+    /* Sidebar */
+    #sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: #181825;
+      border-right: 1px solid var(--overlay);
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* Empty state */
-  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); text-align: center; gap: 8px; }
-  .empty-state .icon { font-size: 48px; }
+    #sidebar .logo {
+      padding: 20px 16px;
+      border-bottom: 1px solid var(--overlay);
+    }
 
-  /* Error toast */
-  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--red); color: var(--base); padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 100; display: none; }
+    #sidebar .module {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      font-size: 14px;
+    }
 
-  /* Urgency colors */
-  .urg-critical { color: var(--red); }
-  .urg-high { color: var(--orange); }
-  .urg-medium { color: var(--yellow); }
-  .urg-low { color: var(--green); }
+    #sidebar .module:hover {
+      background: var(--surface);
+    }
 
-  /* Context menu */
-  .ctx-menu { position: fixed; background: var(--surface); border: 1px solid var(--overlay); border-radius: 8px; padding: 4px 0; min-width: 200px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.4); display: none; }
-  .ctx-menu .item { padding: 10px 16px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 10px; transition: background 0.1s; }
-  .ctx-menu .item:hover { background: var(--overlay); }
-  .ctx-menu .item .icon { width: 20px; text-align: center; font-size: 14px; }
-  .ctx-menu .item.danger { color: var(--red); }
-  .ctx-menu .item.danger:hover { background: var(--red); color: var(--base); }
-  .ctx-menu .divider { height: 1px; background: var(--overlay); margin: 4px 0; }
+    #sidebar .module.active {
+      background: var(--surface);
+      border-left-color: var(--blue);
+      color: var(--blue);
+    }
 
-  /* Primary button (Fetch Latest) */
-  .btn.primary { background: var(--blue); color: var(--base); border-color: var(--blue); font-weight: 700; }
-  .btn.primary:hover { opacity: 0.85; background: var(--blue); }
+    #sidebar .module.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
-  /* Modal overlay */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: none; align-items: center; justify-content: center; }
-  .modal-overlay.show { display: flex; }
-  .modal-box { background: var(--surface); border: 1px solid var(--overlay); border-radius: 12px; padding: 24px; max-width: 440px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-  .modal-box h2 { font-size: 16px; margin: 0 0 14px 0; color: var(--text); }
-  .modal-box .info { font-size: 13px; color: var(--subtext); line-height: 1.6; }
-  .modal-box .info strong { color: var(--text); }
-  .modal-box .warning { background: #3a2020; border: 1px solid var(--red); border-radius: 8px; padding: 10px 14px; margin: 14px 0; font-size: 12px; color: var(--red); }
-  .modal-box .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-</style>
+    #sidebar .module.disabled:hover {
+      background: transparent;
+    }
+
+    #sidebar .module .icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    #sidebar .spacer {
+      flex: 1;
+    }
+
+    #sidebar .status {
+      padding: 12px 16px;
+      border-top: 1px solid var(--overlay);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Main workspace */
+    #workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #topbar {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--overlay);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #topbar h1 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    #topbar .count {
+      font-size: 13px;
+      color: var(--subtext);
+    }
+
+    /* Global .btn base — works everywhere (not just #topbar) */
+    .btn {
+      border-radius: 6px;
+      border: 1px solid var(--overlay);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .btn:hover {
+      background: var(--overlay);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #topbar .btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      height: 32px;
+    }
+
+    #topbar .btn:hover {
+      background: var(--overlay);
+    }
+
+    #topbar .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Module content */
+    #module-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #card-panel {
+      width: 420px;
+      min-width: 360px;
+      overflow-y: auto;
+      border-right: 1px solid var(--overlay);
+      padding: 12px;
+    }
+
+    #detail-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .card:hover {
+      background: #3a3b50;
+      border-color: var(--blue);
+    }
+
+    .card.selected {
+      background: #3a3b50;
+      border: 2px solid var(--blue);
+    }
+
+    .card .cn {
+      color: var(--yellow);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .card .subject {
+      color: var(--blue);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .card .meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 11px;
+      align-items: center;
+    }
+
+    .card .category {
+      color: var(--subtext);
+    }
+
+    .card .urgency {
+      font-weight: 600;
+    }
+
+    .card .assignee {
+      color: var(--green);
+    }
+
+    .card .todos {
+      color: var(--purple);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .card .time {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    /* Detail panel */
+    .detail-subject {
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .detail-sender {
+      color: var(--subtext);
+      font-size: 14px;
+    }
+
+    .detail-meta {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .detail-assignee {
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .detail-todos {
+      color: var(--purple);
+      font-size: 13px;
+    }
+
+    .section-label {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+
+    .body-box {
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 280px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+
+    .reply-box {
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 120px;
+      color: var(--text);
+      resize: vertical;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .reply-box:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .btn-primary {
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: none;
+      background: var(--blue);
+      color: var(--base);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: 1px solid var(--overlay);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--overlay);
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-danger {
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: none;
+      background: var(--surface);
+      color: var(--red);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-danger:hover {
+      background: var(--red);
+      color: var(--base);
+    }
+
+
+    /* Sync button group */
+    .sync-group {
+      display: inline-flex;
+    }
+
+    .sync-group .btn {
+      border-radius: 6px 0 0 6px;
+      margin: 0;
+    }
+
+    .sync-group .sync-cal {
+      border-radius: 0 6px 6px 0;
+      border-left: 1px solid var(--overlay);
+      padding: 6px 8px;
+      margin: 0;
+    }
+
+    /* Sort toggle */
+    .sort-toggle {
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--overlay);
+    }
+
+    .sort-btn {
+      padding: 5px 14px;
+      border: none;
+      background: var(--surface);
+      color: var(--subtext);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .sort-btn:hover {
+      background: var(--overlay);
+      color: var(--text);
+    }
+
+    .sort-btn.active {
+      background: var(--blue);
+      color: var(--base);
+    }
+
+    .others-filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      color: var(--subtext);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-label input[type="checkbox"] {
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+
+    /* Progress */
+    .progress-bar {
+      height: 3px;
+      background: var(--overlay);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      background: var(--blue);
+      transition: width 0.3s;
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--muted);
+      text-align: center;
+      gap: 8px;
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+    }
+
+    /* ── Toast Notification System ─────────────────────────────────── */
+    .toast-container {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      max-width: 380px;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-width: 300px;
+      max-width: 380px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+      animation: toastIn 0.3s ease-out;
+    }
+
+    .toast-item.removing {
+      animation: toastOut 0.25s ease-in forwards;
+    }
+
+    .toast-item.info {
+      border-left: 3px solid var(--blue);
+    }
+
+    .toast-item.success {
+      border-left: 3px solid var(--green);
+    }
+
+    .toast-item.warning {
+      border-left: 3px solid var(--yellow);
+    }
+
+    .toast-item.error {
+      border-left: 3px solid var(--red);
+    }
+
+    .toast-item.progress {
+      border-left: 3px solid var(--blue);
+    }
+
+    .toast-item .toast-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast-item .toast-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .toast-item .toast-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .toast-item .toast-close {
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+      background: none;
+      border: none;
+    }
+
+    .toast-item .toast-close:hover {
+      opacity: 1;
+      color: var(--text);
+    }
+
+    .toast-item .toast-msg {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.4;
+    }
+
+    .toast-item .toast-progress {
+      height: 3px;
+      background: var(--overlay);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .toast-item .toast-progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s linear;
+    }
+
+    .toast-item.info .toast-progress-fill {
+      background: var(--blue);
+    }
+
+    .toast-item.success .toast-progress-fill {
+      background: var(--green);
+    }
+
+    .toast-item.warning .toast-progress-fill {
+      background: var(--yellow);
+    }
+
+    .toast-item.error .toast-progress-fill {
+      background: var(--red);
+    }
+
+    .toast-item.progress .toast-progress-fill {
+      background: var(--blue);
+      animation: progressIndeterminate 1.5s ease-in-out infinite;
+    }
+
+    .toast-item .toast-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+      margin-top: 2px;
+    }
+
+    .toast-item .toast-actions button {
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--overlay);
+      background: transparent;
+      color: var(--subtext);
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.15s;
+    }
+
+    .toast-item .toast-actions button:hover {
+      background: var(--overlay);
+      color: var(--text);
+    }
+
+    .toast-item .toast-actions button.primary {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .toast-item .toast-actions button.primary:hover {
+      background: var(--blue);
+      color: var(--base);
+    }
+
+    .toast-item .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--overlay);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(60px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+        max-height: 200px;
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(60px);
+        max-height: 0;
+        padding: 0 14px;
+        margin: 0;
+      }
+    }
+
+    @keyframes progressIndeterminate {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      50% {
+        transform: translateX(0%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    /* Urgency colors */
+    .urg-critical {
+      color: var(--red);
+    }
+
+    .urg-high {
+      color: var(--orange);
+    }
+
+    .urg-medium {
+      color: var(--yellow);
+    }
+
+    .urg-low {
+      color: var(--green);
+    }
+
+    /* ── Reply Agent Info Panel ─────────────────────────────────────── */
+    #agent-info-panel {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .confidence-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .confidence-badge.high {
+      background: #1a3a1a;
+      color: var(--green);
+    }
+
+    .confidence-badge.medium {
+      background: #3a3010;
+      color: var(--yellow);
+    }
+
+    .confidence-badge.low {
+      background: #3a1a1a;
+      color: var(--red);
+    }
+
+    .agent-card {
+      background: #1c1c2e;
+      border: 1px solid var(--overlay);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .agent-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+
+    .agent-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 2px 0;
+      font-size: 12px;
+    }
+
+    .agent-row .ak {
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+
+    .agent-row .av {
+      color: var(--text);
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .agent-row .av.mono {
+      font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 11px;
+      color: var(--green);
+    }
+
+    .agent-intent-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--purple);
+    }
+
+    .agent-context-text {
+      background: #11111b;
+      border: 1px solid var(--overlay);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--subtext);
+      max-height: 260px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-top: 6px;
+      font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    /* Context menu */
+    .ctx-menu {
+      position: fixed;
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 8px;
+      padding: 4px 0;
+      min-width: 200px;
+      z-index: 9999;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      display: none;
+    }
+
+    .ctx-menu .item {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.1s;
+    }
+
+    .ctx-menu .item:hover {
+      background: var(--overlay);
+    }
+
+    .ctx-menu .item .icon {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .ctx-menu .item.danger {
+      color: var(--red);
+    }
+
+    .ctx-menu .item.danger:hover {
+      background: var(--red);
+      color: var(--base);
+    }
+
+    .ctx-menu .divider {
+      height: 1px;
+      background: var(--overlay);
+      margin: 4px 0;
+    }
+
+    /* Primary button (Fetch Latest) */
+    .btn.primary {
+      background: var(--blue);
+      color: var(--base);
+      border-color: var(--blue);
+      font-weight: 700;
+    }
+
+    .btn.primary:hover {
+      opacity: 0.85;
+      background: var(--blue);
+    }
+
+    /* Modal overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-box h2 {
+      font-size: 16px;
+      margin: 0 0 14px 0;
+      color: var(--text);
+    }
+
+    .modal-box .info {
+      font-size: 13px;
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+
+    .modal-box .info strong {
+      color: var(--text);
+    }
+
+    .modal-box .warning {
+      background: #3a2020;
+      border: 1px solid var(--red);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 14px 0;
+      font-size: 12px;
+      color: var(--red);
+    }
+
+    .modal-box .row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    /* To-Do card states */
+    .todo-done { opacity: 0.6; }
+    .todo-done .cn { text-decoration: line-through; }
+    .todo-cancelled { opacity: 0.4; }
+    #todo-detail select, #todo-detail input[type="text"],
+    #todo-detail input[type="date"], #todo-detail textarea {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #todo-detail-panel .agent-card { margin: 0; }
+  </style>
 </head>
+
 <body>
 
-<!-- Sidebar -->
-<aside id="sidebar">
-  <div class="logo">
-    <div style="font-size:18px;font-weight:700;">🤖 lilAmy</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:2px;">Construction Admin</div>
-  </div>
-  <div id="module-list"></div>
-  <div class="spacer"></div>
-  <div class="status" id="status-text">⚫ Loading...</div>
-</aside>
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="logo">
+      <div style="font-size:18px;font-weight:700;">🤖 lilAmy</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Construction Admin</div>
+    </div>
+    <div id="module-list"></div>
+    <div class="spacer"></div>
+    <div class="status" id="status-text">⚫ Loading...</div>
+  </aside>
 
-<!-- Workspace -->
-<main id="workspace">
-  <!-- Top bar -->
-  <div id="topbar">
-    <h1 id="module-title">📧 AMail</h1>
-    <span class="count" id="email-count">0 emails</span>
-    <div style="flex:1"></div>
-    <span style="color:var(--subtext);font-size:12px;">count</span>
-    <input type="number" id="earlier-count" value="20" min="10" max="2000" step="10"
-           style="width:62px;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);text-align:center;">
-    <button class="btn" id="btn-earlier" onclick="fetchEarlier()" title="Fetch unread emails older than current storage">⬆ Earlier</button>
-    <input type="number" id="latest-count" value="20" min="10" max="2000" step="10"
-           style="width:62px;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);text-align:center;">
-    <button class="btn primary" id="btn-latest" onclick="fetchLatest()" title="Fetch unread emails newer than current storage">⬇ Latest</button>
-    <button class="btn" id="btn-sync" onclick="syncInbox()" title="Full reconciliation: fill gaps + detect changes + update bodies">🔄 Sync</button>
-  </div>
+  <!-- Workspace -->
+  <main id="workspace">
+    <!-- Top bar -->
+    <div id="topbar">
+      <h1 id="module-title">📧 AMail</h1>
+      <!-- AMail controls -->
+      <span id="amail-controls" style="display:contents;">
+      <span class="count" id="email-count">0 emails</span>
+      <!-- Sort toggle -->
+      <div class="sort-toggle" id="sort-toggle">
+        <button class="sort-btn active" id="btn-focused" onclick="setSort('focused')">📌 Focused</button>
+        <button class="sort-btn" id="btn-others" onclick="setSort('others')">📂 Others</button>
+      </div>
+      <div class="others-filters" id="others-filters" style="display:none">
+        <label class="filter-label"><input type="checkbox" id="chk-ads" onchange="applyFilters()" checked> ADs</label>
+        <label class="filter-label"><input type="checkbox" id="chk-real" onchange="applyFilters()" checked>
+          Senders</label>
+      </div>
+      <div style="flex:1"></div>
+      <span style="color:var(--subtext);font-size:12px;">count</span>
+      <input type="number" id="earlier-count" value="20" min="10" max="2000" step="10"
+        style="width:62px;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);text-align:center;">
+      <button class="btn" id="btn-earlier" onclick="fetchEarlier()"
+        title="Fetch unread emails older than current storage">⬆ Earlier</button>
+      <input type="number" id="latest-count" value="20" min="10" max="2000" step="10"
+        style="width:62px;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);text-align:center;">
+      <button class="btn primary" id="btn-latest" onclick="fetchLatest()"
+        title="Fetch unread emails newer than current storage">⬇ Latest</button>
+      <span class="sync-group"><button class="btn" id="btn-sync" onclick="syncInbox()"
+          title="Sync gaps in stored date range">🔄 Sync</button><button class="btn sync-cal" id="btn-sync-range"
+          onclick="openSyncRange()" title="Custom date range">📅</button></span>
+      </span><!-- end amail-controls -->
+      <!-- To-Do List controls -->
+      <span id="todo-controls" style="display:none;align-items:center;gap:12px;">
+        <span class="count" id="todo-count-header" style="line-height:32px;">0 items</span>
+      </span>
+    </div>
 
-  <!-- Progress bar -->
-  <div class="progress-bar" id="progress-container" style="display:none">
-    <div class="fill" id="progress-fill" style="width:0%"></div>
-  </div>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progress-container" style="display:none">
+      <div class="fill" id="progress-fill" style="width:0%"></div>
+    </div>
 
-  <!-- Module content: cards + detail -->
-  <div id="module-content">
-    <!-- Left: cards -->
-    <div id="card-panel">
-      <div id="cards-container"></div>
-      <div id="cards-empty" class="empty-state" style="display:none">
-        <div class="icon">📭</div>
-        <div>No emails yet</div>
-        <div style="font-size:12px;">Click Refresh to fetch from Outlook</div>
+    <!-- Module content: cards + detail -->
+    <div id="module-content">
+      <!-- Left: cards -->
+      <div id="card-panel">
+        <div id="cards-container"></div>
+        <div id="cards-empty" class="empty-state" style="display:none">
+          <div class="icon">📭</div>
+          <div>No emails yet</div>
+          <div style="font-size:12px;">Click Refresh to fetch from Outlook</div>
+        </div>
+      </div>
+      <!-- Right: detail -->
+      <div id="detail-panel">
+        <div class="empty-state" id="detail-empty">
+          <div class="icon">📧</div>
+          <div>Select an email to view details</div>
+        </div>
+        <div id="detail-content" style="display:none;flex-direction:column;gap:14px;">
+          <div class="detail-subject" id="det-subject"></div>
+          <div class="detail-sender" id="det-sender"></div>
+          <div class="detail-meta" id="det-meta"></div>
+          <div class="detail-assignee" id="det-assignee"></div>
+          <div class="detail-todos" id="det-todos"></div>
+          <div class="section-label">Email Body</div>
+          <div class="body-box" id="det-body"></div>
+          <div class="section-label">Draft Reply</div>
+          <textarea class="reply-box" id="det-reply" placeholder="Click 'Draft Reply' to generate..."></textarea>
+
+          <!-- Reply Agent Info Panel -->
+          <div id="agent-info-panel" style="display:none;">
+            <div class="section-label" style="display:flex;align-items:center;gap:8px;">
+              🧠 Reply Agent Info
+              <span id="agent-confidence" class="confidence-badge"></span>
+            </div>
+
+            <!-- Loading state -->
+            <div id="agent-loading" class="agent-card"
+              style="text-align:center;padding:16px;color:var(--muted);display:none;">
+              <span class="spinner" style="margin-right:8px;"></span> Analyzing behavioral patterns...
+            </div>
+
+            <!-- Sender Profile -->
+            <div id="agent-sender" class="agent-card" style="display:none;">
+              <div class="agent-card-title">👤 Sender Profile</div>
+              <div class="agent-row"><span class="ak">Name</span><span class="av" id="ai-sender-name">—</span></div>
+              <div class="agent-row"><span class="ak">Email</span><span class="av" id="ai-sender-email">—</span></div>
+              <div class="agent-row"><span class="ak">Tier</span><span class="av" id="ai-sender-tier">—</span></div>
+              <div class="agent-row"><span class="ak">Reply Rate</span><span class="av"
+                  id="ai-sender-reply-rate">—</span></div>
+              <div class="agent-row"><span class="ak">Avg Latency</span><span class="av" id="ai-sender-latency">—</span>
+              </div>
+              <div class="agent-row"><span class="ak">Avg Reply Length</span><span class="av"
+                  id="ai-sender-words">—</span></div>
+              <div class="agent-row"><span class="ak">Preferred Greeting</span><span class="av mono"
+                  id="ai-sender-greeting">—</span></div>
+              <div class="agent-row"><span class="ak">Preferred Sign-off</span><span class="av mono"
+                  id="ai-sender-signoff">—</span></div>
+              <div class="agent-row"><span class="ak">Top Intent</span><span class="av" id="ai-sender-intent">—</span>
+              </div>
+            </div>
+
+            <!-- Predicted Intent -->
+            <div id="agent-intent" class="agent-card" style="display:none;">
+              <div class="agent-card-title">🎯 Predicted Intent</div>
+              <div class="agent-intent-value" id="ai-intent">—</div>
+            </div>
+
+            <!-- Style Params -->
+            <div id="agent-style" class="agent-card" style="display:none;">
+              <div class="agent-card-title">🎨 Recommended Style</div>
+              <div class="agent-row"><span class="ak">Structure</span><span class="av" id="ai-style-structure">—</span>
+              </div>
+              <div class="agent-row"><span class="ak">Formality</span><span class="av" id="ai-style-formality">—</span>
+              </div>
+              <div class="agent-row"><span class="ak">Greeting</span><span class="av mono"
+                  id="ai-style-greeting">—</span></div>
+              <div class="agent-row"><span class="ak">Sample Pairs</span><span class="av" id="ai-style-samples">—</span>
+              </div>
+            </div>
+
+            <!-- Behavioral Context (raw injection) -->
+            <div id="agent-context" class="agent-card" style="display:none;">
+              <div class="agent-card-title" style="cursor:pointer;" onclick="toggleAgentContext()">
+                📝 Behavioral Context (injected into prompt)
+                <span style="font-size:10px;color:var(--muted);margin-left:4px;">▸ click to expand</span>
+              </div>
+              <pre id="ai-context-text" class="agent-context-text" style="display:none;"></pre>
+            </div>
+
+            <!-- Matched Examples -->
+            <div id="agent-examples" class="agent-card" style="display:none;">
+              <div class="agent-card-title">📚 Matched Examples</div>
+              <div class="agent-row"><span class="ak">Count</span><span class="av" id="ai-examples-count">—</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn-primary" id="btn-draft" onclick="draftReply()">✏️ Draft Reply</button>
+            <button class="btn-secondary" id="btn-refine" onclick="showRefine()" disabled>✨ Refine</button>
+            <button class="btn-secondary" id="btn-copy" onclick="copyReply()" disabled>📋 Copy</button>
+            <div style="flex:1"></div>
+            <button class="btn-danger" id="btn-remove" onclick="removeEmail()">🗑 Remove</button>
+          </div>
+          <div id="refine-row" style="display:none;display:flex;gap:8px;">
+            <input type="text" id="refine-input" placeholder="Edit instructions: make it shorter, more formal..."
+              style="flex:1;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);"
+              onkeydown="if(event.key==='Enter')doRefine()">
+            <button class="btn btn-secondary" onclick="doRefine()">✨ Refine</button>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- Right: detail -->
-    <div id="detail-panel">
-      <div class="empty-state" id="detail-empty">
-        <div class="icon">📧</div>
-        <div>Select an email to view details</div>
+
+    <!-- To-Do List View -->
+    <div id="todo-content" style="display:none;flex:1;overflow:hidden;">
+      <!-- Left: to-do cards -->
+      <div id="todo-card-panel" style="width:420px;min-width:360px;overflow-y:auto;border-right:1px solid var(--overlay);padding:12px;">
+        <!-- Status filters -->
+        <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+          <button class="btn" style="padding:4px 10px;font-size:11px;" onclick="loadTodoItems()">All (<span id="todo-count-all">0</span>)</button>
+          <button class="btn" style="padding:4px 10px;font-size:11px;" onclick="loadTodoItems('pending')">Pending (<span id="todo-count-pending">0</span>)</button>
+          <button class="btn" style="padding:4px 10px;font-size:11px;" onclick="loadTodoItems('done')">Done (<span id="todo-count-done">0</span>)</button>
+          <button class="btn" style="padding:4px 10px;font-size:11px;" onclick="loadTodoItems('cancelled')">🗑 Trash (<span id="todo-count-cancelled">0</span>)</button>
+        </div>
+        <!-- Filter dropdowns -->
+        <div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+          <select id="filter-deadline-date" onchange="onFilterChange()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:3px 6px;font-size:11px;color:var(--text);">
+            <option value="">📅 Any date</option>
+            <option value="has">Has deadline</option>
+            <option value="none">No deadline</option>
+            <option value="week">This week</option>
+            <option value="overdue">Overdue</option>
+          </select>
+          <select id="filter-deadline-type" onchange="onFilterChange()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:3px 6px;font-size:11px;color:var(--text);">
+            <option value="">🎯 Any type</option>
+            <option value="exact">Exact</option>
+            <option value="approximate">Approximate</option>
+            <option value="range">Range</option>
+            <option value="deadline">Deadline</option>
+            <option value="tbd">TBD</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <select id="filter-category" onchange="onFilterChange()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:3px 6px;font-size:11px;color:var(--text);">
+            <option value="">📂 Any category</option>
+            <option value="General">General</option><option value="RFI">RFI</option><option value="Submittal">Submittal</option><option value="Financial">Financial</option><option value="Safety">Safety</option><option value="Scheduling">Scheduling</option><option value="Site Visit">Site Visit</option><option value="Meeting">Meeting</option><option value="Contract">Contract</option><option value="Variation">Variation</option><option value="Progress Claim">Progress Claim</option><option value="Procurement">Procurement</option><option value="HR">HR</option>
+          </select>
+          <select id="filter-urgency" onchange="onFilterChange()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:3px 6px;font-size:11px;color:var(--text);">
+            <option value="">⚠️ Any urgency</option>
+            <option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option>
+          </select>
+        </div>
+        <div id="todo-cards-container"></div>
+        <div id="todo-cards-empty" class="empty-state" style="display:none">
+          <div class="icon">📋</div>
+          <div>No to-do items yet</div>
+          <div style="font-size:12px;">Select emails → right-click → "Push to To-Do List"</div>
+        </div>
       </div>
-      <div id="detail-content" style="display:none;flex-direction:column;gap:14px;">
-        <div class="detail-subject" id="det-subject"></div>
-        <div class="detail-sender" id="det-sender"></div>
-        <div class="detail-meta" id="det-meta"></div>
-        <div class="detail-assignee" id="det-assignee"></div>
-        <div class="detail-todos" id="det-todos"></div>
-        <div class="section-label">Email Body</div>
-        <div class="body-box" id="det-body"></div>
-        <div class="section-label">Draft Reply</div>
-        <textarea class="reply-box" id="det-reply" placeholder="Click 'Draft Reply' to generate..."></textarea>
+      <!-- Right: detail panel with editable form -->
+      <div id="todo-detail-panel" style="flex:1;overflow-y:auto;padding:20px;">
+        <div class="empty-state" id="todo-detail-empty">
+          <div class="icon">✅</div>
+          <div>Select a to-do item to view details</div>
+        </div>
+        <div id="todo-detail" style="display:none;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span id="todo-det-description" style="color:var(--text);font-size:16px;font-weight:600;"></span>
+            <span id="todo-saved-indicator" style="font-size:11px;transition:color 0.3s;"></span>
+          </div>
+          <div id="todo-det-source" style="color:var(--subtext);font-size:12px;"></div>
+
+          <!-- Editable fields -->
+          <div class="agent-card">
+            <div class="agent-card-title">📝 Description</div>
+            <textarea id="todo-edit-description" class="agent-context-text" style="width:100%;min-height:60px;max-height:120px;display:block;background:var(--base);border:1px solid var(--overlay);color:var(--text);padding:8px;border-radius:6px;font-size:13px;"></textarea>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div class="agent-card">
+              <div class="agent-card-title">📅 Deadline Date</div>
+              <input type="date" id="todo-edit-deadline" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+            </div>
+            <div class="agent-card">
+              <div class="agent-card-title">🕐 Time</div>
+              <input type="time" id="todo-edit-deadline-time" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+            </div>
+            <div class="agent-card">
+              <div class="agent-card-title">🎯 Deadline Type</div>
+              <select id="todo-edit-deadline-type" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+                <option value="tbd">TBD</option>
+                <option value="exact">Exact</option>
+                <option value="approximate">Approximate</option>
+                <option value="range">Range</option>
+                <option value="deadline">Deadline</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div class="agent-card">
+              <div class="agent-card-title">📂 Category</div>
+              <select id="todo-edit-category" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+                <option value="General">General</option><option value="RFI">RFI</option><option value="Submittal">Submittal</option><option value="Financial">Financial</option><option value="Safety">Safety</option><option value="Scheduling">Scheduling</option><option value="Site Visit">Site Visit</option><option value="Meeting">Meeting</option><option value="Contract">Contract</option><option value="Variation">Variation</option><option value="Progress Claim">Progress Claim</option><option value="Procurement">Procurement</option><option value="HR">HR</option>
+              </select>
+            </div>
+            <div class="agent-card">
+              <div class="agent-card-title">⚠️ Urgency</div>
+              <select id="todo-edit-urgency" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+                <option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option>
+              </select>
+            </div>
+            <div class="agent-card">
+              <div class="agent-card-title">📌 Status</div>
+              <select id="todo-edit-status" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+                <option value="pending">Pending</option><option value="done">✅ Done</option><option value="cancelled">🗑 Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="agent-card">
+            <div class="agent-card-title">🏗 Project</div>
+            <input type="text" id="todo-edit-project" placeholder="e.g., ARCO, Econolodge" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+          </div>
+
+          <div class="agent-card">
+            <div class="agent-card-title">👤 Assignee</div>
+            <input type="text" id="todo-edit-assignee" placeholder="Person or role" style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+          </div>
+
+          <!-- Source email link -->
+          <div id="todo-source-link" style="display:none;cursor:pointer;color:var(--blue);font-size:13px;padding:8px;border:1px solid var(--overlay);border-radius:8px;text-align:center;">
+            📧 View source email →
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variations View -->
+    <div id="variation-content" style="display:none;flex:1;overflow:hidden;">
+      <!-- Left: variation cards -->
+      <div id="var-card-panel" style="width:420px;min-width:360px;overflow-y:auto;border-right:1px solid var(--overlay);padding:12px;">
+
+        <!-- Project selector -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+          <select id="var-project-select" onchange="varSwitchProject()"
+            style="flex:1;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;font-size:13px;color:var(--text);font-weight:600;">
+            <option value="">-- Select Project --</option>
+          </select>
+          <button class="btn" style="padding:4px 10px;font-size:11px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" onclick="varNewProject()" title="New project from scratch">+ New</button>
+          <button class="btn" style="padding:4px 10px;font-size:11px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" onclick="varImportProject()" title="Import existing xlsx">📥 Import</button>
+        </div>
+
+        <!-- Status filter buttons -->
+        <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;">
+          <button class="btn" style="padding:3px 8px;font-size:10px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" id="var-btn-all" onclick="loadVariations()">All (<span id="var-count-all">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" id="var-btn-draft" onclick="loadVariations('draft')">Draft (<span id="var-count-draft">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" id="var-btn-submitted" onclick="loadVariations('submitted')">Submitted (<span id="var-count-submitted">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" id="var-btn-approved" onclick="loadVariations('approved')">Approved (<span id="var-count-approved">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);" id="var-btn-void" onclick="loadVariations('void')">🗑 Void (<span id="var-count-void">0</span>)</button>
+        </div>
+
+        <!-- VO cards -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+          <button class="btn btn-primary" style="padding:4px 12px;font-size:12px;" onclick="varNew()">+ New VO</button>
+          <button class="btn" style="padding:4px 12px;font-size:12px;" id="btn-var-config" onclick="varConfigProject()" disabled>⚙️ Config</button>
+          <button class="btn" style="padding:4px 12px;font-size:12px;background:var(--yellow);color:var(--base);border-color:var(--yellow);" id="btn-var-push" onclick="varPush()" disabled>📤 PUSH</button>
+          <button class="btn btn-danger" style="padding:4px 12px;font-size:12px;" id="btn-var-delete-proj" onclick="varDeleteProject()" disabled>🗑 Delete Project</button>
+          <span style="font-size:11px;color:var(--muted);" id="var-count-header">0 VOs</span>
+        </div>
+
+        <div id="var-cards-container"></div>
+        <div id="var-cards-empty" class="empty-state" style="display:none">
+          <div class="icon">📝</div>
+          <div>No variations yet</div>
+          <div style="font-size:12px;">Select a project and click "+ New VO"</div>
+        </div>
+
+        <!-- Register cards -->
+        <div id="var-register-section" style="display:none;margin-top:12px;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Project Summary</div>
+
+          <!-- Register -->
+          <div class="agent-card" style="margin-bottom:8px;cursor:pointer;" onclick="varToggleRegister()">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:600;font-size:13px;">📊 Register</span>
+              <span style="font-size:11px;color:var(--muted);" id="var-reg-count">0 VOs</span>
+            </div>
+            <div id="var-register-table" style="display:none;margin-top:8px;overflow-x:auto;"></div>
+          </div>
+
+          <!-- Internal VO Register -->
+          <div class="agent-card" style="cursor:pointer;" onclick="varToggleInternalRegister()">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:600;font-size:13px;">📊 Internal VO Register</span>
+              <span style="font-size:11px;color:var(--muted);" id="var-ireg-count">0 VOs</span>
+            </div>
+            <div id="var-iregister-table" style="display:none;margin-top:8px;overflow-x:auto;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Right: variation wizard -->
+      <div id="var-detail-panel" style="flex:1;overflow-y:auto;padding:20px;">
+        <div class="empty-state" id="var-detail-empty">
+          <div class="icon">📝</div>
+          <div>Select a variation or create new</div>
+        </div>
+        <div id="var-detail" style="display:none;flex-direction:column;gap:14px;">
+          <!-- Header: VO title + status -->
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="text" id="var-edit-title" placeholder="VO1 - Title of Variation"
+              style="flex:1;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px 12px;font-size:16px;font-weight:600;color:var(--blue);"
+              onchange="varAutoSave()">
+            <select id="var-edit-status" onchange="varStatusChanged()"
+              style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text);">
+              <option value="submitted">📤 Submitted</option>
+              <option value="approved">✅ Approved</option>
+              <option value="approved_for_signing">✍️ Approved for Signing</option>
+              <option value="not_approved">🚫 Not Approved</option>
+              <option value="void">❌ Void</option>
+            </select>
+          </div>
+
+          <!-- Approved / Not Approved value fields (shown for approval statuses) -->
+          <div id="var-approval-values" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <label style="font-size:11px;color:var(--green);">✅ Approved Value ($)</label>
+              <input type="number" id="var-edit-approved-val" step="0.01"
+                style="width:100%;background:var(--base);border:1px solid var(--green);border-radius:6px;padding:8px 12px;color:var(--green);font-size:15px;font-weight:700;"
+                onchange="varApprovalValueChanged('approved')">
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--red);">🚫 Not Approved Value ($)</label>
+              <input type="number" id="var-edit-notapproved-val" step="0.01"
+                style="width:100%;background:var(--base);border:1px solid var(--red);border-radius:6px;padding:8px 12px;color:var(--red);font-size:15px;font-weight:700;"
+                onchange="varApprovalValueChanged('notapproved')">
+            </div>
+            <!-- Bank / Client Approved selector -->
+            <div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;">
+              <span style="font-size:11px;color:var(--muted);">Approved by:</span>
+              <button class="btn" id="var-btn-bank" onclick="varSetApprovalType('bank')"
+                style="padding:4px 12px;font-size:11px;">🏦 Bank</button>
+              <button class="btn" id="var-btn-client" onclick="varSetApprovalType('client')"
+                style="padding:4px 12px;font-size:11px;">👤 Client</button>
+            </div>
+          </div>
+
+          <div>
+          </div>
+
+          <!-- Step 1: Project Setup -->
+          <div class="agent-card">
+            <div class="agent-card-title">📋 Project Setup <span style="font-size:10px;color:var(--muted);">(set via ⚙️ Config)</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Project Name</label>
+                <input type="text" id="var-edit-project" disabled
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--muted);font-size:13px;opacity:0.7;">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Job Number</label>
+                <input type="text" id="var-edit-job" disabled
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--muted);font-size:13px;opacity:0.7;">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Location</label>
+                <input type="text" id="var-edit-location" disabled
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--muted);font-size:13px;opacity:0.7;">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Date Issued</label>
+                <input type="date" id="var-edit-date"
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;"
+                  onchange="varAutoSave()">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Base Contract ($)</label>
+                <input type="number" id="var-edit-base" disabled
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--muted);font-size:13px;opacity:0.7;">
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;">
+              <label style="font-size:12px;color:var(--subtext);display:flex;align-items:center;gap:4px;">
+                <input type="radio" name="var-vo-type" value="Head Contract VO" checked onchange="varAutoSave()"> Head Contract VO
+              </label>
+              <label style="font-size:12px;color:var(--subtext);display:flex;align-items:center;gap:4px;">
+                <input type="radio" name="var-vo-type" value="Client Direct VO" onchange="varAutoSave()"> Client Direct VO
+              </label>
+            </div>
+          </div>
+
+          <!-- Step 2: Line Items -->
+          <div class="agent-card">
+            <div class="agent-card-title">📊 Line Items</div>
+            <div id="var-items-table" style="width:100%;">
+              <div style="display:grid;grid-template-columns:40px 1fr 60px 55px 80px 80px 70px 35px;gap:4px;font-size:11px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--overlay);">
+                <span>#</span><span>Description</span><span>Qty</span><span>Unit</span><span>Rate ($)</span><span>Cost</span><span>Credit</span><span></span>
+              </div>
+              <div id="var-items-rows"></div>
+            </div>
+            <button class="btn" style="margin-top:8px;padding:4px 12px;font-size:11px;" onclick="varAddItem()">+ Add Item</button>
+
+            <!-- Live totals -->
+            <div id="var-totals" style="margin-top:10px;padding:8px 12px;background:var(--base);border-radius:6px;font-size:12px;line-height:1.8;display:none;">
+              <div style="display:grid;grid-template-columns:1fr auto;gap:8px;color:var(--subtext);">
+                <span>Sub Total</span><span style="color:var(--text);">$<span id="var-subtotal">0</span></span>
+                <span>Credits</span><span style="color:var(--orange);">-$<span id="var-credits">0</span></span>
+                <span>Nett Variation Cost</span><span style="color:var(--text);">$<span id="var-nett">0</span></span>
+                <span>Margin & Overhead (10%)</span><span style="color:var(--text);">$<span id="var-margin">0</span></span>
+                <span>Excl GST</span><span style="color:var(--text);">$<span id="var-excl">0</span></span>
+                <span>GST (10%)</span><span style="color:var(--text);">$<span id="var-gst">0</span></span>
+                <span style="font-weight:700;">TOTAL INCL GST</span><span style="font-weight:700;color:var(--green);">$<span id="var-total">0</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Export (project-level via PUSH) -->
+          <div class="agent-card">
+            <div class="agent-card-title">📄 Export & Publish</div>
+            <div style="font-size:12px;color:var(--subtext);margin-bottom:6px;">
+              Use the <b>📤 PUSH</b> button in the left panel to compile all VOs + Registers into the project xlsx.
+            </div>
+            <span id="var-excel-link" style="display:none;font-size:12px;"></span>
+            <span id="var-pdf-link" style="display:none;font-size:12px;"></span>
+          </div>
+
+          <!-- Step 4: Submission Email -->
+          <div class="agent-card">
+            <div class="agent-card-title">✉️ Submission Email</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+              <input type="text" id="var-email-to" placeholder="To: client@example.com"
+                style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+              <input type="text" id="var-email-cc" placeholder="CC: michael@welink.com.au"
+                style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+            </div>
+            <input type="text" id="var-email-subject" placeholder="Subject line"
+              style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;margin-bottom:8px;">
+            <textarea id="var-email-body" placeholder="Email body..."
+              style="width:100%;min-height:120px;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn" onclick="varGenerateEmail()" style="font-size:12px;">🤖 Generate Draft</button>
+              <button class="btn btn-primary" onclick="varSendEmail()" style="font-size:12px;" disabled>📤 Send via Outlook</button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn btn-primary" id="var-btn-save" onclick="varSave()" style="font-size:12px;">💾 Save Changes</button>
+            <button class="btn" id="var-btn-restore" onclick="varRestore()" style="font-size:12px;display:none;">🔄 Restore</button>
+            <button class="btn btn-danger" id="var-btn-delete" onclick="varDelete()" style="font-size:12px;">🗑 Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- Sync date-range modal -->
+  <div class="modal-overlay" id="sync-range-modal">
+    <div class="modal-box">
+      <h2>📅 Sync Date Range</h2>
+      <div class="info">
+        <label style="display:block;margin-bottom:6px;color:var(--subtext);font-size:12px;">From:</label>
+        <input type="datetime-local" id="sync-range-from"
+          style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;font-size:13px;color:var(--text);margin-bottom:12px;">
+        <label style="display:block;margin-bottom:6px;color:var(--subtext);font-size:12px;">To:</label>
+        <input type="datetime-local" id="sync-range-to"
+          style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;font-size:13px;color:var(--text);margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Leave empty to use storage date range</div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="closeSyncRange()">Cancel</button>
+        <button class="btn" onclick="doSyncRange()"
+          style="background:var(--yellow);color:var(--base);border-color:var(--yellow);">🔄 Sync Range</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync confirmation modal -->
+  <div class="modal-overlay" id="sync-modal">
+    <div class="modal-box">
+      <h2>🔄 Sync Inbox</h2>
+      <div class="info" id="sync-info">Calculating...</div>
+      <div class="warning">
+        ⚠️ This will refetch and reconcile all emails between the dates above.
+        Existing emails will be checked against Outlook — removed emails stay gone,
+        new unread emails will be added. This may take several minutes.
+      </div>
+      <div class="row">
+        <button class="btn" onclick="closeSyncModal()">Cancel</button>
+        <button class="btn" id="btn-sync-confirm" onclick="doSync()"
+          style="background:var(--yellow);color:var(--base);border-color:var(--yellow);">🔄 Start Sync</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context menu — items tagged with data-modules: amail, todo, trash, variations -->
+  <div class="ctx-menu" id="ctx-menu">
+    <div class="item" data-modules="amail" onclick="ctxOpenOutlook()"><span class="icon">📧</span> Open in Outlook</div>
+    <div class="item" data-modules="amail" onclick="ctxPushToTodo()"><span class="icon">📋</span> Push to To-Do List</div>
+    <div class="item" data-modules="amail" onclick="ctxCreateVariation()"><span class="icon">📝</span> Create Variation</div>
+    <div class="divider" data-modules="amail"></div>
+    <div class="item" data-modules="todo" onclick="ctxPushToCalendar()"><span class="icon">📅</span> Push to Calendar</div>
+    <div class="item danger" data-modules="amail todo variations" onclick="ctxRemoveCurrent()"><span class="icon">🗑</span> <span class="ctx-remove-label">Remove</span></div>
+    <div class="item" data-modules="trash void" onclick="ctxRestoreCurrent()"><span class="icon">🔄</span> Restore</div>
+    <div class="item danger" data-modules="trash void" onclick="ctxPermanentRemoveCurrent()"><span class="icon">⛔</span> Permanently remove</div>
+  </div>
+
+  <!-- New Project modal -->
+  <div class="modal-overlay" id="var-new-project-modal">
+    <div class="modal-box">
+      <h2>🏗 New Project</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">
+        <input type="text" id="var-new-proj-name" placeholder="Project name" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <input type="text" id="var-new-proj-job" placeholder="Job number" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <input type="text" id="var-new-proj-loc" placeholder="Location" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <input type="number" id="var-new-proj-base" placeholder="Base contract amount" step="0.01" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <label style="font-size:11px;color:var(--muted);">📁 Save folder</label>
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="var-new-proj-path" placeholder="data/projects"
+            style="flex:1;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+          <button class="btn" onclick="varBrowsePath()" style="padding:6px 10px;font-size:11px;white-space:nowrap;">📁 Browse</button>
+        </div>
+        <label style="font-size:11px;color:var(--muted);margin-top:4px;">📄 Filename (without .xlsx)</label>
+        <input type="text" id="var-new-proj-filename" placeholder="Project_Client_Variations"
+          style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('var-new-project-modal').classList.remove('show')">Cancel</button>
+        <button class="btn" onclick="varCreateProject()" style="background:var(--blue);color:var(--base);border-color:var(--blue);">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Project modal -->
+  <div class="modal-overlay" id="var-import-modal">
+    <div class="modal-box">
+      <h2>📥 Import Project from xlsx</h2>
+      <div class="info" style="margin:12px 0;">
+        <label style="display:block;margin-bottom:6px;color:var(--subtext);font-size:12px;">Select an existing variation xlsx file:</label>
         <div style="display:flex;gap:8px;align-items:center;">
-          <button class="btn-primary" id="btn-draft" onclick="draftReply()">✏️ Draft Reply</button>
-          <button class="btn-secondary" id="btn-refine" onclick="showRefine()" disabled>✨ Refine</button>
-          <button class="btn-secondary" id="btn-copy" onclick="copyReply()" disabled>📋 Copy</button>
-          <div style="flex:1"></div>
-          <button class="btn-danger" id="btn-remove" onclick="removeEmail()">🗑 Remove</button>
+          <input type="file" id="var-import-file" accept=".xlsx"
+            style="flex:1;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
         </div>
-        <div id="refine-row" style="display:none;display:flex;gap:8px;">
-          <input type="text" id="refine-input" placeholder="Edit instructions: make it shorter, more formal..."
-                 style="flex:1;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);"
-                 onkeydown="if(event.key==='Enter')doRefine()">
-          <button class="btn btn-secondary" onclick="doRefine()">✨ Refine</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">
+          This will read all VO sheets, the Register, and Internal VO Register from the file.
+          All VOs and line items will be imported into the database.
         </div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('var-import-modal').classList.remove('show')">Cancel</button>
+        <button class="btn" id="btn-import-confirm" onclick="varDoImport()" style="background:var(--yellow);color:var(--base);border-color:var(--yellow);">📥 Import</button>
       </div>
     </div>
   </div>
-</main>
 
-<!-- Sync confirmation modal -->
-<div class="modal-overlay" id="sync-modal">
-  <div class="modal-box">
-    <h2>🔄 Sync Inbox</h2>
-    <div class="info" id="sync-info">Calculating...</div>
-    <div class="warning">
-      ⚠️ This will refetch and reconcile all emails between the dates above.
-      Existing emails will be checked against Outlook — removed emails stay gone,
-      new unread emails will be added. This may take several minutes.
-    </div>
-    <div class="row">
-      <button class="btn" onclick="closeSyncModal()">Cancel</button>
-      <button class="btn" id="btn-sync-confirm" onclick="doSync()" style="background:var(--yellow);color:var(--base);border-color:var(--yellow);">🔄 Start Sync</button>
+  <!-- PUSH confirmation modal -->
+  <div class="modal-overlay" id="var-push-modal">
+    <div class="modal-box">
+      <h2>📤 PUSH to xlsx</h2>
+      <div class="info" style="margin:12px 0;" id="var-push-info">
+        This will compile all VOs + Register + Internal VO Register into the project xlsx.
+        A timestamped backup will be created first.
+      </div>
+      <div class="warning">
+        ⚠️ This will overwrite the existing xlsx at the project's save path.
+        A backup copy will be created in the same folder.
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('var-push-modal').classList.remove('show')">Cancel</button>
+        <button class="btn" id="btn-push-confirm" onclick="varDoPush()"
+          style="background:var(--yellow);color:var(--base);border-color:var(--yellow);">📤 Push Now</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Context menu -->
-<div class="ctx-menu" id="ctx-menu">
-  <div class="item" onclick="ctxOpenOutlook()"><span class="icon">📧</span> Open in Outlook</div>
-  <div class="divider"></div>
-  <div class="item danger" onclick="ctxRemove()"><span class="icon">🗑</span> Remove</div>
-</div>
+  <!-- Config Project modal -->
+  <div class="modal-overlay" id="var-config-modal">
+    <div class="modal-box">
+      <h2>⚙️ Project Configuration</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">
+        <label style="font-size:11px;color:var(--muted);">Project Name</label>
+        <input type="text" id="var-config-name" placeholder="Project name" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <label style="font-size:11px;color:var(--muted);">Job Number</label>
+        <input type="text" id="var-config-job" placeholder="Job number" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <label style="font-size:11px;color:var(--muted);">Site Address</label>
+        <input type="text" id="var-config-loc" placeholder="Site address" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <label style="font-size:11px;color:var(--muted);">Base Contract Amount ($)</label>
+        <input type="number" id="var-config-base" placeholder="0" step="0.01" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <label style="font-size:11px;color:var(--muted);">📁 Save folder</label>
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="var-config-folder" placeholder="data/projects" style="flex:1;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+          <button class="btn" onclick="varBrowseConfigPath()" style="padding:6px 10px;font-size:11px;white-space:nowrap;">📁 Browse</button>
+        </div>
+        <label style="font-size:11px;color:var(--muted);">📄 Filename (without .xlsx)</label>
+        <input type="text" id="var-config-filename" placeholder="Project_Client_Variations" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('var-config-modal').classList.remove('show')">Cancel</button>
+        <button class="btn" onclick="varSaveConfig()" style="background:var(--blue);color:var(--base);border-color:var(--blue);">💾 Save</button>
+      </div>
+    </div>
+  </div>
 
-<div class="toast" id="toast"></div>
+  <div class="toast-container" id="toast-container"></div>
 
-<script src="/static/app.js"></script>
+  <script src="/static/app.js?v=24"></script>
 </body>
+
 </html>
