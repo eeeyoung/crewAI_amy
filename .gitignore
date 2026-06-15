@@ -20,6 +20,7 @@ wheels/
 # Primary data directory (local development default)
 data/
 !data/mail_fetch/
+lilamy_test_project/
 
 # Legacy data directory (still used if LILAMY_DATA_DIR points elsewhere)
 .crewai/
