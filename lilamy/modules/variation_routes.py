@@ -40,6 +40,7 @@ class VariationCreate(BaseModel):
     approved_value: float | None = None
     not_approved_value: float | None = None
     approval_type: str | None = None
+    sort_order: int | None = None
 
 
 class VariationUpdate(BaseModel):
@@ -56,6 +57,7 @@ class VariationUpdate(BaseModel):
     approved_value: float | None = None
     not_approved_value: float | None = None
     approval_type: str | None = None
+    sort_order: int | None = None
 
 
 class ItemCreate(BaseModel):
@@ -101,10 +103,10 @@ async def list_variations(project_entry_id: str = Query(""), project: str = Quer
 
 
 @router.get("/next-vo-number")
-async def next_vo_number(project: str = Query("")):
-    """Get the next VO number for a project."""
+async def next_vo_number(project_entry_id: str = Query("")):
+    """Get the next VO number for a project (count of active VOs + 1)."""
     svc = _get_service()
-    num = svc.get_next_vo_number(project)
+    num = svc.get_next_vo_number(project_entry_id)
     return {"vo_number": num}
 
 
@@ -158,6 +160,18 @@ async def permanent_delete_variation(entry_id: str):
     """Permanently delete a variation and all its items."""
     from shared_tools.variation_db import hard_delete_variation
     ok = hard_delete_variation(entry_id)
+    return {"ok": ok}
+
+
+class ReorderRequest(BaseModel):
+    ordered_ids: list[str]
+
+
+@router.put("/reorder")
+async def reorder_variations(data: ReorderRequest):
+    """Update sort_order for a list of variations based on their position in the list."""
+    from shared_tools.variation_db import reorder_variations as db_reorder
+    ok = db_reorder(data.ordered_ids)
     return {"ok": ok}
 
 

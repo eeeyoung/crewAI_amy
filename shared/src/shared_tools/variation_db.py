@@ -88,6 +88,7 @@ def init_variation_db() -> None:
                 approved_value REAL DEFAULT 0,
                 not_approved_value REAL DEFAULT 0,
                 approval_type TEXT DEFAULT 'client',
+                sort_order INTEGER DEFAULT 0,
                 excel_path TEXT,
                 pdf_path TEXT,
                 onedrive_path TEXT,
@@ -131,6 +132,7 @@ def init_variation_db() -> None:
         _migrate_add_column(conn, "variations", "approved_value", "REAL DEFAULT 0")
         _migrate_add_column(conn, "variations", "not_approved_value", "REAL DEFAULT 0")
         _migrate_add_column(conn, "variations", "approval_type", "TEXT DEFAULT 'client'")
+        _migrate_add_column(conn, "variations", "sort_order", "INTEGER DEFAULT 0")
 
         # Migrate existing data from mail_history.db → variations.db
         _migrate_from_shared_db(conn)
@@ -351,9 +353,9 @@ def upsert_variation(data: dict) -> bool:
                (entry_id, project_entry_id, project_name, project_location, job_number,
                 base_contract_amount, vo_number, vo_title, vo_type, is_estimate,
                 date_issued, site_instruction_ref, status, source_email_entry_id,
-                bank_approved, client_approved, approved_value, not_approved_value, approval_type,
+                bank_approved, client_approved, approved_value, not_approved_value, approval_type, sort_order,
                 excel_path, pdf_path, onedrive_path, submitted_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
                ON CONFLICT(entry_id) DO UPDATE SET
                 project_entry_id = excluded.project_entry_id,
                 project_name = excluded.project_name,
@@ -367,6 +369,7 @@ def upsert_variation(data: dict) -> bool:
                 bank_approved = excluded.bank_approved, client_approved = excluded.client_approved,
                 approved_value = excluded.approved_value, not_approved_value = excluded.not_approved_value,
                 approval_type = excluded.approval_type,
+                sort_order = excluded.sort_order,
                 excel_path = excluded.excel_path, pdf_path = excluded.pdf_path,
                 onedrive_path = excluded.onedrive_path, submitted_at = excluded.submitted_at,
                 updated_at = datetime('now')""",
@@ -380,6 +383,7 @@ def upsert_variation(data: dict) -> bool:
              data.get("bank_approved", 0), data.get("client_approved", 0),
              data.get("approved_value", 0), data.get("not_approved_value", 0),
              data.get("approval_type", "client"),
+             data.get("sort_order", 0),
              data.get("excel_path"), data.get("pdf_path"),
              data.get("onedrive_path"), data.get("submitted_at")),
         )
@@ -420,7 +424,7 @@ def get_variations(project_entry_id: str | None = None, project: str | None = No
             params.append(status)
         else:
             query += " AND status != 'void'"
-        query += " ORDER BY vo_number ASC, created_at DESC"
+        query += " ORDER BY sort_order ASC, vo_number ASC"
         if limit > 0:
             query += " LIMIT ?"
             params.append(limit)
@@ -469,6 +473,24 @@ def restore_variation(entry_id: str) -> bool:
         conn.commit()
         return True
     except Exception:
+        return False
+    finally:
+        conn.close()
+
+
+def reorder_variations(ordered_ids: list[str]) -> bool:
+    """Update sort_order for a list of variation entry_ids based on list position."""
+    conn = _get_connection()
+    try:
+        for idx, entry_id in enumerate(ordered_ids):
+            conn.execute(
+                "UPDATE variations SET sort_order = ? WHERE entry_id = ?",
+                (idx, entry_id),
+            )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error reordering variations: {e}")
         return False
     finally:
         conn.close()
