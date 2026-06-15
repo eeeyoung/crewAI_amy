@@ -33,7 +33,10 @@ MODULES = {
         "description": "Client variation workflow — Excel, PDF, submission",
         "enabled": True,
         "router_path": "lilamy.modules.variation_routes:router",
-        "extra_routers": ["lilamy.modules.project_routes:router"],
+        "extra_routers": [
+            "lilamy.modules.project_routes:router",
+            "lilamy.modules.variation_agent_routes:router",
+        ],
     },
     # DEPRECATED — superseded by the To-Do List module above
     "acalendar": {
