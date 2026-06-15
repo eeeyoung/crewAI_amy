@@ -264,6 +264,13 @@ async def export_single_vo_pdf(entry_id: str):
     builder.fill_vo_formulas(ws)
     builder.fill_vo_raised_by(ws, initials=var.get("raised_by", "AC"))
 
+    # Copy logo images from VOXX and set fonts
+    from shared_tools.variation_template import _extract_images as _ext, _add_image_to_sheet as _add_img, _set_all_fonts_arial
+    if "VOXX" in builder.wb.sheetnames:
+        for img_info in _ext(builder.wb["VOXX"]):
+            _add_img(ws, img_info)
+    _set_all_fonts_arial(builder.wb)
+
     # Remove other sheets, keep just this VO
     for name in list(builder.wb.sheetnames):
         if name != sheet_name:

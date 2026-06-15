@@ -857,10 +857,12 @@ def compile_project_to_xlsx(project: dict, variations: list[dict],
 
     # ── 6. Copy images from VOXX to each VO sheet ──────────────────────
     if "VOXX" in builder.wb.sheetnames:
-        voxx = builder.wb["VOXX"]
+        # Cache image data before copying (data is consumed on first read)
+        cached_images = _extract_images(builder.wb["VOXX"])
         for sheet_name in vo_sheets:
             if sheet_name in builder.wb.sheetnames:
-                _copy_images(voxx, builder.wb[sheet_name])
+                for img_data in cached_images:
+                    _add_image_to_sheet(builder.wb[sheet_name], img_data)
 
     # ── 7. Set all fonts to Arial ─────────────────────────────────────
     _set_all_fonts_arial(builder.wb)
@@ -928,47 +930,70 @@ def _fill_internal_register(ws, variations: list[dict]) -> None:
             ws[f"{col}{row}"] = f"=SUM({col}{data_start_row}:{col}{last_data_row})"
 
 
-def _copy_images(src_ws, dst_ws) -> None:
-    """Copy all images from source worksheet to destination worksheet."""
-    if not hasattr(src_ws, '_images') or not src_ws._images:
-        return
+def _extract_images(ws) -> list[dict]:
+    """Extract image data and anchor info from a worksheet. Caches data so it
+    can be reused across multiple destination sheets."""
+    if not hasattr(ws, '_images') or not ws._images:
+        return []
+    results = []
+    for img in ws._images:
+        try:
+            data = None
+            if hasattr(img, '_data'):
+                data = img._data()
+            elif hasattr(img, 'ref') and img.ref:
+                data = img.ref
+            if data:
+                anchor_info = None
+                if hasattr(img, 'anchor'):
+                    anchor_info = img.anchor
+                results.append({
+                    'data': data,
+                    'width': img.width,
+                    'height': img.height,
+                    'anchor': anchor_info,
+                })
+        except Exception:
+            pass
+    return results
+
+
+def _add_image_to_sheet(ws, img_info: dict) -> None:
+    """Add a cached image to a worksheet."""
     from openpyxl.drawing.image import Image
     from openpyxl.drawing.spreadsheet_drawing import OneCellAnchor
     import io
-
-    for img in src_ws._images:
-        try:
-            # Get the image data from the source
-            img_data = None
-            if hasattr(img, '_data'):
-                img_data = img._data()
-            elif hasattr(img, 'ref') and img.ref:
-                img_data = img.ref
-
-            if img_data:
-                new_img = Image(io.BytesIO(img_data))
-                new_img.width = img.width
-                new_img.height = img.height
-                # Copy anchor
-                if hasattr(img, 'anchor') and isinstance(img.anchor, OneCellAnchor):
-                    new_anchor = OneCellAnchor()
-                    new_anchor._from = img.anchor._from
-                    new_anchor.ext = img.anchor.ext
-                    new_img.anchor = new_anchor
-                dst_ws.add_image(new_img)
-        except Exception:
-            pass  # Skip if image can't be copied
+    try:
+        new_img = Image(io.BytesIO(img_info['data']))
+        new_img.width = img_info['width']
+        new_img.height = img_info['height']
+        if img_info['anchor'] and isinstance(img_info['anchor'], OneCellAnchor):
+            new_anchor = OneCellAnchor()
+            new_anchor._from = img_info['anchor']._from
+            new_anchor.ext = img_info['anchor'].ext
+            new_img.anchor = new_anchor
+        ws.add_image(new_img)
+    except Exception:
+        pass
 
 
 def _set_all_fonts_arial(wb) -> None:
     """Set all cell fonts to Arial across all sheets.
-    Only touches cells that actually have content or a non-Arial font."""
+    Preserves signature-style fonts (Rage Italic, Edwardian Script) for the
+    'AC' initials and other handwritten elements."""
     from openpyxl.styles import Font
+
+    # Fonts to preserve as-is (signature/handwriting style)
+    SIGNATURE_FONTS = {'Rage Italic', 'Edwardian Script ITC'}
+
     for ws in wb.worksheets:
         for row in ws.iter_rows():
             for cell in row:
                 fn = cell.font.name if cell.font else None
-                # Only update if cell has content, or has a non-Arial font set
+                # Skip signature cells — keep their original handwriting font
+                if fn in SIGNATURE_FONTS:
+                    continue
+                # Update cells with content or non-Arial font
                 if cell.value is not None or (fn and fn != 'Arial'):
                     old = cell.font
                     cell.font = Font(

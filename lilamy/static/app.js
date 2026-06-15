@@ -2984,28 +2984,65 @@ async function agentAnalyze() {
   spinner.style.display = 'inline-block';
   results.style.display = 'none';
 
-  // Real-time progress messages
-  const progressMsgs = [
-    'Reading prompt...',
-    _agentFiles.length ? `Detected ${_agentFiles.length} file(s)...` : null,
-    _agentFiles.length ? `Uploading ${_agentFiles[0]?.name || 'files'}...` : null,
-    'Feeding to AI model...',
-    'Analyzing project details...',
-    'Extracting line items...',
-    'Matching against existing projects...',
-    'Compiling results...',
-  ].filter(Boolean);
+  // ── Build stacked progress log ──────────────────────────────────
+  const logEl = document.createElement('div');
+  logEl.id = 'agent-progress-log';
+  logEl.style.cssText = 'margin-top:8px;padding:8px 12px;background:var(--base);border-radius:8px;font-size:11px;line-height:1.8;max-height:200px;overflow-y:auto;font-family:monospace;';
 
-  let msgIdx = 0;
-  const progressEl = document.createElement('div');
-  progressEl.style.cssText = 'font-size:12px;color:var(--blue);margin-top:8px;';
-  progressEl.textContent = progressMsgs[0];
-  btn.parentElement.appendChild(progressEl);
+  function addLog(msg, color) {
+    const line = document.createElement('div');
+    line.style.color = color || 'var(--subtext)';
+    line.textContent = msg;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
 
-  const progressTimer = setInterval(() => {
-    msgIdx = Math.min(msgIdx + 1, progressMsgs.length - 1);
-    progressEl.textContent = '⏳ ' + progressMsgs[msgIdx];
-  }, 1500);
+  // Remove old log if exists
+  const oldLog = document.getElementById('agent-progress-log');
+  if (oldLog) oldLog.remove();
+  btn.parentElement.appendChild(logEl);
+
+  // ── Pre-LLM progress ────────────────────────────────────────────
+  addLog('▸ Reading prompt...', 'var(--blue)');
+  await sleep(200);
+  if (text) {
+    addLog(`  ✓ Text prompt: ${text.length} chars`, 'var(--green)');
+  } else {
+    addLog(`  ⚠ No text prompt — analyzing files only`, 'var(--yellow)');
+  }
+  await sleep(200);
+
+  if (_agentFiles.length) {
+    addLog(`▸ ${_agentFiles.length} file(s) attached:`, 'var(--blue)');
+    for (const af of _agentFiles) {
+      addLog(`  📄 ${af.name} (${(af.size / 1024).toFixed(0)} KB)`, 'var(--subtext)');
+    }
+  }
+  await sleep(300);
+
+  // ── LLM call ────────────────────────────────────────────────────
+  addLog('▸ Calling Gemini AI...', 'var(--purple)');
+  const thinkMsgs = [
+    '  ⏳ LilAmy is thinking...',
+    '  ⏳ Analyzing project details...',
+    '  ⏳ Extracting line items...',
+    '  ⏳ Matching projects...',
+  ];
+  let thinkIdx = 0;
+  addLog(thinkMsgs[0], 'var(--blue)');
+  const thinkTimer = setInterval(() => {
+    thinkIdx = (thinkIdx + 1) % thinkMsgs.length;
+    // Replace last line
+    const lines = logEl.querySelectorAll('div');
+    if (lines.length > 0) {
+      const last = lines[lines.length - 1];
+      if (last.textContent.startsWith('  ⏳')) {
+        last.textContent = thinkMsgs[thinkIdx];
+      } else {
+        addLog(thinkMsgs[thinkIdx], 'var(--blue)');
+      }
+    }
+  }, 2000);
 
   try {
     const formData = new FormData();
@@ -3014,30 +3051,44 @@ async function agentAnalyze() {
       formData.append('files', af.file);
     }
 
+    const t0 = Date.now();
     const res = await fetch(`${API}/api/variations/agent/analyze`, {
       method: 'POST',
       body: formData,
     });
     const data = await res.json();
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
 
-    progressEl.textContent = '✅ Analysis complete';
-    setTimeout(() => progressEl.remove(), 1000);
+    clearInterval(thinkTimer);
+    // Remove last thinking line
+    const lines = logEl.querySelectorAll('div');
+    if (lines.length > 0) {
+      const last = lines[lines.length - 1];
+      if (last.textContent.startsWith('  ⏳')) last.remove();
+    }
 
     if (data.error) {
-      notify(data.error, 'error');
+      addLog(`✗ Error: ${data.error}`, 'var(--red)');
     } else {
+      addLog(`✓ Analysis complete (${elapsed}s)`, 'var(--green)');
+      const a = data.analysis || {};
+      if (a.project_name) addLog(`  Project: ${a.project_name}`, 'var(--text)');
+      if (a.line_items) addLog(`  Items found: ${a.line_items.length}`, 'var(--text)');
+      if (a.total_estimated_cost) addLog(`  Est. cost: $${a.total_estimated_cost.toLocaleString()}`, 'var(--green)');
+      setTimeout(() => logEl.remove(), 2000);
       renderAgentResults(data);
     }
   } catch (e) {
-    progressEl.textContent = '❌ ' + e.message;
-    setTimeout(() => progressEl.remove(), 3000);
-    notify('Analysis failed: ' + e.message, 'error');
+    clearInterval(thinkTimer);
+    addLog(`✗ Failed: ${e.message}`, 'var(--red)');
+    setTimeout(() => logEl.remove(), 4000);
   } finally {
-    clearInterval(progressTimer);
     btn.disabled = false;
     spinner.style.display = 'none';
   }
 }
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function renderAgentResults(data) {
   const panel = document.getElementById('agent-results');
