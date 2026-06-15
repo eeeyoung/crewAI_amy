@@ -1,9 +1,83 @@
 # PROGRESS.md — lilAmy Platform Development
 
-**Latest session:** 2026-06-15
-**Previous:** 2026-06-14 ([Habit Learner Integration](#session-2026-06-14--habit-learner-integration--bug-fixes))
+**Latest session:** 2026-06-15 (continued)
+**Previous:** 2026-06-15 ([Client Variation Workflow v2](#session-2026-06-15--client-variation-workflow-v2-project-based))
 **Branch:** `main`
 **Git user:** `eeeyoung`
+
+---
+
+## Session 2026-06-15 (continued) — Variation Agent, Drag-Drop, Polish
+
+### What We Built
+
+#### 1. Variation Agent — Multi-Modal AI Input — **DONE**
+
+New `🤖 Agent` button in Variations top bar. Accepts text + file uploads (PDFs, images), sends to Gemini 2.5 Flash for analysis:
+- Extracts project name, VO title, line items, costs from documents
+- Matches against existing projects in DB
+- Auto-creates VO with pre-filled items on user confirmation
+- If no project match: pre-fills New Project modal and creates first VO
+- Real-time stacked progress log during analysis
+
+Files: `variation_agent.py`, `variation_agent_routes.py`
+
+#### 2. Drag-and-Drop VO Reordering — **DONE**
+
+- `sort_order` column on variations table
+- VO cards have ⋮⋮ drag handle; HTML5 DnD with above/below visual indicators
+- Drop on container for "below last card" support
+- Server-side reorder via `PUT /api/variations/reorder`
+- Pushed xlsx sheet order follows drag sequence (no re-sort by VO number)
+
+#### 3. PDF Export — Per-VO & Project-Level — **DONE**
+
+- `📄 Export PDF` button in VO editing page downloads single VO as PDF
+- Project-level PDF via PUSH
+- Excel COM conversion on Windows; `excel.Visible=False` removed (property not settable)
+
+#### 4. Visual Polish — **DONE**
+
+- All fonts set to Arial in pushed xlsx (preserving size/bold/italic)
+- Signature cells ("AC") preserve original Rage Italic handwriting font
+- Template logo images copied to all VO sheets (cached extraction, not consumed)
+- Register status column: left-aligned with color fills (green/yellow/red)
+
+#### 5. Status System & Register Model — **DONE**
+
+- Statuses: Submitted, Approved, Approved for Signing, Not Approved, Void (Draft removed)
+- Approved/Not Approved value textboxes with auto-calc (one edits, other updates)
+- Bank/Client Approved selector for Internal VO Register routing
+- Register computation uses stored approved/not-approved values
+
+#### 6. VO Numbering & Project Config — **DONE**
+
+- Next VO number = count of active VOs + 1 (server-side, not frontend)
+- Restored VOs get reassigned to next available number
+- Project-level config (name, job#, location, filename) via ⚙️ Config modal
+- Per-VO fields (name, location, job#) are read-only, sourced from project
+
+#### 7. Bug Fixes — **DONE**
+
+- `upsert_variation_item` now does partial UPDATE (only supplied fields) — fixes qty/rate overwrite
+- `fill_vo_items` clearing limited to before SUB TOTAL label — fixes missing formulas
+- Sheet names parsed from VO title prefix (not vo_number field)
+- VOXX removed from output; stale template rows cleared from Registers
+- Internal VO Register: sequential numbering + number formatting (no date display)
+
+### Files Created
+
+| File | Purpose |
+|---|---|
+| `shared/src/shared_tools/variation_agent.py` | Multi-modal Gemini analysis for VO requests |
+| `lilamy/modules/variation_agent_routes.py` | `POST /api/variations/agent/analyze` |
+
+### Key Architectural Decisions
+
+1. **Agent is read-only**: Analyzes and returns a plan. Frontend executes mutations after user confirmation.
+2. **Pure multi-modal LLM**: No local PDF parsing (no PyMuPDF). Files sent as inline Part dicts to Gemini.
+3. **`genai.upload_file()` doesn't accept `file_data`**: The deprecated SDK's API differs from docs. Inline Part dicts work. This bug was silently caught by `except Exception` — now a CLAUDE.md rule prohibits empty except blocks.
+4. **Drag order = sheet order**: `sort_order` column drives both UI and xlsx. Reorder endpoint updates DB. Compile preserves creation order (no re-sort).
 
 ---
 
