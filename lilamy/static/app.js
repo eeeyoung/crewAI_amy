@@ -2604,6 +2604,36 @@ async function loadVariationsSilent(status) {
   } catch (e) {}
 }
 
+async function varExportSinglePdf() {
+  if (!selectedVarId) return;
+  const btn = document.getElementById('btn-export-pdf');
+  btn.disabled = true;
+  btn.textContent = '⏳ Exporting...';
+  try {
+    // Trigger PDF generation and download
+    const res = await fetch(`${API}/api/variations/${selectedVarId}/export-single-pdf`, { method: 'POST' });
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.headers.get('Content-Disposition')?.match(/filename="?(.+?)"?$/)?.[1] || 'variation.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      notify('PDF downloaded', 'success');
+    } else {
+      const data = await res.json();
+      notify(data.error || 'PDF export failed', 'error');
+    }
+  } catch (e) {
+    notify('PDF export failed: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = '📄 Export PDF';
+}
+
 // ── Excel / PDF ──────────────────────────────────────────────────────
 
 async function varGenerateExcel() {

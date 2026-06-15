@@ -377,7 +377,6 @@ class VariationService(QObject):
 
         excel = win32com.client.Dispatch("Excel.Application")
         try:
-            excel.Visible = False
             excel.DisplayAlerts = False
             wb = excel.Workbooks.Open(str(Path(excel_path).resolve()))
 

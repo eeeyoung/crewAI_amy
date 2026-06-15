@@ -206,6 +206,94 @@ async def remove_item(entry_id: str, item_id: int):
     return {"ok": ok}
 
 
+@router.post("/{entry_id}/export-single-pdf")
+async def export_single_vo_pdf(entry_id: str):
+    """Generate a PDF for a single VO and return it for download."""
+    import tempfile
+    from pathlib import Path
+    from shared_tools.variation_db import get_variation, get_variation_items
+    from shared_tools.variation_template import TemplateMapping, VariationExcelBuilder, calculate_variation_costs
+
+    var = get_variation(entry_id)
+    if not var:
+        return {"error": "Variation not found"}
+
+    items = get_variation_items(entry_id)
+
+    # Get project info for the header
+    from shared_tools.variation_db import get_project
+    proj = get_project(var.get("project_entry_id", "")) if var.get("project_entry_id") else None
+
+    # Load mapping and template
+    try:
+        mapping_path = Path(__file__).parent.parent.parent / "knowledge" / "variation_template_mapping.yaml"
+        if mapping_path.exists():
+            import yaml
+            with open(mapping_path, "r") as f:
+                mapping = TemplateMapping(yaml.safe_load(f))
+        else:
+            mapping = TemplateMapping.default()
+    except Exception:
+        mapping = TemplateMapping.default()
+
+    knowledge_dir = Path(__file__).parent.parent.parent / "knowledge"
+    cleaned = knowledge_dir / "variation_template.xlsx"
+    original = knowledge_dir / "drafted simple workflow" / "20260602 47CBR - Welink Construction Client Variations.xlsx"
+    template_path = cleaned if cleaned.exists() else original
+
+    if not template_path.exists():
+        return {"error": "Template not found"}
+
+    # Build a temp xlsx with just this one VO
+    builder = VariationExcelBuilder(mapping, template_path)
+    builder.open()
+    vo_number = var.get("vo_number", 1) or 1
+    sheet_name = builder.create_vo_sheet(vo_number)
+    ws = builder.wb[sheet_name]
+
+    # Use project-level fields if available
+    var_for_sheet = dict(var)
+    if proj:
+        var_for_sheet["project_name"] = proj.get("name", var.get("project_name", ""))
+        var_for_sheet["project_location"] = proj.get("location", var.get("project_location", ""))
+        var_for_sheet["job_number"] = proj.get("job_number", var.get("job_number", ""))
+        var_for_sheet["company_name"] = proj.get("company_name", "Welink Construction")
+
+    builder.fill_vo_project_info(ws, var_for_sheet)
+    builder.fill_vo_items(ws, items)
+    builder.fill_vo_formulas(ws)
+    builder.fill_vo_raised_by(ws, initials=var.get("raised_by", "AC"))
+
+    # Remove other sheets, keep just this VO
+    for name in list(builder.wb.sheetnames):
+        if name != sheet_name:
+            del builder.wb[name]
+
+    # Save temp xlsx
+    tmp_xlsx = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
+    tmp_xlsx.close()
+    builder.save(Path(tmp_xlsx.name))
+    builder.close()
+
+    # Convert to PDF
+    svc = _get_service()
+    try:
+        pdf_path = svc._excel_to_pdf(tmp_xlsx.name, {"vo_number": vo_number})
+        if pdf_path.exists():
+            from fastapi.responses import FileResponse
+            return FileResponse(pdf_path, media_type="application/pdf",
+                               filename=f"{var.get('vo_title', 'VO')}.pdf")
+    except Exception:
+        pass
+    finally:
+        try:
+            Path(tmp_xlsx.name).unlink(missing_ok=True)
+        except Exception:
+            pass
+
+    return {"error": "PDF export failed — Excel COM required (Windows only)"}
+
+
 @router.put("/{entry_id}/items/reorder")
 async def reorder_items(entry_id: str, data: ReorderRequest):
     """Reorder line items."""

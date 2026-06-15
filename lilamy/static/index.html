@@ -1424,11 +1424,15 @@
             </div>
           </div>
 
-          <!-- Step 3: Export (project-level via PUSH) -->
+          <!-- Step 3: Export -->
           <div class="agent-card">
-            <div class="agent-card-title">📄 Export & Publish</div>
-            <div style="font-size:12px;color:var(--subtext);margin-bottom:6px;">
-              Use the <b>📤 PUSH</b> button in the left panel to compile all VOs + Registers into the project xlsx.
+            <div class="agent-card-title">📄 Export</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <button class="btn" id="btn-export-pdf" onclick="varExportSinglePdf()" style="font-size:12px;">📄 Export PDF</button>
+              <span style="font-size:11px;color:var(--muted);">Download current VO as PDF</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:6px;">
+              Use <b>📤 PUSH</b> to compile all VOs + Registers into the project xlsx.
             </div>
             <span id="var-excel-link" style="display:none;font-size:12px;"></span>
             <span id="var-pdf-link" style="display:none;font-size:12px;"></span>
@@ -1658,7 +1662,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=28"></script>
+  <script src="/static/app.js?v=29"></script>
 </body>
 
 </html>
