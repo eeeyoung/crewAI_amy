@@ -2979,9 +2979,33 @@ async function agentAnalyze() {
 
   const btn = document.getElementById('btn-agent-analyze');
   const spinner = document.getElementById('agent-spinner');
+  const results = document.getElementById('agent-results');
   btn.disabled = true;
   spinner.style.display = 'inline-block';
-  document.getElementById('agent-results').style.display = 'none';
+  results.style.display = 'none';
+
+  // Real-time progress messages
+  const progressMsgs = [
+    'Reading prompt...',
+    _agentFiles.length ? `Detected ${_agentFiles.length} file(s)...` : null,
+    _agentFiles.length ? `Uploading ${_agentFiles[0]?.name || 'files'}...` : null,
+    'Feeding to AI model...',
+    'Analyzing project details...',
+    'Extracting line items...',
+    'Matching against existing projects...',
+    'Compiling results...',
+  ].filter(Boolean);
+
+  let msgIdx = 0;
+  const progressEl = document.createElement('div');
+  progressEl.style.cssText = 'font-size:12px;color:var(--blue);margin-top:8px;';
+  progressEl.textContent = progressMsgs[0];
+  btn.parentElement.appendChild(progressEl);
+
+  const progressTimer = setInterval(() => {
+    msgIdx = Math.min(msgIdx + 1, progressMsgs.length - 1);
+    progressEl.textContent = '⏳ ' + progressMsgs[msgIdx];
+  }, 1500);
 
   try {
     const formData = new FormData();
@@ -2996,14 +3020,20 @@ async function agentAnalyze() {
     });
     const data = await res.json();
 
+    progressEl.textContent = '✅ Analysis complete';
+    setTimeout(() => progressEl.remove(), 1000);
+
     if (data.error) {
       notify(data.error, 'error');
     } else {
       renderAgentResults(data);
     }
   } catch (e) {
+    progressEl.textContent = '❌ ' + e.message;
+    setTimeout(() => progressEl.remove(), 3000);
     notify('Analysis failed: ' + e.message, 'error');
   } finally {
+    clearInterval(progressTimer);
     btn.disabled = false;
     spinner.style.display = 'none';
   }

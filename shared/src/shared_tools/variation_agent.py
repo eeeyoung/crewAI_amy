@@ -56,7 +56,7 @@ Return ONLY a JSON object with these fields (use null for unknown values):
   "vo_type": "Head Contract VO or Client Direct VO",
   "line_items": [
     {
-      "description": "detailed description of the work item",
+      "description": "short phrase describing the work item (max 8 words)",
       "qty": number,
       "unit": "item/m2/m3/hr/etc",
       "rate": number
@@ -66,14 +66,16 @@ Return ONLY a JSON object with these fields (use null for unknown values):
   "notes": "any additional context or caveats from the documents"
 }
 
-Guidelines:
-- For project_name, look for project codes (ARCO, CBR, etc.) or full project names.
+CRITICAL RULES:
+- For line_items DESCRIPTION: keep it SHORT and SIMPLE. Use brief phrases like
+  "100mm fire sprinkler pipework" or "12 new sprinkler heads" — NOT full sentences.
+  Maximum 8 words per description. Be specific but concise.
+- For project_name: look for project codes (ARCO, CBR, etc.) or full project names.
 - If the project name is ambiguous, set confidence to "low".
-- For line_items, be as specific as possible. Extract quantities and rates from
-  the documents if present. If a rate isn't specified, estimate a reasonable one.
-- vo_type: Use "Client Direct VO" only if the client is directly requesting and
-  paying for the variation. Default to "Head Contract VO".
-- If there are no line items detectable, return an empty array.
+- Extract quantities and rates from documents if present. If a rate isn't specified,
+  estimate a reasonable one.
+- vo_type: "Client Direct VO" only if client is directly requesting/paying.
+  Default to "Head Contract VO".
 - Output ONLY the JSON object, no markdown fences, no explanation."""
 
 
