@@ -34,8 +34,8 @@ def _get_gemini_model():
         raise RuntimeError("GEMINI_API_KEY not set in .env")
 
     genai.configure(api_key=api_key)
-    # Use gemini-2.5-flash for reliable multi-modal support
-    return genai.GenerativeModel("models/gemini-2.5-flash")
+    # Use gemini-3.5-flash — latest stable multi-modal model
+    return genai.GenerativeModel("models/gemini-3.5-flash")
 
 
 # =============================================================================
