@@ -18,7 +18,7 @@ wheels/
 # liability.
 
 # Primary data directory (local development default)
-data/
+data/mail_fetch
 
 # Legacy data directory (still used if LILAMY_DATA_DIR points elsewhere)
 .crewai/
