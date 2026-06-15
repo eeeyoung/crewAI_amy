@@ -91,11 +91,12 @@ function switchModule(id) {
   } else if (id === 'variations') {
     if (varView) varView.style.display = 'flex';
     document.getElementById('module-title').textContent = '📝 Variations';
+    document.getElementById('btn-agent').style.display = '';
     loadProjects().then(() => {
-      // If there's a project already selected, reload
       if (selectedProjectId) varSwitchProject();
     });
   } else {
+    document.getElementById('btn-agent').style.display = 'none';
     // Default: AMail
     if (amailView) amailView.style.display = 'flex';
     if (amailCtrls) amailCtrls.style.display = 'contents';
@@ -2173,9 +2174,18 @@ function renderVarCards() {
     return `
       <div class="card${selectedVarIds.has(v.entry_id) ? ' selected' : ''}"
            id="varcard-${v.entry_id}"
+           draggable="true"
+           ondragstart="varDragStart(event, '${v.entry_id}')"
+           ondragover="varDragOver(event)"
+           ondragleave="varDragLeave(event)"
+           ondrop="varDrop(event, '${v.entry_id}')"
+           ondragend="varDragEnd(event)"
            onclick="selectVariation('${v.entry_id}', event)">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="color:var(--blue);font-weight:600;">${esc(v.vo_title || `VO${v.vo_number || '?'}`)}</span>
+          <span style="display:flex;align-items:center;gap:4px;">
+            <span class="var-drag-handle" style="cursor:grab;color:var(--muted);font-size:14px;user-select:none;" title="Drag to reorder">⋮⋮</span>
+            <span style="color:var(--blue);font-weight:600;">${esc(v.vo_title || `VO${v.vo_number || '?'}`)}</span>
+          </span>
           <span style="font-size:11px;color:${statusColors[st] || 'var(--muted)'};">${statusIcons[st] || ''} ${statusNames[st] || st}</span>
         </div>
         <div style="font-size:12px;color:var(--subtext);margin-top:4px;">🏗 ${esc(v.project_name || 'No project')}</div>
@@ -2412,12 +2422,18 @@ async function varNew() {
   if (!selectedProjectId) { notify('Select a project first', 'warning'); return; }
   const proj = projects.find(p => p.entry_id === selectedProjectId);
 
-  // Compute next VO number: max existing VO number (excluding void) + 1
-  const activeVos = variations.filter(v => v.status !== 'void');
-  const maxNum = activeVos.reduce((max, v) => Math.max(max, v.vo_number || 0), 0);
-  const nextVo = maxNum + 1;
+  // Get next VO number from server (count of active VOs + 1)
+  let nextVo = 1;
+  try {
+    const r = await fetch(`${API}/api/variations/next-vo-number?project_entry_id=${selectedProjectId}`);
+    const d = await r.json();
+    nextVo = d.vo_number || 1;
+  } catch (_) {}
   const autoTitle = `VO${nextVo} - `;
   const today = new Date().toISOString().substring(0, 10);
+
+  // Put new VO at bottom (max sort_order + 1)
+  const maxSort = variations.reduce((max, v) => Math.max(max, v.sort_order || 0), 0);
 
   try {
     const res = await fetch(`${API}/api/variations`, {
@@ -2432,6 +2448,7 @@ async function varNew() {
         vo_number: nextVo,
         vo_title: autoTitle,
         date_issued: today,
+        sort_order: maxSort + 1,
       }),
     });
     const data = await res.json();
@@ -2692,15 +2709,130 @@ async function varSendEmail() {
   }
 }
 
+// ── Drag-and-drop reordering ────────────────────────────────────────
+
+let _varDragSourceId = null;
+let _varDragInsertBefore = true;
+
+function varDragStart(e, entryId) {
+  _varDragSourceId = entryId;
+  const card = document.getElementById(`varcard-${entryId}`);
+  if (card) {
+    card.style.opacity = '0.4';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', entryId);
+  }
+}
+
+function varDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  e.dataTransfer.dropEffect = 'move';
+  // Clear all indicators first
+  document.querySelectorAll('#var-cards-container .card').forEach(c => {
+    c.style.borderTop = ''; c.style.borderBottom = '';
+  });
+  const card = e.target.closest('.card');
+  if (card && card.id?.startsWith('varcard-')) {
+    const rect = card.getBoundingClientRect();
+    _varDragInsertBefore = e.clientY < (rect.top + rect.height / 2);
+    if (_varDragInsertBefore) {
+      card.style.borderTop = '2px solid var(--blue)';
+    } else {
+      card.style.borderBottom = '2px solid var(--blue)';
+    }
+  }
+}
+
+function varDragLeave(e) {
+  const card = e.target.closest('.card');
+  if (card?.id?.startsWith('varcard-')) {
+    const rel = e.relatedTarget;
+    if (!rel || !card.contains(rel)) {
+      card.style.borderTop = '';
+      card.style.borderBottom = '';
+    }
+  }
+}
+
+function varDragEnd(e) {
+  _varDragSourceId = null;
+  document.querySelectorAll('#var-cards-container .card').forEach(c => {
+    c.style.opacity = ''; c.style.borderTop = ''; c.style.borderBottom = '';
+  });
+}
+
+// Drop on container (below all cards)
+function varContainerDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('#var-cards-container .card').forEach(c => {
+    c.style.borderTop = ''; c.style.borderBottom = '';
+  });
+}
+
+async function varContainerDrop(e) {
+  e.preventDefault();
+  const src = _varDragSourceId;
+  varDragEnd(e);
+  if (!src) return;
+  const fromIdx = variations.findIndex(v => v.entry_id === src);
+  if (fromIdx < 0) return;
+  const moved = variations.splice(fromIdx, 1)[0];
+  variations.push(moved);
+  variations.forEach((v, i) => { v.sort_order = i; });
+  renderVarCards();
+  applyVarSelection();
+  try {
+    await fetch(`${API}/api/variations/reorder`, {
+      method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ ordered_ids: variations.map(v => v.entry_id) }),
+    });
+  } catch (_) {}
+}
+
+async function varDrop(e, targetId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const src = _varDragSourceId;
+  varDragEnd(e);
+  if (!src || src === targetId) return;
+
+  const fromIdx = variations.findIndex(v => v.entry_id === src);
+  let toIdx = variations.findIndex(v => v.entry_id === targetId);
+  if (fromIdx < 0 || toIdx < 0) return;
+
+  // Insert below target if dragged to bottom half
+  if (!_varDragInsertBefore) toIdx = Math.min(toIdx + 1, variations.length);
+  if (fromIdx < toIdx) toIdx--;
+
+  const moved = variations.splice(fromIdx, 1)[0];
+  variations.splice(toIdx, 0, moved);
+  variations.forEach((v, i) => { v.sort_order = i; });
+
+  renderVarCards();
+  applyVarSelection();
+
+  try {
+    await fetch(`${API}/api/variations/reorder`, {
+      method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ ordered_ids: variations.map(v => v.entry_id) }),
+    });
+  } catch (_) {}
+}
+
 // ── Delete ───────────────────────────────────────────────────────────
 
 async function varRestore() {
   if (!selectedVarId) return;
   try {
-    // Reassign VO number: get next available (max active + 1)
-    const activeVos = variations.filter(v => v.status !== 'void' && v.entry_id !== selectedVarId);
-    const maxNum = activeVos.reduce((max, v) => Math.max(max, v.vo_number || 0), 0);
-    const nextVo = maxNum + 1;
+    // Get next VO number from server
+    let nextVo = 1;
+    try {
+      const r = await fetch(`${API}/api/variations/next-vo-number?project_entry_id=${selectedProjectId}`);
+      const d = await r.json();
+      nextVo = d.vo_number || 1;
+    } catch (_) {}
 
     // Restore AND update vo_number + vo_title
     const res = await fetch(`${API}/api/variations/${selectedVarId}/restore`, { method: 'POST' });
@@ -2759,6 +2891,265 @@ async function varDelete() {
     }
   }
 }
+
+// ── Variation Agent ──────────────────────────────────────────────────
+
+let _agentFiles = [];  // {name, file} pairs waiting to be uploaded
+
+function openAgentModal() {
+  document.getElementById('agent-modal').classList.add('show');
+  document.getElementById('agent-text').value = '';
+  _agentFiles = [];
+  renderAgentFiles();
+  document.getElementById('agent-results').style.display = 'none';
+}
+
+function closeAgentModal() {
+  document.getElementById('agent-modal').classList.remove('show');
+}
+
+function agentHandleDrop(e) {
+  e.preventDefault();
+  e.target.style.borderColor = 'var(--overlay)';
+  agentHandleFiles(e.dataTransfer.files);
+}
+
+function agentHandleFiles(fileList) {
+  for (const f of fileList) {
+    if (!_agentFiles.find(af => af.name === f.name && af.size === f.size)) {
+      _agentFiles.push({ name: f.name, size: f.size, file: f });
+    }
+  }
+  renderAgentFiles();
+}
+
+function renderAgentFiles() {
+  const container = document.getElementById('agent-files');
+  if (!_agentFiles.length) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = _agentFiles.map((f, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--surface);border-radius:6px;margin-bottom:4px;font-size:12px;">
+      <span>📄</span>
+      <span style="flex:1;color:var(--text);">${esc(f.name)}</span>
+      <span style="color:var(--muted);font-size:10px;">${(f.size / 1024).toFixed(0)}KB</span>
+      <button onclick="_agentFiles.splice(${i},1);renderAgentFiles()"
+        style="background:none;border:none;color:var(--red);cursor:pointer;">×</button>
+    </div>
+  `).join('');
+}
+
+async function agentAnalyze() {
+  const text = document.getElementById('agent-text')?.value?.trim() || '';
+  if (!text && !_agentFiles.length) {
+    notify('Please enter text or attach files', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('btn-agent-analyze');
+  const spinner = document.getElementById('agent-spinner');
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  document.getElementById('agent-results').style.display = 'none';
+
+  try {
+    const formData = new FormData();
+    formData.append('text', text);
+    for (const af of _agentFiles) {
+      formData.append('files', af.file);
+    }
+
+    const res = await fetch(`${API}/api/variations/agent/analyze`, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      notify(data.error, 'error');
+    } else {
+      renderAgentResults(data);
+    }
+  } catch (e) {
+    notify('Analysis failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
+
+function renderAgentResults(data) {
+  const panel = document.getElementById('agent-results');
+  const content = document.getElementById('agent-results-content');
+  panel.style.display = 'block';
+
+  const analysis = data.analysis || {};
+  const match = data.project_match;
+  const nextVo = data.next_vo_number;
+
+  if (analysis.parse_error || analysis.raw_response) {
+    content.innerHTML = `<div style="color:var(--red);font-size:12px;">⚠️ Could not parse structured data. Raw response:</div>
+      <pre style="background:var(--base);padding:8px;border-radius:6px;font-size:11px;color:var(--subtext);max-height:200px;overflow-y:auto;">${esc(analysis.raw_response || '')}</pre>`;
+    return;
+  }
+
+  let html = '';
+
+  // Project match
+  if (match) {
+    html += `<div class="agent-card" style="margin-bottom:8px;">
+      <div class="agent-card-title">📁 Project</div>
+      <div style="color:var(--green);font-weight:600;">✅ ${esc(match.name)} — matched</div>
+      <div style="font-size:11px;color:var(--muted);">Next VO number: <b>VO${nextVo}</b></div>
+    </div>`;
+  } else {
+    html += `<div class="agent-card" style="margin-bottom:8px;">
+      <div class="agent-card-title">📁 Project</div>
+      <div style="color:var(--yellow);">⚠️ No match for "${esc(analysis.project_name || 'unknown')}"</div>
+      <button class="btn" onclick="agentCreateProject()" style="margin-top:6px;font-size:11px;">🏗 Create New Project</button>
+    </div>`;
+  }
+
+  // VO summary
+  html += `<div class="agent-card" style="margin-bottom:8px;">
+    <div class="agent-card-title">📝 Variation</div>
+    <div style="font-weight:600;color:var(--blue);">VO${nextVo || '?'} - ${esc(analysis.vo_title || '(no title)')}</div>
+    <div style="font-size:12px;color:var(--subtext);margin-top:4px;">${esc(analysis.vo_summary || '')}</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;">Type: ${esc(analysis.vo_type || 'Head Contract VO')}</div>
+  </div>`;
+
+  // Line items
+  const items = analysis.line_items || [];
+  if (items.length) {
+    html += `<div class="agent-card" style="margin-bottom:8px;">
+      <div class="agent-card-title">📊 Line Items (${items.length})</div>`;
+    let totalEst = 0;
+    items.forEach((it, i) => {
+      const cost = (it.qty || 0) * (it.rate || 0);
+      totalEst += cost;
+      html += `<div style="font-size:11px;padding:2px 0;border-bottom:1px solid #1a1a2e;">
+        ${i+1}. ${esc(it.description || 'Item')} — ${it.qty || 0} ${esc(it.unit || 'item')} × $${(it.rate || 0).toLocaleString()} = <b>$${cost.toLocaleString()}</b>
+      </div>`;
+    });
+    html += `<div style="font-size:12px;font-weight:600;color:var(--green);margin-top:4px;">Estimated Total: $${totalEst.toLocaleString()}</div>`;
+    html += `</div>`;
+  }
+
+  // Notes
+  if (analysis.notes) {
+    html += `<div class="agent-card" style="margin-bottom:8px;">
+      <div class="agent-card-title">📝 Notes</div>
+      <div style="font-size:11px;color:var(--subtext);">${esc(analysis.notes)}</div>
+    </div>`;
+  }
+
+  // Action button
+  if (match) {
+    html += `<button class="btn btn-primary" onclick="agentCreateVO('${match.entry_id}', ${nextVo})"
+      style="width:100%;padding:10px;">✅ Create VO${nextVo} in ${esc(match.name)}</button>`;
+  }
+
+  content.innerHTML = html;
+}
+
+async function agentCreateVO(projectId, voNumber) {
+  // Switch to the matched project and create the VO
+  const analysis = {}; // stored as last analysis — we read from DOM results
+  // Actually we need the analysis data. Store it globally.
+  if (!_lastAgentData || !_lastAgentData.analysis) {
+    notify('No analysis data available', 'error');
+    return;
+  }
+
+  const a = _lastAgentData.analysis;
+  const proj = _lastAgentData.existing_projects?.find(p => p.entry_id === projectId);
+
+  try {
+    // Ensure we're on the right project
+    if (selectedProjectId !== projectId) {
+      document.getElementById('var-project-select').value = projectId;
+      await varSwitchProject();
+    }
+
+    // Create the VO
+    const res = await fetch(`${API}/api/variations`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        project_entry_id: projectId,
+        project_name: proj?.name || '',
+        vo_number: voNumber,
+        vo_title: `VO${voNumber} - ${a.vo_title || ''}`,
+        vo_type: a.vo_type || 'Head Contract VO',
+        date_issued: new Date().toISOString().substring(0, 10),
+        status: 'submitted',
+      }),
+    });
+    const data = await res.json();
+    if (!data.entry_id) { notify('Failed to create VO', 'error'); return; }
+
+    // Add line items
+    for (const it of (a.line_items || [])) {
+      await fetch(`${API}/api/variations/${data.entry_id}/items`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          item_number: (a.line_items?.indexOf(it) || 0) + 1,
+          description: it.description || '',
+          qty: it.qty || 0,
+          unit: it.unit || 'item',
+          rate: it.rate || 0,
+          credit: 0,
+        }),
+      });
+    }
+
+    closeAgentModal();
+    await loadVariations(currentVarFilter);
+    await loadVarRegisters();
+    selectVariation(data.entry_id);
+    notify(`VO${voNumber} created with ${a.line_items?.length || 0} items!`, 'success');
+  } catch (e) {
+    notify('Failed: ' + e.message, 'error');
+  }
+}
+
+let _lastAgentData = null;
+
+// Override renderAgentResults to store data
+const _origRenderAgentResults = renderAgentResults;
+renderAgentResults = function(data) {
+  _lastAgentData = data;
+  _origRenderAgentResults(data);
+};
+
+async function agentCreateProject() {
+  if (!_lastAgentData?.analysis) return;
+  const a = _lastAgentData.analysis;
+
+  // Pre-fill the new project modal
+  document.getElementById('agent-modal').classList.remove('show');
+  document.getElementById('var-new-proj-name').value = a.project_name || '';
+  document.getElementById('var-new-proj-filename').value = (a.project_name || 'Project').replace(/[^a-zA-Z0-9]/g, '_');
+  document.getElementById('var-new-project-modal').classList.add('show');
+
+  // Store that this is an agent-triggered creation
+  window._agentPendingVO = a;
+}
+
+// Override varCreateProject to handle agent-triggered creation
+const _origVarCreateProject = varCreateProject;
+varCreateProject = async function() {
+  await _origVarCreateProject();
+  // If agent-triggered, create the first VO
+  if (window._agentPendingVO && selectedProjectId) {
+    const a = window._agentPendingVO;
+    const nextVo = 1; // First VO in new project
+    await agentCreateVO(selectedProjectId, nextVo);
+    window._agentPendingVO = null;
+  }
+};
 
 // ── Boot ─────────────────────────────────────────────────────────────
 

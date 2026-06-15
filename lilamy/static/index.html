@@ -967,6 +967,8 @@
     <!-- Top bar -->
     <div id="topbar">
       <h1 id="module-title">📧 AMail</h1>
+      <button class="btn" id="btn-agent" onclick="openAgentModal()"
+        style="display:none;padding:4px 12px;font-size:12px;background:var(--purple);color:var(--base);border-color:var(--purple);">🤖 Agent</button>
       <!-- AMail controls -->
       <span id="amail-controls" style="display:contents;">
       <span class="count" id="email-count">0 emails</span>
@@ -1275,7 +1277,7 @@
           <span style="font-size:11px;color:var(--muted);" id="var-count-header">0 VOs</span>
         </div>
 
-        <div id="var-cards-container"></div>
+        <div id="var-cards-container" ondragover="varContainerDragOver(event)" ondrop="varContainerDrop(event)"></div>
         <div id="var-cards-empty" class="empty-state" style="display:none">
           <div class="icon">📝</div>
           <div>No variations yet</div>
@@ -1609,9 +1611,54 @@
     </div>
   </div>
 
+  <!-- Variation Agent modal -->
+  <div class="modal-overlay" id="agent-modal">
+    <div class="modal-box" style="max-width:640px;">
+      <h2>🤖 Variation Agent</h2>
+      <div style="font-size:12px;color:var(--subtext);margin-bottom:12px;">
+        Describe the variation request and attach any documents (PDFs, images).
+        The AI will analyze everything and suggest a VO.
+      </div>
+
+      <!-- Text input -->
+      <textarea id="agent-text" placeholder="e.g., ARCO project needs a variation for wet fire sprinkler upgrade to ground floor. Approx 50m of 100mm pipework at $150/m, plus 12 new sprinkler heads at $350 each..."
+        style="width:100%;min-height:90px;background:var(--base);border:1px solid var(--overlay);border-radius:8px;padding:10px;color:var(--text);font-size:13px;resize:vertical;font-family:inherit;margin-bottom:10px;"></textarea>
+
+      <!-- File drop zone -->
+      <div id="agent-dropzone" style="border:2px dashed var(--overlay);border-radius:8px;padding:20px;text-align:center;cursor:pointer;margin-bottom:8px;transition:border-color 0.2s;"
+        ondragover="this.style.borderColor='var(--blue)';event.preventDefault()"
+        ondragleave="this.style.borderColor='var(--overlay)'"
+        ondrop="agentHandleDrop(event)"
+        onclick="document.getElementById('agent-file-input').click()">
+        <span style="font-size:24px;">📎</span>
+        <div style="font-size:12px;color:var(--subtext);">Drop files here or click to browse</div>
+        <div style="font-size:10px;color:var(--muted);">PDF, PNG, JPG supported</div>
+      </div>
+      <input type="file" id="agent-file-input" accept=".pdf,.png,.jpg,.jpeg,.txt" multiple
+        style="display:none;" onchange="agentHandleFiles(this.files)">
+
+      <!-- File list -->
+      <div id="agent-files" style="margin-bottom:10px;"></div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="btn" id="btn-agent-analyze" onclick="agentAnalyze()"
+          style="background:var(--purple);color:var(--base);border-color:var(--purple);">🔍 Analyze</button>
+        <button class="btn" onclick="closeAgentModal()">Cancel</button>
+        <span class="spinner" id="agent-spinner" style="display:none;"></span>
+      </div>
+
+      <!-- Results panel -->
+      <div id="agent-results" style="display:none;">
+        <div style="border-top:1px solid var(--overlay);padding-top:10px;margin-top:4px;"></div>
+        <div id="agent-results-content"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=24"></script>
+  <script src="/static/app.js?v=28"></script>
 </body>
 
 </html>
