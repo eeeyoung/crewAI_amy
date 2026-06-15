@@ -763,8 +763,8 @@ def compile_project_to_xlsx(project: dict, variations: list[dict],
     active_variations = [v for v in variations if v.get("status") != "void"]
     voided_vo_numbers = {v.get("vo_number") for v in variations if v.get("status") == "void"}
 
-    # Sort by VO number
-    active_variations.sort(key=lambda v: v.get("vo_number", 0) or 0)
+    # Sort by sort_order (drag-and-drop sequence), then vo_number
+    active_variations.sort(key=lambda v: (v.get("sort_order", 0) or 0, v.get("vo_number", 0) or 0))
 
     # Find template
     knowledge_dir = Path(__file__).parent.parent.parent.parent / "knowledge"
@@ -793,37 +793,35 @@ def compile_project_to_xlsx(project: dict, variations: list[dict],
         sheet_name = builder.create_vo_sheet(vo_number)
         ws = builder.wb[sheet_name]
 
-        builder.fill_vo_project_info(ws, var)
+        # Override with project-level fields (not per-VO denormalized copies)
+        var_for_sheet = dict(var)
+        var_for_sheet["project_name"] = project.get("name", var.get("project_name", ""))
+        var_for_sheet["project_location"] = project.get("location", var.get("project_location", ""))
+        var_for_sheet["job_number"] = project.get("job_number", var.get("job_number", ""))
+        var_for_sheet["company_name"] = project.get("company_name", var.get("company_name", "Welink Construction"))
+
+        builder.fill_vo_project_info(ws, var_for_sheet)
         items = var.get("items", [])
         builder.fill_vo_items(ws, items)
         builder.fill_vo_formulas(ws)
         builder.fill_vo_raised_by(ws, initials=var.get("raised_by", "AC"))
 
-    # ── 3. Reorder: VO sheets first (numeric order), then Register, Internal VO Register, VOXX ──
-    def _vo_sort_key(name: str) -> int:
-        try:
-            return int(name.replace("VO", ""))
-        except ValueError:
-            return 999
-
-    vo_sheets = sorted(
-        [s for s in builder.wb.sheetnames if s.startswith("VO") and s != "VOXX"],
-        key=_vo_sort_key,
-    )
+    # ── 3. Reorder: VO sheets first (in creation order = sort_order), then Register, Internal VO Register ──
+    # VO sheets were created in active_variations order (sorted by sort_order).
+    # Preserve that order — do NOT re-sort by VO number.
+    vo_sheets = [s for s in builder.wb.sheetnames if s.startswith("VO") and s != "VOXX"]
     trailing = ["Register", "Internal VO Register"]
     trailing = [s for s in trailing if s in builder.wb.sheetnames]
     trailing += [s for s in builder.wb.sheetnames
                  if s not in vo_sheets and s not in trailing]
 
-    # Build order by moving each sheet to the end in reverse, then to front
-    # Move all trailing sheets to the end first, then VO sheets are naturally first
+    # Move all trailing sheets to the end
     for name in trailing:
         current = builder.wb.sheetnames.index(name)
         end = len(builder.wb.sheetnames) - 1
         builder.wb.move_sheet(name, offset=end - current)
 
-    # Now sort VO sheets: move each to position 0 in reverse numeric order,
-    # so smaller numbers end up first
+    # Move VO sheets to the front in reverse order, preserving their relative sequence
     for name in reversed(vo_sheets):
         builder.wb.move_sheet(name, offset=-builder.wb.sheetnames.index(name))
 

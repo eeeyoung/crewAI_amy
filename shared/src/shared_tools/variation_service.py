@@ -920,10 +920,7 @@ Output ONLY the JSON object, no other text."""
     # ── Utility ───────────────────────────────────────────────────────
 
     def get_next_vo_number(self, project_entry_id: str) -> int:
-        """Return the next VO number for a project."""
+        """Return the next VO number: count of active (non-void) VOs + 1."""
         from shared_tools.variation_db import get_variations
-        existing = get_variations(project_entry_id=project_entry_id)
-        if not existing:
-            return 1
-        max_vo = max((v.get("vo_number") or 0 for v in existing), default=0)
-        return max_vo + 1
+        existing = get_variations(project_entry_id=project_entry_id)  # excludes void
+        return len(existing) + 1
