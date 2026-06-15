@@ -26,7 +26,7 @@ load_dotenv()
 
 
 def _get_gemini_model():
-    """Return a raw Gemini generative model for multi-modal use."""
+    """Return a Gemini generative model configured for deterministic JSON output."""
     import google.generativeai as genai
 
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -34,8 +34,14 @@ def _get_gemini_model():
         raise RuntimeError("GEMINI_API_KEY not set in .env")
 
     genai.configure(api_key=api_key)
-    # Use gemini-3.5-flash — latest stable multi-modal model
-    return genai.GenerativeModel("models/gemini-3.5-flash")
+    return genai.GenerativeModel(
+        model_name="models/gemini-3.5-flash",
+        generation_config={
+            "temperature": 0,                     # deterministic output
+            "top_p": 1.0,
+            "response_mime_type": "application/json",  # force JSON mode
+        },
+    )
 
 
 # =============================================================================
@@ -46,7 +52,7 @@ SYSTEM_PROMPT = """You are a construction variation analyst for Welink Construct
 Analyze the user's input (text + any attached documents) and extract structured
 information for creating a Variation Order (VO).
 
-Return ONLY a JSON object with these fields (use null for unknown values):
+Return a JSON object with these fields (use null for unknown values):
 
 {
   "project_name": "extracted or inferred project name (e.g., ARCO, Ferguson Residence)",
@@ -58,7 +64,7 @@ Return ONLY a JSON object with these fields (use null for unknown values):
     {
       "description": "short phrase describing the work item (max 8 words)",
       "qty": number,
-      "unit": "item/m2/m3/hr/etc",
+      "unit": "item/LS/m2/m3/hr/etc",
       "rate": number
     }
   ],
@@ -67,16 +73,27 @@ Return ONLY a JSON object with these fields (use null for unknown values):
 }
 
 CRITICAL RULES:
-- For line_items DESCRIPTION: keep it SHORT and SIMPLE. Use brief phrases like
-  "100mm fire sprinkler pipework" or "12 new sprinkler heads" — NOT full sentences.
-  Maximum 8 words per description. Be specific but concise.
-- For project_name: look for project codes (ARCO, CBR, etc.) or full project names.
-- If the project name is ambiguous, set confidence to "low".
-- Extract quantities and rates from documents if present. If a rate isn't specified,
-  estimate a reasonable one.
-- vo_type: "Client Direct VO" only if client is directly requesting/paying.
-  Default to "Head Contract VO".
-- Output ONLY the JSON object, no markdown fences, no explanation."""
+
+1. ITEM GROUPING (A-level vs B-level):
+   Construction quotations often have TOP-LEVEL items (A-level) with sub-items (B-level)
+   listed underneath. B-level items usually have NO individual price — only the A-level
+   parent has a total price. ALWAYS extract A-level items ONLY. Do NOT extract B-level
+   sub-items as separate line items. If a document has 2 A-level items each with 10
+   B-level sub-items, you should output exactly 2 line items — one per A-level item.
+   Use the A-level description and its total price. Ignore B-level descriptions.
+
+2. LINE ITEM DESCRIPTIONS: keep them SHORT — max 8 words. Use brief phrases like
+   "Ceiling framing and plasterboard" NOT "Supply and install suspend ceiling frames
+   and 1x13mm plasterboard lining with flushing and sanding...". Be concise.
+
+3. PROJECT NAME: look for project codes (ARCO, CBR, etc.) or full names. If ambiguous,
+   set confidence to "low".
+
+4. PRICING: extract exact rates from documents. If not specified, estimate reasonably.
+   Always use the A-level total if available, not the sum of B-level items.
+
+5. VO TYPE: "Client Direct VO" only if client is directly requesting/paying.
+   Default to "Head Contract VO"."""
 
 
 # =============================================================================
