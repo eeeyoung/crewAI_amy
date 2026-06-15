@@ -18,14 +18,15 @@ wheels/
 # liability.
 
 # Primary data directory (local development default)
-data/mail_fetch
+data/
+!data/mail_fetch/
 
 # Legacy data directory (still used if LILAMY_DATA_DIR points elsewhere)
 .crewai/
 
 # ChromaDB vector stores
-.chromadb/
-chroma/
+# .chromadb/
+# chroma/
 chroma.sqlite3
 
 # lilAmy platform data files
@@ -34,7 +35,8 @@ chroma.sqlite3
 .lilamy_graph_token.json
 
 # Generic database and binary formats
-*.db
+# *.db
+habit_learner.db
 *.bin
 *.pkl
 *.jsonl
@@ -48,7 +50,6 @@ chroma.sqlite3
 vectordb/
 embeddings/
 indices/
-.knowledge/
 
 # Cache and temporary directories
 .cache/

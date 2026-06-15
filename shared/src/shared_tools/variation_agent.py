@@ -136,8 +136,6 @@ def analyze_variation_request(
             "existing_projects": [...],
         }
     """
-    import google.generativeai as genai
-
     model = _get_gemini_model()
 
     # ── Build multi-modal message parts ───────────────────────────────
@@ -149,18 +147,10 @@ def analyze_variation_request(
     if files:
         for f in files:
             try:
-                # Upload file to Gemini and add as part
                 mime = f.get("mime_type", "application/pdf")
-                uploaded = genai.upload_file(
-                    path=None,
-                    file_data={
-                        "mime_type": mime,
-                        "data": f["content"],
-                    },
-                    display_name=f.get("name", "document"),
-                )
-
-                parts.append(uploaded)
+                # Send file bytes directly as a Part dict — upload_file() doesn't
+                # accept raw bytes in the deprecated SDK, but inline Part dicts work.
+                parts.append({"mime_type": mime, "data": f["content"]})
             except Exception as e:
                 parts.append(
                     f"[Note: Could not process attached file '{f.get('name', 'unknown')}': {e}]"
