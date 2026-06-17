@@ -48,7 +48,7 @@ async function loadModules() {
 function renderSidebar(modules) {
   const list = document.getElementById('module-list');
   list.innerHTML = modules.map(m => `
-    <div class="module ${m.enabled ? 'active' : 'disabled'}"
+    <div class="module ${m.enabled ? '' : 'disabled'}"
          ${m.enabled ? `onclick="switchModule('${m.id}')"` : ''}
          title="${m.description}">
       <span class="icon">${m.icon}</span>
@@ -117,9 +117,39 @@ async function loadEmails() {
     emails = data.emails;
     lastCount = emails.length;
     applyFilters();
+    // Lazy-load attachment pins after cards render
+    setTimeout(() => loadAttachmentPins(), 200);
   } catch (e) {
     notify('Failed to load emails', 'error');
   }
+}
+
+async function loadAttachmentPins() {
+  if (emails.length === 0) return;
+  const ids = emails.map(e => e.entry_id);
+  try {
+    const res = await fetch(`${API}/api/amail/emails/attachments-check`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ entry_ids: ids }),
+    });
+    const data = await res.json();
+    if (!data.ok) return;
+    const counts = data.counts || {};
+    for (const [eid, count] of Object.entries(counts)) {
+      if (count > 0) {
+        const card = document.getElementById(`card-${eid}`);
+        if (card && !card.querySelector('.att-pin')) {
+          const pin = document.createElement('span');
+          pin.className = 'att-pin';
+          pin.textContent = '📎';
+          pin.title = `${count} attachment(s)`;
+          pin.style.cssText = 'position:absolute;top:6px;right:8px;font-size:14px;';
+          card.style.position = 'relative';
+          card.appendChild(pin);
+        }
+      }
+    }
+  } catch (_) {}
 }
 
 function getFilteredEmails() {
@@ -177,6 +207,10 @@ function renderCards() {
 }
 
 function selectEmail(entryId) {
+  // Auto-mark previous email as READ in Outlook
+  if (selectedId && selectedId !== entryId) {
+    markEmailRead(selectedId);
+  }
   selectedId = entryId;
   // Update card selection
   document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
@@ -215,6 +249,9 @@ async function loadDetail(entryId) {
   try { todos = typeof email.todos_json === 'string' ? JSON.parse(email.todos_json) : (email.todos_json || []); } catch (_) {}
   document.getElementById('det-todos').textContent = todos.length ? `✅ ${todos.join(' · ')}` : '';
 
+  // Attachments
+  loadAttachments(entryId);
+
   // Body
   const body = email.body || email.email_body || '';
   document.getElementById('det-body').textContent = body || '(body not available — open in Outlook for full content)';
@@ -227,6 +264,103 @@ async function loadDetail(entryId) {
   document.getElementById('btn-copy').disabled = !email.reply_draft;
   document.getElementById('refine-row').style.display = email.reply_draft ? 'flex' : 'none';
   document.getElementById('refine-input').value = '';
+}
+
+// ── Attachments ──────────────────────────────────────────────────────
+
+async function loadAttachments(entryId) {
+  _currentAttachments = [];
+  _selectedAttIndices.clear();
+  const panel = document.getElementById('det-attachments');
+  const list = document.getElementById('det-att-list');
+  const btnDl = document.getElementById('btn-att-download');
+  const btnDlOpen = document.getElementById('btn-att-download-open');
+
+  try {
+    const res = await fetch(`${API}/api/amail/emails/${entryId}/attachments`);
+    const data = await res.json();
+    if (!data.ok || !data.attachments?.length) {
+      panel.style.display = 'none';
+      return;
+    }
+    _currentAttachments = data.attachments;
+    panel.style.display = 'block';
+    renderAttachmentList();
+    btnDl.disabled = false;
+    btnDlOpen.disabled = false;
+  } catch (_) {
+    panel.style.display = 'none';
+  }
+}
+
+function renderAttachmentList() {
+  const list = document.getElementById('det-att-list');
+  list.innerHTML = _currentAttachments.map(a => {
+    const sel = _selectedAttIndices.has(a.index);
+    const sizeStr = a.size ? `${(a.size / 1024).toFixed(0)} KB` : '';
+    return `
+      <div class="att-item${sel ? ' selected' : ''}"
+           style="display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:4px;
+                  cursor:pointer;${sel ? 'background:var(--blue);color:#fff;' : 'background:var(--surface);'}
+                  font-size:12px;"
+           onclick="toggleAttSelect(${a.index}, event)"
+           ondblclick="downloadSingleAtt(${a.index})">
+        <span>📄</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.filename || `Attachment ${a.index}`)}</span>
+        ${sizeStr ? `<span style="font-size:10px;color:${sel ? '#fff' : 'var(--muted)'};">${sizeStr}</span>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleAttSelect(index, event) {
+  if (event?.shiftKey && _currentAttachments.length) {
+    // Range select
+    const indices = _currentAttachments.map(a => a.index);
+    const curIdx = indices.indexOf(index);
+    const lastIdx = _selectedAttIndices.size ? indices.indexOf([..._selectedAttIndices].pop()) : curIdx;
+    const [lo, hi] = curIdx < lastIdx ? [curIdx, lastIdx] : [lastIdx, curIdx];
+    for (let i = lo; i <= hi; i++) _selectedAttIndices.add(indices[i]);
+  } else if (event?.ctrlKey || event?.metaKey) {
+    if (_selectedAttIndices.has(index)) _selectedAttIndices.delete(index);
+    else _selectedAttIndices.add(index);
+  } else {
+    if (_selectedAttIndices.has(index) && _selectedAttIndices.size === 1) {
+      _selectedAttIndices.clear();
+    } else {
+      _selectedAttIndices.clear();
+      _selectedAttIndices.add(index);
+    }
+  }
+  renderAttachmentList();
+}
+
+async function downloadSingleAtt(index) {
+  try {
+    const a = document.createElement('a');
+    a.href = `${API}/api/amail/emails/${selectedId}/attachments/${index}/download?open_inline=true`;
+    a.download = '';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (_) {}
+}
+
+async function downloadAttachments(openAfter) {
+  const indices = _selectedAttIndices.size > 0 ? [..._selectedAttIndices] : _currentAttachments.map(a => a.index);
+  if (indices.length === 0) return;
+  for (const idx of indices) {
+    const a = document.createElement('a');
+    a.href = `${API}/api/amail/emails/${selectedId}/attachments/${idx}/download?open_inline=${openAfter}`;
+    a.download = '';  // let server Content-Disposition set filename
+    // Download-only: no target → browser downloads, never opens
+    // Download & Open: target=_blank → inline disposition opens in new tab
+    if (openAfter) a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    await new Promise(r => setTimeout(r, 300));
+  }
 }
 
 // ── Actions ──────────────────────────────────────────────────────────
@@ -628,10 +762,16 @@ async function removeEmail() {
   }
 }
 
-async function openOutlook(entryId, replyMode = false) {
+async function openOutlook(entryId, replyMode = false, replyAll = false) {
   // Call backend to open email in native Outlook via COM
+  let url = `${API}/api/amail/emails/${entryId}/open-in-outlook`;
+  if (replyAll) {
+    url += `?reply_all=true`;
+  } else if (replyMode) {
+    url += `?reply_mode=true`;
+  }
   try {
-    const res = await fetch(`${API}/api/amail/emails/${entryId}/open-in-outlook?reply_mode=${replyMode}`, { method: 'POST' });
+    const res = await fetch(url, { method: 'POST' });
     const data = await res.json();
     if (!data.ok) {
       // Fallback: open mailto link
@@ -664,6 +804,8 @@ function setSort(mode) {
 
 function applyFilters() {
   renderCards();
+  // Reload attachment pins after card re-render
+  setTimeout(() => loadAttachmentPins(), 200);
   // Update count display
   const filtered = getFilteredEmails();
   const countEl = document.getElementById('email-count');
@@ -862,6 +1004,8 @@ function showToast(msg) { notify(msg, 'info', 3000); }
 
 let selectedIds = new Set();    // all selected entry_ids
 let lastClickedId = null;       // for Shift+Click range
+let _currentAttachments = [];   // attachments for selected email
+let _selectedAttIndices = new Set();  // selected attachment indices for download
 
 function getCardIndex(id) {
   return emails.findIndex(e => e.entry_id === id);
@@ -870,6 +1014,10 @@ function getCardIndex(id) {
 function isSelected(id) { return selectedIds.has(id); }
 
 function selectSingle(id) {
+  // Auto-mark previous email as READ in Outlook (user clicked away = processed)
+  if (selectedId && selectedId !== id) {
+    markEmailRead(selectedId);
+  }
   selectedIds.clear();
   selectedIds.add(id);
   lastClickedId = id;
@@ -906,6 +1054,8 @@ function toggleSelect(id) {
 // Click empty area → deselect all
 document.getElementById('card-panel').addEventListener('click', (e) => {
   if (!e.target.closest('.card')) {
+    // Auto-mark last viewed as READ
+    if (selectedId) markEmailRead(selectedId);
     selectedIds.clear();
     lastClickedId = null;
     applySelection();
@@ -996,6 +1146,16 @@ function ctxOpenOutlook() {
   ctxMenu.style.display = 'none';
 }
 
+function ctxReply() {
+  for (const id of selectedIds) openOutlook(id, true, false);
+  ctxMenu.style.display = 'none';
+}
+
+function ctxReplyAll() {
+  for (const id of selectedIds) openOutlook(id, false, true);
+  ctxMenu.style.display = 'none';
+}
+
 async function ctxRemove() {
   const toRemove = [...selectedIds];
   if (toRemove.length === 0) { ctxMenu.style.display = 'none'; return; }
@@ -1015,6 +1175,90 @@ async function ctxRemove() {
   lastClickedId = null;
   applyFilters();
   updateNotify(notifyId, 'success', 'Removed', `${toRemove.length} email(s) removed`);
+  ctxMenu.style.display = 'none';
+}
+
+// ── Mark email read/unread in Outlook (fire-and-forget) ────────────
+
+async function markEmailRead(entryId) {
+  try {
+    await fetch(`${API}/api/amail/emails/mark-read`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ entry_ids: [entryId] }),
+    });
+  } catch (_) {}
+}
+
+async function markEmailsRead(entryIds) {
+  if (!entryIds.length) return;
+  try {
+    await fetch(`${API}/api/amail/emails/mark-read`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ entry_ids: entryIds }),
+    });
+  } catch (_) {}
+}
+
+async function ctxMarkUnread() {
+  const toMark = [...selectedIds];
+  if (toMark.length === 0) { ctxMenu.style.display = 'none'; return; }
+  try {
+    await fetch(`${API}/api/amail/emails/mark-unread`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ entry_ids: toMark }),
+    });
+    notify(`Marked ${toMark.length} email(s) as unread`, 'success');
+  } catch (_) {}
+  ctxMenu.style.display = 'none';
+}
+
+async function ctxDismissRead() {
+  // Dismiss cards from AMail AND mark as READ in Outlook
+  const toDismiss = [...selectedIds];
+  if (toDismiss.length === 0) { ctxMenu.style.display = 'none'; return; }
+  const notifyId = 'dismiss-' + Date.now();
+  notifyProgress(notifyId, `Dismissing ${toDismiss.length} email(s)...`, '');
+  // Mark as READ in Outlook
+  await markEmailsRead(toDismiss);
+  // Remove from AMail store
+  for (const id of toDismiss) {
+    try { await fetch(`${API}/api/amail/emails/${id}/remove`, { method: 'POST' }); } catch (_) {}
+  }
+  emails = emails.filter(e => !selectedIds.has(e.entry_id));
+  if (selectedIds.has(selectedId)) {
+    selectedId = null;
+    document.getElementById('detail-empty').style.display = 'flex';
+    document.getElementById('detail-content').style.display = 'none';
+  }
+  selectedIds.clear();
+  lastClickedId = null;
+  applyFilters();
+  updateNotify(notifyId, 'success', 'Dismissed', `${toDismiss.length} email(s) dismissed & marked read`);
+  ctxMenu.style.display = 'none';
+}
+
+async function ctxFlagAndPush() {
+  // Flag in Outlook AND push to To-Do List
+  const selected = [...selectedIds];
+  if (selected.length === 0) { ctxMenu.style.display = 'none'; return; }
+
+  const notifyId = 'flagpush-' + Date.now();
+  notifyProgress(notifyId, `Flagging & pushing ${selected.length} email(s)...`, '');
+
+  // Fire both in parallel
+  const flagP = fetch(`${API}/api/amail/emails/mark-flagged`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ entry_ids: selected }),
+  }).catch(() => {});
+  const pushP = fetch(`${API}/api/todo/push-from-emails`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email_ids: selected }),
+  }).then(r => r.json()).catch(() => null);
+
+  const [flagRes, pushData] = await Promise.all([flagP, pushP]);
+  const count = pushData?.count || 0;
+  updateNotify(notifyId, 'success', 'Flagged & Pushed',
+    `${selected.length} email(s) flagged in Outlook · ${count} task(s) created`);
   ctxMenu.style.display = 'none';
 }
 
@@ -1298,6 +1542,37 @@ document.addEventListener('keydown', (e) => {
       && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
     e.preventDefault();
     ctxPushToTodo();
+  }
+  // Ctrl+H: open reply panel in Outlook — reply to sender (same as double-click)
+  if (e.ctrlKey && e.key === 'h' && currentModule === 'amail'
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    for (const id of selectedIds) openOutlook(id, true, false);
+  }
+  // Ctrl+Shift+H: reply ALL in Outlook
+  if (e.ctrlKey && e.shiftKey && e.key === 'H' && currentModule === 'amail'
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    for (const id of selectedIds) openOutlook(id, false, true);
+  }
+  // Ctrl+F: flag emails in Outlook & push to To-Do List
+  if (e.ctrlKey && e.key === 'f' && currentModule === 'amail' && selectedIds.size > 0
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    ctxFlagAndPush();
+  }
+  // Spacebar: dismiss selected cards (remove from UI + mark READ)
+  if (e.key === ' ' && currentModule === 'amail' && selectedIds.size > 0
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    ctxDismissRead();
+  }
+  // Ctrl+D: download all attachments of the selected email
+  if (e.ctrlKey && e.key === 'd' && currentModule === 'amail' && selectedId
+      && _currentAttachments.length > 0
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    downloadAttachments(false);
   }
 });
 
@@ -1669,6 +1944,7 @@ let selectedVarIds = new Set();   // multi-select
 let lastClickedVarId = null;       // for Shift+Click range
 let currentVarFilter = null;       // null=All | 'draft'|'submitted'|'approved'|'void'
 let _varApprovalType = 'client';   // 'bank' | 'client' — which column in Internal Register
+let _currentVoNumber = null;       // vo_number of the currently selected variation
 let _varSaveTimer = null;
 
 // ── Project management ──────────────────────────────────────────────
@@ -2207,6 +2483,7 @@ async function loadVarDetail(entryId) {
 
     document.getElementById('var-edit-title').value = v.vo_title || '';
     document.getElementById('var-edit-status').value = v.status || 'draft';
+    _currentVoNumber = v.vo_number || null;
 
     // Project-level fields (global, from project config)
     const proj = projects.find(p => p.entry_id === selectedProjectId);
@@ -2617,7 +2894,18 @@ async function varExportSinglePdf() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = res.headers.get('Content-Disposition')?.match(/filename="?(.+?)"?$/)?.[1] || 'variation.pdf';
+      // Build filename from VO data (avoids CORS header issues)
+      const projName = document.getElementById('var-edit-project')?.value || 'Project';
+      const voNum = _currentVoNumber || '';
+      const voTitle = document.getElementById('var-edit-title')?.value || '';
+      // Strip "VO{num} - " prefix from title to get description
+      const descMatch = voTitle.match(/^VO\d+\s*[-–—]\s*(.+)/);
+      const desc = descMatch ? descMatch[1] : voTitle;
+      // Sanitize for filenames
+      const safeProj = projName.replace(/[<>:"/\\|?*]/g, '').trim();
+      const safeDesc = desc.replace(/[<>:"/\\|?*]/g, '').trim();
+      let dlName = safeDesc ? `${safeProj}_VO${voNum}_${safeDesc}.pdf` : `${safeProj}_VO${voNum}.pdf`;
+      a.download = dlName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

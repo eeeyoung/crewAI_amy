@@ -1030,6 +1030,17 @@
           <div class="detail-meta" id="det-meta"></div>
           <div class="detail-assignee" id="det-assignee"></div>
           <div class="detail-todos" id="det-todos"></div>
+          <!-- Attachments Panel -->
+          <div id="det-attachments" style="display:none;">
+            <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>📎 Attachments</span>
+              <span style="display:flex;gap:6px;">
+                <button class="btn" id="btn-att-download" onclick="downloadAttachments(false)" style="font-size:11px;padding:3px 8px;">⬇ Download</button>
+                <button class="btn" id="btn-att-download-open" onclick="downloadAttachments(true)" style="font-size:11px;padding:3px 8px;">📂 Download &amp; Open</button>
+              </span>
+            </div>
+            <div id="det-att-list" style="display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;"></div>
+          </div>
           <div class="section-label">Email Body</div>
           <div class="body-box" id="det-body"></div>
           <div class="section-label">Draft Reply</div>
@@ -1510,8 +1521,14 @@
   <!-- Context menu — items tagged with data-modules: amail, todo, trash, variations -->
   <div class="ctx-menu" id="ctx-menu">
     <div class="item" data-modules="amail" onclick="ctxOpenOutlook()"><span class="icon">📧</span> Open in Outlook</div>
+    <div class="item" data-modules="amail" onclick="ctxReply()"><span class="icon">↩</span> Reply <span style="color:var(--muted);font-size:10px;">Ctrl+H</span></div>
+    <div class="item" data-modules="amail" onclick="ctxReplyAll()"><span class="icon">↩↩</span> Reply All <span style="color:var(--muted);font-size:10px;">Ctrl+Shift+H</span></div>
+    <div class="divider" data-modules="amail"></div>
     <div class="item" data-modules="amail" onclick="ctxPushToTodo()"><span class="icon">📋</span> Push to To-Do List</div>
+    <div class="item" data-modules="amail" onclick="ctxFlagAndPush()"><span class="icon">🚩</span> Flag &amp; Push to To-Do <span style="color:var(--muted);font-size:10px;">Ctrl+F</span></div>
     <div class="item" data-modules="amail" onclick="ctxCreateVariation()"><span class="icon">📝</span> Create Variation</div>
+    <div class="item" data-modules="amail" onclick="ctxMarkUnread()"><span class="icon">📬</span> Mark as Unread</div>
+    <div class="item" data-modules="amail" onclick="ctxDismissRead()"><span class="icon">📭</span> Dismiss (mark read &amp; remove)</div>
     <div class="divider" data-modules="amail"></div>
     <div class="item" data-modules="todo" onclick="ctxPushToCalendar()"><span class="icon">📅</span> Push to Calendar</div>
     <div class="item danger" data-modules="amail todo variations" onclick="ctxRemoveCurrent()"><span class="icon">🗑</span> <span class="ctx-remove-label">Remove</span></div>
@@ -1662,7 +1679,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=31"></script>
+  <script src="/static/app.js?v=39"></script>
 </body>
 
 </html>
