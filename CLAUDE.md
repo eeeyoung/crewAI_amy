@@ -82,6 +82,11 @@ uv run python chat.py                            # Terminal RAG chatbot
 | `VariationTemplate` | `shared/src/shared_tools/variation_template.py` | Excel template engine: mapping, import, compile |
 | `HabitLearnerService` | `shared/src/shared_tools/habit_learner_service.py` | Amy's email reply pattern learning |
 | `TodoService` | `shared/src/shared_tools/todo_service.py` | To-Do List with Outlook calendar push |
+| `SubcontractorService` | `shared/src/shared_tools/subcontractor_service.py` | **(PLANNED)** Quote → PO → Subcontract → Claims workflow |
+| `SubcontractorAgent` | `shared/src/shared_tools/subcontractor_agent.py` | **(PLANNED)** Quote ingestion, tender analysis AI agents |
+| `SubcontractorDB` | `shared/src/shared_tools/subcontractor_db.py` | **(PLANNED)** Dedicated subcontractor database (vendors, commitments, claims) |
+| `SubcontractorTemplate` | `shared/src/shared_tools/subcontractor_template.py` | **(PLANNED)** PO, Subcontract, Tender Analysis document generators |
+| `SubcontractorLearner` | `shared/src/shared_tools/subcontractor_learner.py` | **(PLANNED)** Batch knowledge builder from project subcontract folders |
 
 ## Project Structure
 
@@ -112,10 +117,14 @@ crewAI_amy/
 │   └── asummary1/             ← Email summarizer with PyQt6 GUI
 ├── ingest.py                  ← Hybrid ingestion CLI
 ├── chat.py                    ← Grounded RAG chatbot
+├── coding_plans/
+│   ├── SUBCONTRACTOR_MANAGEMENT_PLAN.md  ← Tier 3 Subcontractor Platform (current focus)
+│   ├── VARIATION_WORKFLOW_PLAN.md
+│   ├── IMPLEMENTATION_PLAN_HABIT_LEARNER.md
+│   ├── CALENDAR_ASSISTANT_PLAN.md
+│   ├── AMY_Architecture_and_Roadmap.md
+│   └── SERVICE_EXTRACTION_PLAN.md
 ├── CLAUDE.md                  ← This file
-├── AGENTS.md                  ← Cross-tool version (Cursor, Copilot, Codex, Windsurf)
-├── AMY_Architecture_and_Roadmap.md
-└── SERVICE_EXTRACTION_PLAN.md
 ```
 
 ## Gotchas

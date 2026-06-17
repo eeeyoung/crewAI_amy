@@ -22,6 +22,7 @@ data/
 !data/mail_fetch/
 lilamy_test_project/
 variations.db
+subcontractor.db
 
 # Legacy data directory (still used if LILAMY_DATA_DIR points elsewhere)
 .crewai/
