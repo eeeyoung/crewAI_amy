@@ -762,10 +762,12 @@ async function removeEmail() {
   }
 }
 
-async function openOutlook(entryId, replyMode = false, replyAll = false) {
+async function openOutlook(entryId, replyMode = false, replyAll = false, forward = false) {
   // Call backend to open email in native Outlook via COM
   let url = `${API}/api/amail/emails/${entryId}/open-in-outlook`;
-  if (replyAll) {
+  if (forward) {
+    url += `?forward=true`;
+  } else if (replyAll) {
     url += `?reply_all=true`;
   } else if (replyMode) {
     url += `?reply_mode=true`;
@@ -1573,6 +1575,26 @@ document.addEventListener('keydown', (e) => {
       && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
     e.preventDefault();
     downloadAttachments(false);
+  }
+  // Enter: open selected email in Outlook (single-select only)
+  if (e.key === 'Enter' && currentModule === 'amail' && selectedIds.size > 0
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    if (selectedIds.size > 1) {
+      notify('Please select only one email to open in Outlook', 'warning');
+    } else {
+      openOutlook([...selectedIds][0]);
+    }
+  }
+  // Ctrl+T: forward email in Outlook (single-select only, includes attachments)
+  if (e.ctrlKey && e.key === 't' && currentModule === 'amail' && selectedIds.size > 0
+      && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    e.preventDefault();
+    if (selectedIds.size > 1) {
+      notify('Please select only one email to forward', 'warning');
+    } else {
+      openOutlook([...selectedIds][0], false, false, true);
+    }
   }
 });
 

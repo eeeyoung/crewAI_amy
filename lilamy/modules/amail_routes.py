@@ -460,10 +460,12 @@ async def get_email_detail(entry_id: str):
 
 @router.post("/emails/{entry_id}/open-in-outlook")
 async def open_in_outlook(entry_id: str, reply_mode: bool = Query(False),
-                           reply_all: bool = Query(False)):
+                           reply_all: bool = Query(False),
+                           forward: bool = Query(False)):
     """Open the source email in Outlook.
     - reply_mode=True: reply to sender only
     - reply_all=True: reply to all recipients (overrides reply_mode)
+    - forward=True: forward the email (includes all attachments)
     Requires Outlook COM (Windows only)."""
     try:
         import pythoncom
@@ -473,7 +475,10 @@ async def open_in_outlook(entry_id: str, reply_mode: bool = Query(False),
         mail = outlook.GetItemFromID(entry_id)
         if mail is None:
             return {"ok": False, "error": "Email not found in Outlook"}
-        if reply_all:
+        if forward:
+            fwd = mail.Forward()
+            fwd.Display()
+        elif reply_all:
             reply = mail.ReplyAll()
             reply.Display()
         elif reply_mode:
