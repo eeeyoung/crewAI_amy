@@ -288,8 +288,20 @@ async def export_single_vo_pdf(entry_id: str):
         pdf_path = svc._excel_to_pdf(tmp_xlsx.name, {"vo_number": vo_number})
         if pdf_path.exists():
             from fastapi.responses import FileResponse
+            import re
+            # Build filename: ProjectName_VO{number}_Description.pdf
+            project_name = var_for_sheet.get("project_name", "Project")
+            vo_num = var.get("vo_number", 1) or 1
+            vo_title = var.get("vo_title", "")
+            # Extract description from vo_title (strip "VO{num} - " prefix)
+            desc_match = re.match(r'VO\d+\s*[-–—]\s*(.+)', vo_title)
+            description = desc_match.group(1) if desc_match else vo_title
+            # Sanitize: remove characters invalid in Windows filenames
+            safe_desc = re.sub(r'[<>:"/\\|?*]', '', description).strip()
+            safe_project = re.sub(r'[<>:"/\\|?*]', '', project_name).strip()
+            download_name = f"{safe_project}_VO{vo_num}_{safe_desc}.pdf" if safe_desc else f"{safe_project}_VO{vo_num}.pdf"
             return FileResponse(pdf_path, media_type="application/pdf",
-                               filename=f"{var.get('vo_title', 'VO')}.pdf")
+                               filename=download_name)
     except Exception:
         pass
     finally:

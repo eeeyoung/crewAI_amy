@@ -424,7 +424,7 @@ def get_variations(project_entry_id: str | None = None, project: str | None = No
             params.append(status)
         else:
             query += " AND status != 'void'"
-        query += " ORDER BY sort_order ASC, vo_number ASC"
+        query += " ORDER BY sort_order DESC, vo_number DESC"
         if limit > 0:
             query += " LIMIT ?"
             params.append(limit)
@@ -482,10 +482,13 @@ def reorder_variations(ordered_ids: list[str]) -> bool:
     """Update sort_order for a list of variation entry_ids based on list position."""
     conn = _get_connection()
     try:
+        n = len(ordered_ids)
         for idx, entry_id in enumerate(ordered_ids):
+            # First in list → highest sort_order (appears at top with DESC)
+            sort_order = n - 1 - idx
             conn.execute(
                 "UPDATE variations SET sort_order = ? WHERE entry_id = ?",
-                (idx, entry_id),
+                (sort_order, entry_id),
             )
         conn.commit()
         return True
