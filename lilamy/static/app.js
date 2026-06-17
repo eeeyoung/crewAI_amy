@@ -1158,6 +1158,15 @@ function ctxReplyAll() {
   ctxMenu.style.display = 'none';
 }
 
+function ctxForward() {
+  if (selectedIds.size > 1) {
+    notify('Please select only one email to forward', 'warning');
+  } else {
+    openOutlook([...selectedIds][0], false, false, true);
+  }
+  ctxMenu.style.display = 'none';
+}
+
 async function ctxRemove() {
   const toRemove = [...selectedIds];
   if (toRemove.length === 0) { ctxMenu.style.display = 'none'; return; }
@@ -1576,18 +1585,14 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     downloadAttachments(false);
   }
-  // Enter: open selected email in Outlook (single-select only)
+  // Enter: open selected email(s) in Outlook (view mode)
   if (e.key === 'Enter' && currentModule === 'amail' && selectedIds.size > 0
       && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
     e.preventDefault();
-    if (selectedIds.size > 1) {
-      notify('Please select only one email to open in Outlook', 'warning');
-    } else {
-      openOutlook([...selectedIds][0]);
-    }
+    for (const id of selectedIds) openOutlook(id);
   }
-  // Ctrl+T: forward email in Outlook (single-select only, includes attachments)
-  if (e.ctrlKey && e.key === 't' && currentModule === 'amail' && selectedIds.size > 0
+  // Ctrl+G: forward email in Outlook (single-select, includes attachments)
+  if (e.ctrlKey && e.key === 'g' && currentModule === 'amail' && selectedIds.size > 0
       && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
     e.preventDefault();
     if (selectedIds.size > 1) {
