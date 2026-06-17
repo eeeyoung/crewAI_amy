@@ -334,6 +334,8 @@ def mark_email_as_read(entry_id: str) -> bool:
     if platform.system() != "Windows":
         return False
     try:
+        import pythoncom
+        pythoncom.CoInitialize()
         import win32com.client
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         msg = outlook.GetItemFromID(entry_id)
@@ -350,6 +352,8 @@ def mark_email_as_unread(entry_id: str) -> bool:
     if platform.system() != "Windows":
         return False
     try:
+        import pythoncom
+        pythoncom.CoInitialize()
         import win32com.client
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         msg = outlook.GetItemFromID(entry_id)
@@ -358,6 +362,24 @@ def mark_email_as_unread(entry_id: str) -> bool:
         return True
     except Exception as e:
         print(f"Error marking email as unread: {e}")
+        return False
+
+
+def mark_email_as_flagged(entry_id: str) -> bool:
+    """Flag an Outlook email (set follow-up flag). Returns True on success."""
+    if platform.system() != "Windows":
+        return False
+    try:
+        import pythoncom
+        pythoncom.CoInitialize()
+        import win32com.client
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        msg = outlook.GetItemFromID(entry_id)
+        msg.FlagStatus = 2  # olFlagMarked
+        msg.Save()
+        return True
+    except Exception as e:
+        print(f"Error flagging email: {e}")
         return False
 
 

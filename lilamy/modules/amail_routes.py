@@ -292,6 +292,114 @@ async def remove_email(entry_id: str):
     return {"ok": ok}
 
 
+class BatchEntryIds(BaseModel):
+    entry_ids: list[str]
+
+
+@router.post("/emails/mark-read")
+async def mark_emails_read(data: BatchEntryIds):
+    """Mark one or more Outlook emails as READ."""
+    from shared_tools.outlook_tool import mark_email_as_read
+    count = 0
+    for eid in data.entry_ids:
+        if mark_email_as_read(eid):
+            count += 1
+    return {"ok": True, "count": count}
+
+
+@router.post("/emails/mark-unread")
+async def mark_emails_unread(data: BatchEntryIds):
+    """Mark one or more Outlook emails as UNREAD."""
+    from shared_tools.outlook_tool import mark_email_as_unread
+    count = 0
+    for eid in data.entry_ids:
+        if mark_email_as_unread(eid):
+            count += 1
+    return {"ok": True, "count": count}
+
+
+@router.post("/emails/mark-flagged")
+async def mark_emails_flagged(data: BatchEntryIds):
+    """Flag one or more Outlook emails (set follow-up flag)."""
+    from shared_tools.outlook_tool import mark_email_as_flagged
+    count = 0
+    for eid in data.entry_ids:
+        if mark_email_as_flagged(eid):
+            count += 1
+    return {"ok": True, "count": count}
+
+
+@router.post("/emails/attachments-check")
+async def check_attachments(data: BatchEntryIds):
+    """Batch check which emails have non-inline attachments.
+    Returns {entry_id: count} mapping."""
+    from shared_tools.outlook_tool import fetch_attachments_for_email
+    result = {}
+    for eid in data.entry_ids:
+        try:
+            atts = fetch_attachments_for_email(eid)
+            result[eid] = len(atts)
+        except Exception:
+            result[eid] = 0
+    return {"ok": True, "counts": result}
+
+
+@router.get("/emails/{entry_id}/attachments")
+async def list_attachments(entry_id: str):
+    """List non-inline attachments for an email."""
+    from shared_tools.outlook_tool import fetch_attachments_for_email
+    try:
+        atts = fetch_attachments_for_email(entry_id)
+        return {"ok": True, "attachments": atts}
+    except Exception as e:
+        return {"ok": False, "error": str(e), "attachments": []}
+
+
+@router.get("/emails/{entry_id}/attachments/{index}/download")
+async def download_attachment(entry_id: str, index: int, open_inline: bool = False):
+    """Download a single attachment by its 1-based index.
+    If open_inline=True, uses inline disposition so browser may open it directly."""
+    import tempfile
+    from pathlib import Path
+    from shared_tools.outlook_tool import save_attachment, fetch_attachments_for_email
+
+    # Get filename first
+    atts = fetch_attachments_for_email(entry_id)
+    filename = None
+    for a in atts:
+        if a.get("index") == index:
+            filename = a.get("filename", f"attachment_{index}")
+            break
+    if not filename:
+        filename = f"attachment_{index}"
+
+    tmp_dir = tempfile.mkdtemp()
+    saved = save_attachment(entry_id, index, tmp_dir)
+    if not saved or saved.startswith("Error:"):
+        return {"error": saved or "Failed to save attachment"}
+
+    from fastapi.responses import FileResponse
+    ext = Path(filename).suffix.lower()
+    mime_map = {
+        ".pdf": "application/pdf",
+        ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+        ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml",
+        ".txt": "text/plain", ".csv": "text/csv",
+        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }
+    # Download mode: use octet-stream so no app (Adobe, etc.) intercepts the download
+    # Open mode: use real MIME type so the browser can open it properly
+    media_type = mime_map.get(ext) if open_inline else "application/octet-stream"
+
+    return FileResponse(
+        saved,
+        media_type=media_type,
+        filename=filename,
+        content_disposition_type="inline" if open_inline else "attachment",
+    )
+
+
 @router.post("/emails/{entry_id}/refine")
 async def refine_reply(entry_id: str, data: dict):
     """Refine an existing draft based on user instructions."""
@@ -351,9 +459,12 @@ async def get_email_detail(entry_id: str):
 
 
 @router.post("/emails/{entry_id}/open-in-outlook")
-async def open_in_outlook(entry_id: str, reply_mode: bool = Query(False)):
-    """Open the source email in Outlook. If reply_mode=True, also open reply
-    window with full thread quoted. Requires Outlook COM (Windows only)."""
+async def open_in_outlook(entry_id: str, reply_mode: bool = Query(False),
+                           reply_all: bool = Query(False)):
+    """Open the source email in Outlook.
+    - reply_mode=True: reply to sender only
+    - reply_all=True: reply to all recipients (overrides reply_mode)
+    Requires Outlook COM (Windows only)."""
     try:
         import pythoncom
         pythoncom.CoInitialize()
@@ -362,8 +473,11 @@ async def open_in_outlook(entry_id: str, reply_mode: bool = Query(False)):
         mail = outlook.GetItemFromID(entry_id)
         if mail is None:
             return {"ok": False, "error": "Email not found in Outlook"}
-        if reply_mode:
+        if reply_all:
             reply = mail.ReplyAll()
+            reply.Display()
+        elif reply_mode:
+            reply = mail.Reply()
             reply.Display()
         else:
             mail.Display()
