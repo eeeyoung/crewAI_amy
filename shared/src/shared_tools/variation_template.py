@@ -477,6 +477,16 @@ class VariationExcelBuilder:
         ws[f'A{acc_row}'] = "ACCEPTED FOR AND ON BEHALF OF CLIENT:"
         ws[f'A{acc_row}'].font = FONT_LABEL
 
+        # ── Page Setup ──────────────────────────────────────────────
+        ws.page_setup.orientation = 'landscape'
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = 0
+        ws.page_setup.paperSize = 9  # A4
+        ws.sheet_properties.pageSetUpPr = openpyxl.worksheet.properties.PageSetupProperties(fitToPage=True)
+        # Print area: A1 to G{last content row}
+        last_row = box_bottom
+        ws.print_area = f'A1:G{last_row}'
+
     # ── Register Sheet ────────────────────────────────────────────────
 
     def fill_register_project_info(self, ws, variation: dict) -> None:

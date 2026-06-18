@@ -399,14 +399,17 @@ class VariationService(QObject):
             ws = wb.Sheets(sheet_name)
             ws.PageSetup.Orientation = 2  # xlLandscape
             ws.PageSetup.FitToPagesWide = 1
-            ws.PageSetup.FitToPagesTall = 1
-            ws.ExportAsFixedFormat(
-                Type=0,  # xlTypePDF
-                Filename=str(pdf_path.resolve()),
-                Quality=0,  # xlQualityStandard
-                IncludeDocProperties=True,
-                IgnorePrintAreas=False,
-            )
+            ws.PageSetup.FitToPagesTall = False  # allow multiple pages if needed
+            try:
+                ws.ExportAsFixedFormat(
+                    Type=0,  # xlTypePDF
+                    Filename=str(pdf_path.resolve()),
+                    Quality=0,  # xlQualityStandard
+                    IncludeDocProperties=True,
+                    IgnorePrintAreas=False,
+                )
+            except Exception as e:
+                raise RuntimeError(f"Excel PDF export failed: {e}")
 
             wb.Close(SaveChanges=False)
             return pdf_path
