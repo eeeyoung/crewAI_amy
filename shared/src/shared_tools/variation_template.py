@@ -300,19 +300,39 @@ class VariationExcelBuilder:
         # If more items than template rows, insert rows to shift SUB TOTAL down
         if items_needed > slots_available:
             extra = items_needed - slots_available
-            source_row = sub_row - 1  # last template item row (has borders/formatting)
+            source_row = sub_row - 1  # last template item row (has formatting)
+            # Read outer border style from source row's left border (thick)
+            src_left = ws[f"A{source_row}"].border.left
+            thick_side = src_left if src_left and src_left.style else Side(style='medium')
+            thin = Side(style='thin')
             # Insert blank rows just below the last item row (above SUB TOTAL)
             for _ in range(extra):
                 ws.insert_rows(sub_row)
-            # Copy non-border formatting from source, then apply thin inner borders
-            thin = Side(style='thin')
+            # Demote original last item row: was the bottom edge → now an inner row
+            for col in cols.values():
+                try:
+                    cell = ws[f"{col}{source_row}"]
+                    cell.border = Border(
+                        left=thick_side, right=thick_side, top=thin, bottom=thin)
+                except Exception:
+                    pass
+            # Inserted rows: thick left/right, thin top/bottom
             for offset in range(extra):
                 target_row = sub_row + offset
                 _copy_row_format(ws, source_row, target_row, cols.values())
                 for col in cols.values():
                     try:
                         ws[f"{col}{target_row}"].border = Border(
-                            left=thin, right=thin, top=thin, bottom=thin)
+                            left=thick_side, right=thick_side, top=thin, bottom=thin)
+                    except Exception:
+                        pass
+            # Last inserted row → thick bottom (it's the new table bottom edge)
+            if extra > 0:
+                last_row = sub_row + extra - 1
+                for col in cols.values():
+                    try:
+                        ws[f"{col}{last_row}"].border = Border(
+                            left=thick_side, right=thick_side, top=thin, bottom=thick_side)
                     except Exception:
                         pass
             # SUB TOTAL row shifted down by `extra` rows
