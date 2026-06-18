@@ -361,16 +361,13 @@ class VariationExcelBuilder:
         c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM)
         c.alignment = ALIGN_CENTER; c.fill = HEADER_FILL
 
-        # Row 13 sub-headers — also light blue fill
+        # Row 13 sub-headers — borders only, no fill
         sub_cols = {'C': 'Qty', 'D': 'Unit', 'E': 'Rate ($)'}
         for col_letter, label in sub_cols.items():
             c = ws[f'{col_letter}13']; c.value = label; c.font = FONT_BOLD
             c.border = _subhdr_border(col_letter); c.alignment = ALIGN_CENTER
-            c.fill = HEADER_FILL
-        # Other row-13 cells: borders + fill only, no text
         for col_letter in ['A', 'B', COL_F, COL_G]:
             c = ws[f'{col_letter}13']; c.border = _subhdr_border(col_letter)
-            c.fill = HEADER_FILL
 
         # Column widths
         ws.column_dimensions['A'].width = 8
@@ -450,11 +447,12 @@ class VariationExcelBuilder:
         summary_end = SUMMARY + len(summary_rows) - 1
 
         # ── 5. Signature Box (2 rows below summary) ─────────────────
-        # A thick-bordered box containing Variation Raised By and Authorised By
+        # Thick-bordered F:G box: Variation Raised By → initials → Authorised By
+        # ACCEPTED FOR... sits in column A on the same row as Authorised By
         box_top = summary_end + 3
         rb_row = box_top       # Variation Raised By:
         init_row = rb_row + 1  # initials
-        acc_row = init_row + 2 # Authorised By:
+        acc_row = init_row + 2 # Authorised By: (F) + ACCEPTED FOR... (A)
         box_bottom = acc_row + 3  # 3 cells below Authorised By
 
         # Fill the box with borders: thick top/bottom/left/right
@@ -473,14 +471,11 @@ class VariationExcelBuilder:
         # Initials
         ws[f'F{init_row}'] = initials
         ws[f'F{init_row}'].font = FONT_SIGN; ws[f'F{init_row}'].alignment = ALIGN_CENTER
-        # Authorised By: label
+        # Authorised By: (F) + ACCEPTED FOR... (A) — same row
         ws[f'F{acc_row}'] = "Authorised By:"
         ws[f'F{acc_row}'].font = FONT_LABEL; ws[f'F{acc_row}'].alignment = ALIGN_LEFT
-
-        # ── 6. Acceptance Footer (below the box) ───────────────────
-        footer_row = box_bottom + 2
-        ws[f'A{footer_row}'] = "ACCEPTED FOR AND ON BEHALF OF CLIENT:"
-        ws[f'A{footer_row}'].font = FONT_LABEL
+        ws[f'A{acc_row}'] = "ACCEPTED FOR AND ON BEHALF OF CLIENT:"
+        ws[f'A{acc_row}'].font = FONT_LABEL
 
     # ── Register Sheet ────────────────────────────────────────────────
 
