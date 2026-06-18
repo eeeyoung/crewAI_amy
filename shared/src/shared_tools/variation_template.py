@@ -280,77 +280,67 @@ class VariationExcelBuilder:
     def fill_vo_items(self, ws, items: list[dict]) -> None:
         """Fill line items into the items area of a VO sheet.
         Always uses sequential numbering (i+1), ignoring stored item_number.
-        Only clears up to the SUB TOTAL label to avoid wiping out totals."""
+        Clears the full item area, unmerges any template merged cells, and inserts
+        rows as needed. Stores items_count for summary positioning."""
         m = self.mapping
         start_row = m.vo_items_start_row
         cols = m.config.get("vo_sheet", {}).get("items_columns", {})
-        labels = m.totals_labels
         cost_col = cols.get("cost", "F")
         qty_col = cols.get("qty", "C")
         rate_col = cols.get("rate", "E")
-
-        # Find where the SUB TOTAL label is — this is the anchor for the items area
-        sub_label = labels.get("sub_total", "SUB TOTAL")
-        sub_row = _find_label_row(ws, sub_label, start_col="A", start_row=start_row, max_scan=50)
-        if not sub_row:
-            sub_row = start_row + m.vo_items_max_rows  # fallback: use max_rows from mapping
+        col_list = list(cols.values())
+        col_first = col_list[0]
+        col_last = col_list[-1]
         items_needed = len(items)
-        slots_available = sub_row - start_row
+        slots_available = m.vo_items_max_rows
+        template_last_item = start_row + slots_available - 1  # where template's last item sits
 
-        # If more items than template rows, insert rows to shift SUB TOTAL down
+        # Unmerge any merged cells in the items + summary area (template artifacts)
+        _unmerge_range(ws, start_row, template_last_item + 20, col_list)
+
+        # If more items than template slots, insert rows
         if items_needed > slots_available:
             extra = items_needed - slots_available
-            source_row = sub_row - 1  # last template item row (has formatting)
-            # Read outer border style from source row's left border (thick)
-            src_left = ws[f"A{source_row}"].border.left
+            insert_at = template_last_item + 1  # row after last template item
+            # Read border style from last template item row
+            src_left = ws[f"A{template_last_item}"].border.left
             thick = src_left if src_left and src_left.style else Side(style='medium')
             thin = Side(style='thin')
-            col_list = list(cols.values())
-            col_first = col_list[0]
-            col_last = col_list[-1]
-            # Per-column border: thick only on outer left (first col) / outer right (last col)
-            def _inner_border(col_letter, bottom=thin):
+            def _item_border(col_letter, bottom=thin):
                 return Border(
                     left=thick if col_letter == col_first else thin,
                     right=thick if col_letter == col_last else thin,
                     top=thin, bottom=bottom)
-            # Insert blank rows just below the last item row (above SUB TOTAL)
+            # Insert rows
             for _ in range(extra):
-                ws.insert_rows(sub_row)
-            # Demote original last item row: was the bottom edge → now an inner row
+                ws.insert_rows(insert_at)
+            # Demote original last item row → inner row
             for col in col_list:
                 try:
-                    ws[f"{col}{source_row}"].border = _inner_border(col, bottom=thin)
+                    ws[f"{col}{template_last_item}"].border = _item_border(col, bottom=thin)
                 except Exception:
                     pass
-            # Inserted rows: outer thick left/right, thin top/bottom
+            # Format all inserted rows
             for offset in range(extra):
-                target_row = sub_row + offset
-                _copy_row_format(ws, source_row, target_row, col_list)
+                target_row = insert_at + offset
+                _copy_row_format(ws, template_last_item, target_row, col_list)
                 for col in col_list:
                     try:
-                        ws[f"{col}{target_row}"].border = _inner_border(col, bottom=thin)
+                        ws[f"{col}{target_row}"].border = _item_border(col,
+                            bottom=thick if offset == extra - 1 else thin)
                     except Exception:
                         pass
-            # Last inserted row → thick bottom (new table bottom edge)
-            if extra > 0:
-                last_row = sub_row + extra - 1
-                for col in col_list:
-                    try:
-                        ws[f"{col}{last_row}"].border = _inner_border(col, bottom=thick)
-                    except Exception:
-                        pass
-            # SUB TOTAL row shifted down by `extra` rows
-            sub_row += extra
 
-        max_clear = sub_row - 1
+        # Item area bounds: start_row → last_item_row
+        last_item_row = start_row + items_needed - 1
 
-        # Pre-clear ALL rows from start_row to max_clear (catch template leftovers)
-        for row in range(start_row, max_clear + 1):
-            for col_letter in cols.values():
+        # Clear ALL rows from start to template end (removes old data in unused slots too)
+        clear_end = max(last_item_row, template_last_item)
+        for row in range(start_row, clear_end + 1):
+            for col_letter in col_list:
                 ws[f"{col_letter}{row}"] = None
 
-        # Write items into the expanded area
+        # Write items
         for i in range(items_needed):
             row = start_row + i
             item = items[i]
@@ -362,58 +352,112 @@ class VariationExcelBuilder:
             ws[f"{cost_col}{row}"] = f"={qty_col}{row}*{rate_col}{row}"
             _set_cell(ws, f"{cols.get('credit', 'G')}{row}", item.get("credit", 0))
 
+        # Store for summary positioning
+        self._last_items_count = items_needed
+        self._last_item_end_row = last_item_row
+
     def fill_vo_formulas(self, ws) -> None:
-        """Write subtotal, margin, GST, and total formulas below the items area.
-        Uses label-based detection to find the SUB TOTAL row, then writes formulas
-        relative to that position."""
+        """Build the summary section (SUB TOTAL → TOTAL INCL GST) dynamically
+        exactly 2 rows below the last item row. Does NOT use label detection —
+        positions are calculated from item count."""
         m = self.mapping
-        labels = m.totals_labels
+        items_count = getattr(self, '_last_items_count', 0) or 0
+        if items_count == 0:
+            return
         start_row = m.vo_items_start_row
+        last_item = start_row + items_count - 1
         cost_col = m.vo_item_col("cost") or "F"
         credit_col = m.vo_item_col("credit") or "G"
+        col_list = list(m.config.get("vo_sheet", {}).get("items_columns", {}).values())
+        col_first = col_list[0]
+        col_last = col_list[-1]
 
-        # Find the subtotal row by scanning for the label (start looking after items area)
-        # max_scan covers items_max_rows (50) + totals section (10) with margin
-        sub_row = _find_label_row(ws, labels.get("sub_total", "SUB TOTAL"), start_col="A",
-                                   start_row=start_row + 1, max_scan=m.vo_items_max_rows + 20)
+        # Read border styles from item table
+        ref_cell = ws[f"A{last_item}"]
+        thick = ref_cell.border.left if ref_cell.border.left and ref_cell.border.left.style else Side(style='medium')
+        thin = Side(style='thin')
 
-        if sub_row:
-            # SUM over all item rows up to the row just before SUB TOTAL
-            end_row = sub_row - 1
-            ws[f"{cost_col}{sub_row}"] = f"=SUM({cost_col}{start_row}:{cost_col}{end_row})"
-            ws[f"{credit_col}{sub_row}"] = f"=SUM({credit_col}{start_row}:{credit_col}{end_row})"
+        def _summary_border(col_letter, top=thin, bottom=thin):
+            return Border(
+                left=thick if col_letter == col_first else thin,
+                right=thick if col_letter == col_last else thin,
+                top=top, bottom=bottom)
 
-            # Nett = Subtotal - Credits
-            nett_row = sub_row + 1
-            ws[f"{cost_col}{nett_row}"] = f"={cost_col}{sub_row}-{credit_col}{sub_row}"
+        # Summary starts 2 rows below the last item
+        sr = last_item + 3  # +1 gap, +2 gap, then summary row
+        labels = m.totals_labels
+        bold_font = Font(name='Arial', size=10, bold=True)
 
-            # Margin = Nett × 10%
-            margin_row = nett_row + 1
-            ws[f"{cost_col}{margin_row}"] = f"={cost_col}{nett_row}*0.1"
+        # Row layout:
+        #   sr+0: (blank separator)
+        #   sr+1: SUB TOTAL         | =SUM(cost)  =SUM(credit)
+        #   sr+2: NETT VARIATION    | =sub−credit
+        #   sr+3: MARGIN (10%)      | =nett*0.1
+        #   sr+4: EXCL GST          | =nett+margin
+        #   sr+5: GST (10%)         | =excl*0.1
+        #   sr+6: TOTAL INCL GST    | =excl+gst
+        #   sr+7: (blank)
+        #   sr+8: Variation Raised By: | AC
 
-            # Excl GST = Nett + Margin
-            excl_row = margin_row + 1
-            ws[f"{cost_col}{excl_row}"] = f"={cost_col}{nett_row}+{cost_col}{margin_row}"
+        summary_start = sr + 1
+        # Clear and write summary labels + formulas
+        summary_rows = [
+            (labels.get("sub_total", "SUB TOTAL"),
+             f"=SUM({cost_col}{start_row}:{cost_col}{last_item})",
+             f"=SUM({credit_col}{start_row}:{credit_col}{last_item})", False),
+            (labels.get("nett_cost", "NETT VARIATION COST"),
+             f"={cost_col}{summary_start}-{credit_col}{summary_start}", "", True),
+            (labels.get("margin", "MARGIN AND OVERHEAD COSTS"),
+             f"={cost_col}{summary_start + 1}*0.1", "", False),
+            (labels.get("excl_gst", "VARIATION COST EXCLUDING GST"),
+             f"={cost_col}{summary_start + 1}+{cost_col}{summary_start + 2}", "", False),
+            (labels.get("gst", "GST"),
+             f"={cost_col}{summary_start + 3}*0.1", "", False),
+            (labels.get("total", "TOTAL INCLUDING GST"),
+             f"={cost_col}{summary_start + 3}+{cost_col}{summary_start + 4}", "", True),
+        ]
 
-            # GST = Excl GST × 10%
-            gst_row = excl_row + 1
-            ws[f"{cost_col}{gst_row}"] = f"={cost_col}{excl_row}*0.1"
+        for i, (label, cost_formula, credit_formula, is_total) in enumerate(summary_rows):
+            row = summary_start + i
+            # Clear row first
+            for col in col_list:
+                ws[f"{col}{row}"] = None
+            # Label in column A
+            label_cell = ws[f"A{row}"]
+            label_cell.value = label
+            label_cell.font = bold_font if is_total else Font(name='Arial', size=10)
+            # Cost formula in cost column
+            cost_cell = ws[f"{cost_col}{row}"]
+            cost_cell.value = cost_formula
+            cost_cell.font = bold_font if is_total else Font(name='Arial', size=10)
+            # Credit formula (only for SUB TOTAL row)
+            if credit_formula:
+                credit_cell = ws[f"{credit_col}{row}"]
+                credit_cell.value = credit_formula
+                credit_cell.font = Font(name='Arial', size=10)
+            # Borders on all columns
+            bot = thick if (is_total and i == len(summary_rows) - 1) else thin
+            for col in col_list:
+                try:
+                    ws[f"{col}{row}"].border = _summary_border(col, top=thin, bottom=bot)
+                except Exception:
+                    pass
 
-            # Total = Excl GST + GST
-            total_row = gst_row + 1
-            ws[f"{cost_col}{total_row}"] = f"={cost_col}{excl_row}+{cost_col}{gst_row}"
+        # Store where summary ends for raised_by positioning
+        self._summary_end_row = summary_start + len(summary_rows) - 1
 
     def fill_vo_raised_by(self, ws, initials: str = "AC") -> None:
-        """Fill the 'Variation Raised By' field."""
+        """Fill the 'Variation Raised By' field, positioned 2 rows below summary."""
         m = self.mapping
-        labels = m.totals_labels
-        # Find the "Variation Raised By:" label row — scan from items area through totals
-        search_start = m.vo_items_start_row + m.vo_items_max_rows
-        rb_row = _find_label_row(ws, labels.get("raised_by", "Variation Raised By:"),
-                                  start_col="A", start_row=search_start, max_scan=30)
-        if rb_row:
-            rb_col = m.config.get("vo_sheet", {}).get("raised_by_value_col", "F")
-            ws[f"{rb_col}{rb_row}"] = initials
+        summary_end = getattr(self, '_summary_end_row', None)
+        if summary_end is None:
+            return
+        rb_row = summary_end + 3  # 2-row gap below summary
+        rb_col = m.config.get("vo_sheet", {}).get("raised_by_value_col", "F")
+        label_cell = ws[f"A{rb_row}"]
+        label_cell.value = m.totals_labels.get("raised_by", "Variation Raised By:")
+        label_cell.font = Font(name='Arial', size=10)
+        ws[f"{rb_col}{rb_row}"] = initials
 
     # ── Register Sheet ────────────────────────────────────────────────
 
@@ -562,6 +606,22 @@ def _set_cell(ws, cell_ref: str, value: Any) -> None:
     if cell_ref:
         try:
             ws[cell_ref] = value
+        except Exception:
+            pass
+
+
+def _unmerge_range(ws, start_row: int, end_row: int, col_letters: list[str]) -> None:
+    """Unmerge any merged cells that overlap the given row/column range."""
+    merged_to_unmerge = []
+    for merged_range in list(ws.merged_cells.ranges):
+        mr_min_row = merged_range.min_row
+        mr_max_row = merged_range.max_row
+        if mr_max_row < start_row or mr_min_row > end_row:
+            continue
+        merged_to_unmerge.append(str(merged_range))
+    for ref in merged_to_unmerge:
+        try:
+            ws.unmerge_cells(ref)
         except Exception:
             pass
 
