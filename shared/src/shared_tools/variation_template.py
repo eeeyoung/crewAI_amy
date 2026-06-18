@@ -289,21 +289,33 @@ class VariationExcelBuilder:
         qty_col = cols.get("qty", "C")
         rate_col = cols.get("rate", "E")
 
-        # Find where the SUB TOTAL label is — don't clear past it
+        # Find where the SUB TOTAL label is — this is the anchor for the items area
         sub_label = labels.get("sub_total", "SUB TOTAL")
         sub_row = _find_label_row(ws, sub_label, start_col="A", start_row=start_row, max_scan=50)
-        max_clear = (sub_row - 1) if sub_row else (start_row + 5)
+        if not sub_row:
+            sub_row = start_row + m.vo_items_max_rows  # fallback: use max_rows from mapping
+        items_needed = len(items)
+        slots_available = sub_row - start_row
+
+        # If more items than template rows, insert rows to shift SUB TOTAL down
+        if items_needed > slots_available:
+            extra = items_needed - slots_available
+            # Insert blank rows just below the last item row (above SUB TOTAL)
+            for _ in range(extra):
+                ws.insert_rows(sub_row)
+            # SUB TOTAL row shifted down by `extra` rows
+            sub_row += extra
+
+        max_clear = sub_row - 1
 
         # Pre-clear ALL rows from start_row to max_clear (catch template leftovers)
         for row in range(start_row, max_clear + 1):
             for col_letter in cols.values():
                 ws[f"{col_letter}{row}"] = None
 
-        # Write items into the pre-cleared area
-        for i in range(len(items)):
+        # Write items into the expanded area
+        for i in range(items_needed):
             row = start_row + i
-            if row >= max_clear:
-                break
             item = items[i]
             _set_cell(ws, f"{cols.get('item', 'A')}{row}", i + 1)
             _set_cell(ws, f"{cols.get('description', 'B')}{row}", item.get("description", ""))
