@@ -261,6 +261,7 @@ class VariationExcelBuilder:
         ALIGN_CENTER = Alignment(horizontal='center', vertical='center')
         ALIGN_RIGHT = Alignment(horizontal='right', vertical='center')
         ALIGN_LEFT = Alignment(horizontal='left', vertical='center')
+        ALIGN_LEFT_TOP = Alignment(horizontal='left', vertical='top')
 
         cols = m.config.get("vo_sheet", {}).get("items_columns", {})
         cost_col = cols.get("cost", "F")
@@ -307,8 +308,8 @@ class VariationExcelBuilder:
         c.font = FONT_TITLE
         c.alignment = ALIGN_CENTER
 
-        ws['A6'] = "PROJECT:"; ws['A6'].font = FONT; ws['A6'].alignment = ALIGN_CENTER
-        _set_cell(ws, 'B6', variation.get("project_name", "")); ws['B6'].font = FONT
+        ws['A6'] = "PROJECT:"; ws['A6'].font = FONT; ws['A6'].alignment = ALIGN_LEFT
+        _set_cell(ws, 'B6', variation.get("project_name", "")); ws['B6'].font = FONT; ws['B6'].alignment = ALIGN_LEFT
         _set_cell(ws, 'F6', "Date:"); ws['F6'].font = FONT; ws['F6'].alignment = ALIGN_RIGHT
         date_str = variation.get("date_issued", "")
         if date_str:
@@ -318,18 +319,18 @@ class VariationExcelBuilder:
                 _set_cell(ws, 'G6', dt); ws['G6'].number_format = "DD/MM/YYYY"
             except (ValueError, TypeError):
                 _set_cell(ws, 'G6', date_str)
-        ws['G6'].font = FONT
+        ws['G6'].font = FONT; ws['G6'].alignment = ALIGN_LEFT
 
-        ws['A7'] = "NAME:"; ws['A7'].font = FONT; ws['A7'].alignment = ALIGN_CENTER
-        _set_cell(ws, 'B7', variation.get("company_name", "Welink Construction")); ws['B7'].font = FONT
+        ws['A7'] = "NAME:"; ws['A7'].font = FONT; ws['A7'].alignment = ALIGN_LEFT
+        _set_cell(ws, 'B7', variation.get("company_name", "Welink Construction")); ws['B7'].font = FONT; ws['B7'].alignment = ALIGN_LEFT
         _set_cell(ws, 'F7', "Site Instruction / Ref:"); ws['F7'].font = FONT; ws['F7'].alignment = ALIGN_RIGHT
-        _set_cell(ws, 'G7', variation.get("site_instruction_ref", "")); ws['G7'].font = FONT
+        _set_cell(ws, 'G7', variation.get("site_instruction_ref", "")); ws['G7'].font = FONT; ws['G7'].alignment = ALIGN_LEFT
 
-        ws['A8'] = "SITE ADDRESS:"; ws['A8'].font = FONT; ws['A8'].alignment = ALIGN_CENTER
-        _set_cell(ws, 'B8', variation.get("project_location", "")); ws['B8'].font = FONT
+        ws['A8'] = "SITE ADDRESS:"; ws['A8'].font = FONT; ws['A8'].alignment = ALIGN_LEFT
+        _set_cell(ws, 'B8', variation.get("project_location", "")); ws['B8'].font = FONT; ws['B8'].alignment = ALIGN_LEFT
 
-        ws['A9'] = "JOB No:"; ws['A9'].font = FONT; ws['A9'].alignment = ALIGN_CENTER
-        _set_cell(ws, 'B9', variation.get("job_number", "")); ws['B9'].font = FONT
+        ws['A9'] = "JOB No:"; ws['A9'].font = FONT; ws['A9'].alignment = ALIGN_LEFT
+        _set_cell(ws, 'B9', variation.get("job_number", "")); ws['B9'].font = FONT; ws['B9'].alignment = ALIGN_LEFT
 
         # VO title
         _set_cell(ws, 'B11', f"VO{variation.get('vo_number', '')} - {variation.get('vo_title', '')}")
@@ -343,10 +344,14 @@ class VariationExcelBuilder:
         ]
         for ref, val, border, align in header_cells_12:
             c = ws[ref]; c.value = val; c.font = FONT_BOLD; c.border = border; c.alignment = align
-        # Description: B12:E12 merged
+        # Description: B12:E12 merged — set borders on all merged cells
         ws.merge_cells('B12:E12')
-        c = ws['B12']; c.value = 'Description'; c.font = FONT_BOLD
-        c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM); c.alignment = ALIGN_CENTER
+        for col in ['B', 'C', 'D', 'E']:
+            c = ws[f'{col}12']
+            c.border = Border(left=THIN if col != 'E' else MEDIUM,
+                             right=MEDIUM if col == 'E' else THIN,
+                             top=MEDIUM, bottom=MEDIUM)
+        c = ws['B12']; c.value = 'Description'; c.font = FONT_BOLD; c.alignment = ALIGN_CENTER
         # Credit
         c = ws['G12']; c.value = 'Credit'; c.font = FONT_BOLD
         c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM); c.alignment = ALIGN_CENTER
@@ -359,6 +364,12 @@ class VariationExcelBuilder:
         # Other row-13 cells: borders only, no text
         for col_letter in ['A', 'B', COL_F, COL_G]:
             c = ws[f'{col_letter}13']; c.border = _subhdr_border(col_letter)
+
+        # Column widths
+        ws.column_dimensions['A'].width = 8
+        ws.column_dimensions['B'].width = 42
+        for col_letter in ['C', 'D', 'E', 'F', 'G']:
+            ws.column_dimensions[col_letter].width = 14
 
         # ── 3. Item Rows (dynamic, starting at row 14) ─────────────
         ITEM_START = 14
@@ -410,50 +421,53 @@ class VariationExcelBuilder:
 
         for i, (label, cost_formula, credit_formula, is_key) in enumerate(summary_rows):
             row = SUMMARY + i
-            is_last_summary = (i == len(summary_rows) - 1)
-            # Label column A
-            cA = ws[f'A{row}']; cA.value = label; cA.font = FONT_LABEL
-            # Cost value column F
-            cF = ws[f'{cost_col}{row}']
-            cF.value = cost_formula
-            cF.font = FONT_VALUE_BOLD if is_last_summary else FONT_VALUE
-            cF.alignment = ALIGN_RIGHT if is_last_summary else ALIGN_CENTER
-            cF.border = _summary_border(cost_col,
-                top=MEDIUM if i == 0 else THIN,
-                bottom=MEDIUM if i == 4 else (MEDIUM if is_last_summary else THIN))
-            # Borders for other columns
-            for col_letter in col_list:
-                if col_letter in ('A', cost_col):
-                    continue
-                c = ws[f'{col_letter}{row}']
-                if col_letter == credit_col and credit_formula:
-                    c.value = credit_formula
-                    c.font = FONT_VALUE
-                c.border = _summary_border(col_letter,
-                    top=MEDIUM if i == 0 else THIN,
-                    bottom=MEDIUM if i == 4 else (MEDIUM if is_last_summary else THIN))
+            # Label column A — plain text, no borders
+            ws[f'A{row}'] = label
+            ws[f'A{row}'].font = FONT_LABEL
+            # Cost value column F — plain, no borders
+            ws[f'{cost_col}{row}'] = cost_formula
+            ws[f'{cost_col}{row}'].font = FONT_VALUE_BOLD if is_key else FONT_VALUE
+            ws[f'{cost_col}{row}'].alignment = ALIGN_RIGHT
+            # Credit value (SUB TOTAL only)
+            if credit_formula:
+                ws[f'{credit_col}{row}'] = credit_formula
+                ws[f'{credit_col}{row}'].font = FONT_VALUE
+                ws[f'{credit_col}{row}'].alignment = ALIGN_RIGHT
 
         summary_end = SUMMARY + len(summary_rows) - 1
 
-        # ── 5. Variation Raised By (2 rows below summary) ──────────
-        rb_row = summary_end + 3
-        c = ws[f'F{rb_row}']; c.value = "Variation Raised By:"
-        c.font = FONT_LABEL; c.border = Border(left=MEDIUM, top=MEDIUM)
-        c.alignment = ALIGN_LEFT
-        ws[f'G{rb_row}'].border = Border(right=MEDIUM, top=MEDIUM)
-        # Initials
-        init_row = rb_row + 1
-        c = ws[f'F{init_row}']; c.value = initials
-        c.font = FONT_SIGN; c.border = Border(left=MEDIUM); c.alignment = ALIGN_CENTER
-        ws[f'G{init_row}'].border = Border(right=MEDIUM)
+        # ── 5. Signature Box (2 rows below summary) ─────────────────
+        # A thick-bordered box containing Variation Raised By and Authorised By
+        box_top = summary_end + 3
+        rb_row = box_top       # Variation Raised By:
+        init_row = rb_row + 1  # initials
+        acc_row = init_row + 2 # Authorised By:
+        box_bottom = acc_row + 3  # 3 cells below Authorised By
 
-        # ── 6. Acceptance Footer ───────────────────────────────────
-        acc_row = init_row + 2
-        ws[f'A{acc_row}'] = "ACCEPTED FOR AND ON BEHALF OF CLIENT:"
-        ws[f'A{acc_row}'].font = FONT_LABEL
-        c = ws[f'F{acc_row}']; c.value = "Authorised By:"
-        c.font = FONT_LABEL; c.border = Border(left=MEDIUM); c.alignment = ALIGN_LEFT
-        ws[f'G{acc_row}'].border = Border(right=MEDIUM)
+        # Fill the box with borders: thick top/bottom/left/right
+        for row in range(box_top, box_bottom + 1):
+            for col_letter in ['F', 'G']:
+                c = ws[f'{col_letter}{row}']
+                l = MEDIUM if col_letter == 'F' else THIN
+                r = MEDIUM if col_letter == 'G' else THIN
+                t = MEDIUM if row == box_top else THIN
+                b = MEDIUM if row == box_bottom else THIN
+                c.border = Border(left=l, right=r, top=t, bottom=b)
+
+        # Variation Raised By: label
+        ws[f'F{rb_row}'] = "Variation Raised By:"
+        ws[f'F{rb_row}'].font = FONT_LABEL; ws[f'F{rb_row}'].alignment = ALIGN_LEFT
+        # Initials
+        ws[f'F{init_row}'] = initials
+        ws[f'F{init_row}'].font = FONT_SIGN; ws[f'F{init_row}'].alignment = ALIGN_CENTER
+        # Authorised By: label
+        ws[f'F{acc_row}'] = "Authorised By:"
+        ws[f'F{acc_row}'].font = FONT_LABEL; ws[f'F{acc_row}'].alignment = ALIGN_LEFT
+
+        # ── 6. Acceptance Footer (below the box) ───────────────────
+        footer_row = box_bottom + 2
+        ws[f'A{footer_row}'] = "ACCEPTED FOR AND ON BEHALF OF CLIENT:"
+        ws[f'A{footer_row}'].font = FONT_LABEL
 
     # ── Register Sheet ────────────────────────────────────────────────
 
