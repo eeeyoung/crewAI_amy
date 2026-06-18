@@ -19,7 +19,7 @@ from typing import Any
 
 import openpyxl
 from openpyxl.utils import get_column_letter
-from openpyxl.styles import Font, Alignment, Border, Side, PatternFill, numbers
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill, Color, numbers
 
 import yaml
 
@@ -258,6 +258,8 @@ class VariationExcelBuilder:
         FONT_VALUE = Font(name='Arial', size=8)
         FONT_VALUE_BOLD = Font(name='Arial', size=8, bold=True)
         FONT_SIGN = Font(name='Rage Italic', size=18)
+        HEADER_FILL = PatternFill(patternType='solid', fgColor=Color(theme=8, tint=0.7999816888943144))
+        FMT_MONEY = '$#,##0.00'
         ALIGN_CENTER = Alignment(horizontal='center', vertical='center')
         ALIGN_RIGHT = Alignment(horizontal='right', vertical='center')
         ALIGN_LEFT = Alignment(horizontal='left', vertical='center')
@@ -343,27 +345,32 @@ class VariationExcelBuilder:
             ('F12', 'Cost', _hdr_border(COL_F), ALIGN_CENTER),
         ]
         for ref, val, border, align in header_cells_12:
-            c = ws[ref]; c.value = val; c.font = FONT_BOLD; c.border = border; c.alignment = align
-        # Description: B12:E12 merged — set borders on all merged cells
+            c = ws[ref]; c.value = val; c.font = FONT_BOLD; c.border = border
+            c.alignment = align; c.fill = HEADER_FILL
+        # Description: B12:E12 merged — set borders + fill on all merged cells
         ws.merge_cells('B12:E12')
         for col in ['B', 'C', 'D', 'E']:
             c = ws[f'{col}12']
             c.border = Border(left=THIN if col != 'E' else MEDIUM,
                              right=MEDIUM if col == 'E' else THIN,
                              top=MEDIUM, bottom=MEDIUM)
+            c.fill = HEADER_FILL
         c = ws['B12']; c.value = 'Description'; c.font = FONT_BOLD; c.alignment = ALIGN_CENTER
         # Credit
         c = ws['G12']; c.value = 'Credit'; c.font = FONT_BOLD
-        c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM); c.alignment = ALIGN_CENTER
+        c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM)
+        c.alignment = ALIGN_CENTER; c.fill = HEADER_FILL
 
-        # Row 13 sub-headers
+        # Row 13 sub-headers — also light blue fill
         sub_cols = {'C': 'Qty', 'D': 'Unit', 'E': 'Rate ($)'}
         for col_letter, label in sub_cols.items():
             c = ws[f'{col_letter}13']; c.value = label; c.font = FONT_BOLD
             c.border = _subhdr_border(col_letter); c.alignment = ALIGN_CENTER
-        # Other row-13 cells: borders only, no text
+            c.fill = HEADER_FILL
+        # Other row-13 cells: borders + fill only, no text
         for col_letter in ['A', 'B', COL_F, COL_G]:
             c = ws[f'{col_letter}13']; c.border = _subhdr_border(col_letter)
+            c.fill = HEADER_FILL
 
         # Column widths
         ws.column_dimensions['A'].width = 8
@@ -393,10 +400,14 @@ class VariationExcelBuilder:
             _set_cell(ws, f'{qty_col}{row}', items[i].get("qty", 0))
             _set_cell(ws, f'{cols.get("unit", "D")}{row}', items[i].get("unit", "item"))
             _set_cell(ws, f'{rate_col}{row}', items[i].get("rate", 0))
-            # Cost formula
+            # Cost formula with $ format
             ws[f'{cost_col}{row}'] = f'={qty_col}{row}*{rate_col}{row}'
-            # Credit
+            ws[f'{cost_col}{row}'].number_format = FMT_MONEY
+            ws[f'{cost_col}{row}'].alignment = ALIGN_RIGHT
+            # Credit with $ format
             _set_cell(ws, f'{credit_col}{row}', items[i].get("credit", 0))
+            ws[f'{credit_col}{row}'].number_format = FMT_MONEY
+            ws[f'{credit_col}{row}'].alignment = ALIGN_RIGHT
 
         last_item_row = ITEM_START + items_count - 1
 
@@ -424,15 +435,17 @@ class VariationExcelBuilder:
             # Label column A — plain text, no borders
             ws[f'A{row}'] = label
             ws[f'A{row}'].font = FONT_LABEL
-            # Cost value column F — plain, no borders
+            # Cost value column F — $ format, right-aligned
             ws[f'{cost_col}{row}'] = cost_formula
             ws[f'{cost_col}{row}'].font = FONT_VALUE_BOLD if is_key else FONT_VALUE
             ws[f'{cost_col}{row}'].alignment = ALIGN_RIGHT
+            ws[f'{cost_col}{row}'].number_format = FMT_MONEY
             # Credit value (SUB TOTAL only)
             if credit_formula:
                 ws[f'{credit_col}{row}'] = credit_formula
                 ws[f'{credit_col}{row}'].font = FONT_VALUE
                 ws[f'{credit_col}{row}'].alignment = ALIGN_RIGHT
+                ws[f'{credit_col}{row}'].number_format = FMT_MONEY
 
         summary_end = SUMMARY + len(summary_rows) - 1
 
