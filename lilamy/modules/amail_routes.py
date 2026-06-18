@@ -123,9 +123,12 @@ async def sync_inbox(from_date: str = Query(None), to_date: str = Query(None)):
 
 
 @router.post("/emails/{entry_id}/reply")
-async def generate_reply(entry_id: str):
-    """Generate an AI reply for a specific email (lazy)."""
+async def generate_reply(entry_id: str, data: dict = {}):
+    """Generate an AI reply for a specific email (lazy).
+    Optional body: {prompt_guide: "..."} — user guidance that becomes the primary
+    instruction for the reply agent, with behavioral context as secondary input."""
     from shared_tools.ipc_bridge import get_processed_email, upsert_processed_email
+    prompt_guide = (data.get("prompt_guide") or "").strip() if data else ""
     email = get_processed_email(entry_id)
     if not email:
         return {"error": "Email not found"}
@@ -242,30 +245,103 @@ async def generate_reply(entry_id: str):
         print(f"  Habit Learner: skipped ({e})")
     print(f"  ─────────────────────────────────────────────────────")
 
-    inputs = {
-        "email_subject": email.get("subject", ""),
-        "email_sender": email.get("sender", ""),
-        "email_content": body,
-        "email_category": email.get("category", "General"),
-        "email_urgency": email.get("urgency", "low"),
-        "email_context": email.get("chinese_summary", ""),
-        "email_cc": email.get("cc", ""),
-        "amy_name": "Amy Chen",
-        "amy_email": "amy@welink.com.au",
-        "relevant_facts": "",
-        "relevant_schedule": "",
-        "behavioral_context": behavioral_text,
-    }
+    # ── Prompt Guide mode: user's prompt is the PRIMARY instruction ──
+    if prompt_guide:
+        print(f"\n  ── PROMPT GUIDE MODE ────────────────────────────────")
+        print(f"  User prompt: {prompt_guide[:200]}...")
+        print(f"  behavioral_context (secondary): {len(behavioral_text)} chars")
 
-    print(f"\n  ── LLM Call ─────────────────────────────────────────")
-    print(f"  Prompt template: reply_tasks.yaml")
-    print(f"  Input variables: {', '.join(inputs.keys())}")
-    print(f"  behavioral_context length: {len(behavioral_text)} chars")
-    print(f"  email_content length: {len(body)} chars")
-    print(f"  Calling ReplyGeneratorCrew.kickoff()...")
+        from shared_tools.llm_config import get_llm
 
-    result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
-    draft = result.raw if hasattr(result, "raw") else str(result)
+        prompt = f"""You are {email.get('assignee', 'Amy Chen')} ({email.get('assignee_email', 'amy@welink.com.au')}), a construction contract administrator.
+
+ORIGINAL EMAIL:
+Subject: {email.get('subject', '')}
+Sender: {email.get('sender', '')}
+CC: {email.get('cc', '')}
+Content: {body}
+
+YOUR BACKGROUND CONTEXT (Amy's usual style for similar emails):
+{behavioral_text if behavioral_text else '(no behavioral data available — use standard professional tone)'}
+
+USER'S PRIMARY INSTRUCTION (this is what you MUST follow above all else):
+{prompt_guide}
+
+Write a professional email reply following the user's instruction above. The reply must be the raw body text ONLY — STRICTLY OMIT:
+- No subject line (no "Subject:" or "RE:")
+- No greeting (no "Hi X," or "Dear Y,")
+- No closing (no "Kind Regards", "Best regards", "Thanks", "Cheers")
+- No signature block
+- No preamble (no "Here is the response:")
+
+Use the behavioral context above to match Amy's usual tone, formality, and style — but the user's instruction is the PRIMARY driver of what the reply should say and how it should be structured.
+
+Output ONLY the raw body text."""
+        try:
+            llm = get_llm("fast")
+            draft = llm.call(prompt).strip()
+        except Exception as e:
+            draft = f"Error generating reply: {e}"
+
+        # Build agent_info for prompt guide mode
+        agent_info = {
+            "confidence": 0.5,
+            "predicted_intent": "PROMPT GUIDE MODE",
+            "matched_examples": 0,
+            "behavioral_context": f"ANALYSING USER PROMPT AND INJECTING BEHAVIOURAL TEXT\n\nUser prompt: {prompt_guide[:500]}\n\nBehavioural context ({len(behavioral_text)} chars) used as secondary style reference.",
+            "sender_profile": None,
+            "style_params": None,
+        }
+        if ctx and ctx.sender_profile:
+            sp = ctx.sender_profile
+            agent_info["sender_profile"] = {
+                "name": sp.get("sender_name", sp.get("sender_email", "")),
+                "email": sp.get("sender_email", ""),
+                "tier": sp.get("tier_label", "unknown"),
+                "tier_level": sp.get("tier", 3),
+                "reply_rate": sp.get("reply_rate", 0),
+                "avg_latency_hours": sp.get("avg_latency_hours"),
+                "avg_reply_words": sp.get("avg_reply_words"),
+                "preferred_greeting": sp.get("preferred_greeting", ""),
+                "signoff_preference": sp.get("signoff_preference", ""),
+                "top_intent": sp.get("top_intent", ""),
+                "total_received": sp.get("total_received", 0),
+                "total_replied": sp.get("total_replied", 0),
+            }
+        else:
+            agent_info = {
+                "confidence": 0,
+                "predicted_intent": None,
+                "matched_examples": 0,
+                "behavioral_context": "",
+                "sender_profile": None,
+                "style_params": None,
+            }
+    else:
+        inputs = {
+            "email_subject": email.get("subject", ""),
+            "email_sender": email.get("sender", ""),
+            "email_content": body,
+            "email_category": email.get("category", "General"),
+            "email_urgency": email.get("urgency", "low"),
+            "email_context": email.get("chinese_summary", ""),
+            "email_cc": email.get("cc", ""),
+            "amy_name": "Amy Chen",
+            "amy_email": "amy@welink.com.au",
+            "relevant_facts": "",
+            "relevant_schedule": "",
+            "behavioral_context": behavioral_text,
+        }
+
+        print(f"\n  ── LLM Call ─────────────────────────────────────────")
+        print(f"  Prompt template: reply_tasks.yaml")
+        print(f"  Input variables: {', '.join(inputs.keys())}")
+        print(f"  behavioral_context length: {len(behavioral_text)} chars")
+        print(f"  email_content length: {len(body)} chars")
+        print(f"  Calling ReplyGeneratorCrew.kickoff()...")
+
+        result = ReplyGeneratorCrew().crew().kickoff(inputs=inputs)
+        draft = result.raw if hasattr(result, "raw") else str(result)
 
     print(f"  ✅ LLM call complete")
     print(f"  Draft length: {len(draft)} chars")

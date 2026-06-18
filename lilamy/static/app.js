@@ -234,11 +234,10 @@ async function loadDetail(entryId) {
   empty.style.display = 'none';
   content.style.display = 'flex';
 
-  // Restore cached agent info for this email, or hide if none
+  // Always clear agent info first, then restore if cached for this email
+  hideAgentInfo();
   if (_emailAgentInfo[entryId]) {
     renderAgentInfo(_emailAgentInfo[entryId]);
-  } else {
-    hideAgentInfo();
   }
 
   document.getElementById('det-subject').textContent = email.subject || '(No Subject)';
@@ -537,14 +536,21 @@ async function draftReply() {
   if (!selectedId) return;
   const btn = document.getElementById('btn-draft');
   btn.disabled = true;
+  const promptGuide = (document.getElementById('det-prompt-guide')?.value || '').trim();
+  const isPromptMode = !!promptGuide;
   btn.textContent = '⏳ Drafting...';
   const notifyId = 'draft-' + Date.now();
-  notifyProgress(notifyId, 'Drafting reply...', 'AI is generating a response');
+  notifyProgress(notifyId, 'Drafting reply...',
+    isPromptMode ? 'Analysing user prompt and injecting behavioural text...' : 'AI is generating a response');
   // Show loading state in agent panel
-  showAgentInfoLoading();
+  showAgentInfoLoading(isPromptMode);
 
   try {
-    const res = await fetch(`${API}/api/amail/emails/${selectedId}/reply`, { method: 'POST' });
+    const res = await fetch(`${API}/api/amail/emails/${selectedId}/reply`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt_guide: promptGuide}),
+    });
     const data = await res.json();
     if (data.draft) {
       document.getElementById('det-reply').value = data.draft;
@@ -618,9 +624,12 @@ function copyReply() {
 
 // ── Reply Agent Info Panel ──────────────────────────────────────────
 
-function showAgentInfoLoading() {
+function showAgentInfoLoading(isPromptMode = false) {
   const panel = document.getElementById('agent-info-panel');
   panel.style.display = 'flex';
+  // Expand panel to show loading
+  _agentInfoExpanded = true;
+  applyAgentFold();
   // Hide all data cards, show loading spinner
   document.getElementById('agent-loading').style.display = 'block';
   document.getElementById('agent-sender').style.display = 'none';
@@ -630,6 +639,13 @@ function showAgentInfoLoading() {
   document.getElementById('agent-examples').style.display = 'none';
   document.getElementById('agent-confidence').textContent = '';
   document.getElementById('agent-confidence').className = 'confidence-badge';
+  // Custom loading message for prompt guide mode
+  const loadingEl = document.getElementById('agent-loading');
+  if (loadingEl) {
+    loadingEl.innerHTML = isPromptMode
+      ? '<span class="spinner" style="margin-right:8px;"></span> ANALYSING USER PROMPT AND INJECTING BEHAVIOURAL TEXT...'
+      : '<span class="spinner" style="margin-right:8px;"></span> Analyzing behavioral patterns...';
+  }
 }
 
 let _agentInfoExpanded = false;  // collapsible panel state
@@ -647,7 +663,7 @@ function applyAgentFold() {
   const body = document.getElementById('agent-fold-body');
   const toggle = document.getElementById('agent-fold-toggle');
   if (body) body.style.display = _agentInfoExpanded ? 'flex' : 'none';
-  if (toggle) toggle.textContent = _agentInfoExpanded ? '▲' : '▼';
+  if (toggle) toggle.textContent = _agentInfoExpanded ? '▼' : '▶';
 }
 
 function renderAgentInfo(info) {
@@ -656,8 +672,17 @@ function renderAgentInfo(info) {
     panel.style.display = 'none';
     return;
   }
-  // Persist in cache so it survives email switching
+  // Persist in cache so it survives email switching (use selectedId as key)
   if (selectedId) _emailAgentInfo[selectedId] = info;
+  // Also clear any stale info from the DOM
+  document.getElementById('agent-loading').style.display = 'none';
+  document.getElementById('agent-sender').style.display = 'none';
+  document.getElementById('agent-intent').style.display = 'none';
+  document.getElementById('agent-style').style.display = 'none';
+  document.getElementById('agent-context').style.display = 'none';
+  document.getElementById('agent-examples').style.display = 'none';
+  document.getElementById('agent-confidence').textContent = '';
+  document.getElementById('agent-confidence').className = 'confidence-badge';
   panel.style.display = 'flex';
   // Start collapsed by default
   _agentInfoExpanded = false;

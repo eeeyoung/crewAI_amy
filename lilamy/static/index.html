@@ -1045,14 +1045,16 @@
           <div class="body-box" id="det-body"></div>
           <div class="section-label">Draft Reply</div>
           <textarea class="reply-box" id="det-reply" placeholder="Click 'Draft Reply' to generate..."></textarea>
+          <div class="section-label" style="margin-top:4px;">💬 Prompt Guide <span style="font-size:10px;color:var(--muted);">(optional — tells the agent what to focus on)</span></div>
+          <textarea class="reply-box" id="det-prompt-guide" placeholder="e.g., Ask the subcontractor to include material costs in their quote and confirm delivery timeline. Be firm but polite."
+            style="min-height:50px;font-size:12px;"></textarea>
 
           <!-- Reply Agent Info Panel -->
           <div id="agent-info-panel" style="display:none;">
-            <div class="section-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleAgentFold()">
-              🧠 Reply Agent Info
+            <div class="section-label" style="display:flex;align-items:center;gap:8px;">
+              <span style="cursor:pointer;" onclick="toggleAgentFold()">🧠 Reply Agent Info</span>
               <span id="agent-confidence" class="confidence-badge"></span>
-              <span style="flex:1;"></span>
-              <span id="agent-fold-toggle" style="font-size:12px;color:var(--muted);">▼</span>
+              <span id="agent-fold-toggle" onclick="toggleAgentFold()" style="font-size:11px;color:var(--muted);cursor:pointer;">▶</span>
             </div>
 
             <!-- All cards wrapped in foldable body (collapsed by default) -->
@@ -1688,7 +1690,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=42"></script>
+  <script src="/static/app.js?v=43"></script>
 </body>
 
 </html>
