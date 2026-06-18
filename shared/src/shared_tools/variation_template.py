@@ -303,36 +303,41 @@ class VariationExcelBuilder:
             source_row = sub_row - 1  # last template item row (has formatting)
             # Read outer border style from source row's left border (thick)
             src_left = ws[f"A{source_row}"].border.left
-            thick_side = src_left if src_left and src_left.style else Side(style='medium')
+            thick = src_left if src_left and src_left.style else Side(style='medium')
             thin = Side(style='thin')
+            col_list = list(cols.values())
+            col_first = col_list[0]
+            col_last = col_list[-1]
+            # Per-column border: thick only on outer left (first col) / outer right (last col)
+            def _inner_border(col_letter, bottom=thin):
+                return Border(
+                    left=thick if col_letter == col_first else thin,
+                    right=thick if col_letter == col_last else thin,
+                    top=thin, bottom=bottom)
             # Insert blank rows just below the last item row (above SUB TOTAL)
             for _ in range(extra):
                 ws.insert_rows(sub_row)
             # Demote original last item row: was the bottom edge → now an inner row
-            for col in cols.values():
+            for col in col_list:
                 try:
-                    cell = ws[f"{col}{source_row}"]
-                    cell.border = Border(
-                        left=thick_side, right=thick_side, top=thin, bottom=thin)
+                    ws[f"{col}{source_row}"].border = _inner_border(col, bottom=thin)
                 except Exception:
                     pass
-            # Inserted rows: thick left/right, thin top/bottom
+            # Inserted rows: outer thick left/right, thin top/bottom
             for offset in range(extra):
                 target_row = sub_row + offset
-                _copy_row_format(ws, source_row, target_row, cols.values())
-                for col in cols.values():
+                _copy_row_format(ws, source_row, target_row, col_list)
+                for col in col_list:
                     try:
-                        ws[f"{col}{target_row}"].border = Border(
-                            left=thick_side, right=thick_side, top=thin, bottom=thin)
+                        ws[f"{col}{target_row}"].border = _inner_border(col, bottom=thin)
                     except Exception:
                         pass
-            # Last inserted row → thick bottom (it's the new table bottom edge)
+            # Last inserted row → thick bottom (new table bottom edge)
             if extra > 0:
                 last_row = sub_row + extra - 1
-                for col in cols.values():
+                for col in col_list:
                     try:
-                        ws[f"{col}{last_row}"].border = Border(
-                            left=thick_side, right=thick_side, top=thin, bottom=thick_side)
+                        ws[f"{col}{last_row}"].border = _inner_border(col, bottom=thick)
                     except Exception:
                         pass
             # SUB TOTAL row shifted down by `extra` rows
@@ -368,8 +373,9 @@ class VariationExcelBuilder:
         credit_col = m.vo_item_col("credit") or "G"
 
         # Find the subtotal row by scanning for the label (start looking after items area)
+        # max_scan covers items_max_rows (50) + totals section (10) with margin
         sub_row = _find_label_row(ws, labels.get("sub_total", "SUB TOTAL"), start_col="A",
-                                   start_row=start_row + 1, max_scan=50)
+                                   start_row=start_row + 1, max_scan=m.vo_items_max_rows + 20)
 
         if sub_row:
             # SUM over all item rows up to the row just before SUB TOTAL
@@ -401,9 +407,10 @@ class VariationExcelBuilder:
         """Fill the 'Variation Raised By' field."""
         m = self.mapping
         labels = m.totals_labels
-        # Find the "Variation Raised By:" label row
+        # Find the "Variation Raised By:" label row — scan from items area through totals
+        search_start = m.vo_items_start_row + m.vo_items_max_rows
         rb_row = _find_label_row(ws, labels.get("raised_by", "Variation Raised By:"),
-                                  start_col="A", start_row=25, max_scan=20)
+                                  start_col="A", start_row=search_start, max_scan=30)
         if rb_row:
             rb_col = m.config.get("vo_sheet", {}).get("raised_by_value_col", "F")
             ws[f"{rb_col}{rb_row}"] = initials
