@@ -234,8 +234,12 @@ async function loadDetail(entryId) {
   empty.style.display = 'none';
   content.style.display = 'flex';
 
-  // Clear agent info panel when switching emails
-  hideAgentInfo();
+  // Restore cached agent info for this email, or hide if none
+  if (_emailAgentInfo[entryId]) {
+    renderAgentInfo(_emailAgentInfo[entryId]);
+  } else {
+    hideAgentInfo();
+  }
 
   document.getElementById('det-subject').textContent = email.subject || '(No Subject)';
   document.getElementById('det-sender').textContent = `From: ${email.sender || 'Unknown'}`;
@@ -628,8 +632,22 @@ function showAgentInfoLoading() {
   document.getElementById('agent-confidence').className = 'confidence-badge';
 }
 
+let _agentInfoExpanded = false;  // collapsible panel state
+
 function hideAgentInfo() {
   document.getElementById('agent-info-panel').style.display = 'none';
+}
+
+function toggleAgentFold() {
+  _agentInfoExpanded = !_agentInfoExpanded;
+  applyAgentFold();
+}
+
+function applyAgentFold() {
+  const body = document.getElementById('agent-fold-body');
+  const toggle = document.getElementById('agent-fold-toggle');
+  if (body) body.style.display = _agentInfoExpanded ? 'flex' : 'none';
+  if (toggle) toggle.textContent = _agentInfoExpanded ? '▲' : '▼';
 }
 
 function renderAgentInfo(info) {
@@ -638,7 +656,12 @@ function renderAgentInfo(info) {
     panel.style.display = 'none';
     return;
   }
+  // Persist in cache so it survives email switching
+  if (selectedId) _emailAgentInfo[selectedId] = info;
   panel.style.display = 'flex';
+  // Start collapsed by default
+  _agentInfoExpanded = false;
+  applyAgentFold();
   // Hide loading spinner
   document.getElementById('agent-loading').style.display = 'none';
 
@@ -1008,6 +1031,7 @@ let selectedIds = new Set();    // all selected entry_ids
 let lastClickedId = null;       // for Shift+Click range
 let _currentAttachments = [];   // attachments for selected email
 let _selectedAttIndices = new Set();  // selected attachment indices for download
+let _emailAgentInfo = {};       // per-email agent info cache (keyed by entry_id)
 
 function getCardIndex(id) {
   return emails.findIndex(e => e.entry_id === id);

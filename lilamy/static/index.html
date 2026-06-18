@@ -1048,10 +1048,15 @@
 
           <!-- Reply Agent Info Panel -->
           <div id="agent-info-panel" style="display:none;">
-            <div class="section-label" style="display:flex;align-items:center;gap:8px;">
+            <div class="section-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleAgentFold()">
               🧠 Reply Agent Info
               <span id="agent-confidence" class="confidence-badge"></span>
+              <span style="flex:1;"></span>
+              <span id="agent-fold-toggle" style="font-size:12px;color:var(--muted);">▼</span>
             </div>
+
+            <!-- All cards wrapped in foldable body (collapsed by default) -->
+            <div id="agent-fold-body" style="display:none;flex-direction:column;gap:6px;">
 
             <!-- Loading state -->
             <div id="agent-loading" class="agent-card"
@@ -1105,6 +1110,9 @@
                 <span style="font-size:10px;color:var(--muted);margin-left:4px;">▸ click to expand</span>
               </div>
               <pre id="ai-context-text" class="agent-context-text" style="display:none;"></pre>
+            </div>
+
+            </div><!-- end agent-fold-body -->
             </div>
 
             <!-- Matched Examples -->
@@ -1680,7 +1688,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=41"></script>
+  <script src="/static/app.js?v=42"></script>
 </body>
 
 </html>
