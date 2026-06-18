@@ -282,10 +282,7 @@ class VariationService(QObject):
         sheet_name = builder.create_vo_sheet(vo_number)
         ws = builder.wb[sheet_name]
 
-        builder.fill_vo_project_info(ws, var)
-        builder.fill_vo_items(ws, items)
-        builder.fill_vo_formulas(ws)
-        builder.fill_vo_raised_by(ws, initials=var.get("raised_by", "AC"))
+        builder.build_vo_sheet(ws, var, items)
 
         self.progress_update.emit(60, "Updating Register sheet...")
 

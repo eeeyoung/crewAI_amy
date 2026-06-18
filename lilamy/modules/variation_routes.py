@@ -259,10 +259,7 @@ async def export_single_vo_pdf(entry_id: str):
         var_for_sheet["job_number"] = proj.get("job_number", var.get("job_number", ""))
         var_for_sheet["company_name"] = proj.get("company_name", "Welink Construction")
 
-    builder.fill_vo_project_info(ws, var_for_sheet)
-    builder.fill_vo_items(ws, items)
-    builder.fill_vo_formulas(ws)
-    builder.fill_vo_raised_by(ws, initials=var.get("raised_by", "AC"))
+    builder.build_vo_sheet(ws, var_for_sheet, items)
 
     # Copy logo images from VOXX and set fonts
     from shared_tools.variation_template import _extract_images as _ext, _add_image_to_sheet as _add_img, _set_all_fonts_arial

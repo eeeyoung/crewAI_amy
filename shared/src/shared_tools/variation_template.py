@@ -232,232 +232,228 @@ class VariationExcelBuilder:
     # ── VO Sheet ──────────────────────────────────────────────────────
 
     def create_vo_sheet(self, vo_number: int) -> str:
-        """Clone the blank sheet and name it 'VO{number}'. Returns the sheet name."""
+        """Create a fresh blank sheet named 'VO{number}'. Returns the sheet name."""
         if self.wb is None:
             raise RuntimeError("Call open() first")
 
         sheet_name = f"VO{vo_number}"
-        blank = self.wb[self.mapping.blank_sheet_name]
-
-        # If sheet already exists, remove and re-clone
         if sheet_name in self.wb.sheetnames:
             del self.wb[sheet_name]
 
-        # Clone by copying the blank sheet
-        new_ws = self.wb.copy_worksheet(blank)
-        new_ws.title = sheet_name
+        ws = self.wb.create_sheet(title=sheet_name)
         return sheet_name
 
-    def fill_vo_project_info(self, ws, variation: dict) -> None:
-        """Fill the project info section of a VO sheet."""
+    def build_vo_sheet(self, ws, variation: dict, items: list[dict]) -> None:
+        """Build an entire VO sheet from scratch — no template dependency.
+        Project info, item table, summary section, raised_by, and acceptance
+        are all written in pure code at calculated positions."""
         m = self.mapping
-        _set_cell(ws, m.vo_cell("project_name"), variation.get("project_name", ""))
-        _set_cell(ws, m.vo_cell("company_name"), variation.get("company_name", "Welink Construction"))
-        _set_cell(ws, m.vo_cell("site_address"), variation.get("project_location", ""))
-        _set_cell(ws, m.vo_cell("job_number"), variation.get("job_number", ""))
-        _set_cell(ws, m.vo_cell("vo_title"), variation.get("vo_title", ""))
-        _set_cell(ws, m.vo_cell("site_instruction_ref"), variation.get("site_instruction_ref", ""))
+        THIN = Side(style='thin')
+        MEDIUM = Side(style='medium')
+        HAIR = Side(style='hair')
+        FONT = Font(name='Arial', size=10)
+        FONT_BOLD = Font(name='Arial', size=10, bold=True)
+        FONT_TITLE = Font(name='Arial', size=12, bold=True)
+        FONT_LABEL = Font(name='Arial', size=9, bold=True)
+        FONT_VALUE = Font(name='Arial', size=8)
+        FONT_VALUE_BOLD = Font(name='Arial', size=8, bold=True)
+        FONT_SIGN = Font(name='Rage Italic', size=18)
+        ALIGN_CENTER = Alignment(horizontal='center', vertical='center')
+        ALIGN_RIGHT = Alignment(horizontal='right', vertical='center')
+        ALIGN_LEFT = Alignment(horizontal='left', vertical='center')
 
-        # Date
+        cols = m.config.get("vo_sheet", {}).get("items_columns", {})
+        cost_col = cols.get("cost", "F")
+        credit_col = cols.get("credit", "G")
+        qty_col = cols.get("qty", "C")
+        rate_col = cols.get("rate", "E")
+        col_list = list(cols.values())  # ['A','B','C','D','E','F','G']
+        # The thick separator is between Description (B-E) and Cost/Credit (F-G)
+        COL_B = col_list[1]   # 'B'
+        COL_E = col_list[4]   # 'E'
+        COL_F = col_list[5]   # 'F'
+        COL_G = col_list[6]   # 'G'
+
+        # Border helpers
+        def _hdr_border(col):
+            """Header row 12 border: thick left on A/F, thick right on E/G"""
+            l = MEDIUM if col in ('A', COL_F) else THIN
+            r = MEDIUM if col in (COL_E, COL_G) else THIN
+            return Border(left=l, right=r, top=MEDIUM, bottom=MEDIUM)
+
+        def _subhdr_border(col):
+            """Sub-header row 13 border"""
+            l = MEDIUM if col in ('A', COL_F) else THIN
+            r = MEDIUM if col in (COL_E, COL_G) else THIN
+            return Border(left=l, right=r, top=MEDIUM, bottom=HAIR)
+
+        def _item_border(col, top=HAIR, bottom=HAIR):
+            """Item row border: thick on group edges, hair/thin inner"""
+            l = MEDIUM if col in ('A', COL_F) else THIN
+            r = MEDIUM if col in (COL_E, COL_G) else THIN
+            return Border(left=l, right=r, top=top, bottom=bottom)
+
+        def _summary_border(col, top=THIN, bottom=THIN):
+            """Summary row border: thick left/right, variable top/bottom"""
+            l = MEDIUM if col in ('A', COL_F) else THIN
+            r = MEDIUM if col in (COL_E, COL_G) else THIN
+            return Border(left=l, right=r, top=top, bottom=bottom)
+
+        # ── 1. Project Info (rows 4–9) ──────────────────────────────
+        ws.merge_cells('A4:G4')
+        title_text = "CONTRACT VARIATION - ESTIMATE" if variation.get("is_estimate", 0) else "CONTRACT VARIATION"
+        c = ws['A4']
+        c.value = title_text
+        c.font = FONT_TITLE
+        c.alignment = ALIGN_CENTER
+
+        ws['A6'] = "PROJECT:"; ws['A6'].font = FONT; ws['A6'].alignment = ALIGN_CENTER
+        _set_cell(ws, 'B6', variation.get("project_name", "")); ws['B6'].font = FONT
+        _set_cell(ws, 'F6', "Date:"); ws['F6'].font = FONT; ws['F6'].alignment = ALIGN_RIGHT
         date_str = variation.get("date_issued", "")
         if date_str:
-            # Parse ISO date → datetime for Excel
             from datetime import datetime
             try:
                 dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-                _set_cell(ws, m.vo_cell("date_issued"), dt)
-                ws[m.vo_cell("date_issued")].number_format = "DD/MM/YYYY"
+                _set_cell(ws, 'G6', dt); ws['G6'].number_format = "DD/MM/YYYY"
             except (ValueError, TypeError):
-                _set_cell(ws, m.vo_cell("date_issued"), date_str)
+                _set_cell(ws, 'G6', date_str)
+        ws['G6'].font = FONT
 
-        # Title suffix for estimates
-        title_cell = m.vo_cell("title_cell")
-        if variation.get("is_estimate", 0):
-            ws[title_cell] = "CONTRACT VARIATION - ESTIMATE"
-        else:
-            ws[title_cell] = "CONTRACT VARIATION"
+        ws['A7'] = "NAME:"; ws['A7'].font = FONT; ws['A7'].alignment = ALIGN_CENTER
+        _set_cell(ws, 'B7', variation.get("company_name", "Welink Construction")); ws['B7'].font = FONT
+        _set_cell(ws, 'F7', "Site Instruction / Ref:"); ws['F7'].font = FONT; ws['F7'].alignment = ALIGN_RIGHT
+        _set_cell(ws, 'G7', variation.get("site_instruction_ref", "")); ws['G7'].font = FONT
 
-    def fill_vo_items(self, ws, items: list[dict]) -> None:
-        """Fill line items into the items area of a VO sheet.
-        Always uses sequential numbering (i+1), ignoring stored item_number.
-        Clears the full item area, unmerges any template merged cells, and inserts
-        rows as needed. Stores items_count for summary positioning."""
-        m = self.mapping
-        start_row = m.vo_items_start_row
-        cols = m.config.get("vo_sheet", {}).get("items_columns", {})
-        cost_col = cols.get("cost", "F")
-        qty_col = cols.get("qty", "C")
-        rate_col = cols.get("rate", "E")
-        col_list = list(cols.values())
-        col_first = col_list[0]
-        col_last = col_list[-1]
-        items_needed = len(items)
-        slots_available = m.vo_items_max_rows
-        template_last_item = start_row + slots_available - 1  # where template's last item sits
+        ws['A8'] = "SITE ADDRESS:"; ws['A8'].font = FONT; ws['A8'].alignment = ALIGN_CENTER
+        _set_cell(ws, 'B8', variation.get("project_location", "")); ws['B8'].font = FONT
 
-        # Unmerge any merged cells in the items + summary area (template artifacts)
-        _unmerge_range(ws, start_row, template_last_item + 20, col_list)
+        ws['A9'] = "JOB No:"; ws['A9'].font = FONT; ws['A9'].alignment = ALIGN_CENTER
+        _set_cell(ws, 'B9', variation.get("job_number", "")); ws['B9'].font = FONT
 
-        # If more items than template slots, insert rows
-        if items_needed > slots_available:
-            extra = items_needed - slots_available
-            insert_at = template_last_item + 1  # row after last template item
-            # Read border style from last template item row
-            src_left = ws[f"A{template_last_item}"].border.left
-            thick = src_left if src_left and src_left.style else Side(style='medium')
-            thin = Side(style='thin')
-            def _item_border(col_letter, bottom=thin):
-                return Border(
-                    left=thick if col_letter == col_first else thin,
-                    right=thick if col_letter == col_last else thin,
-                    top=thin, bottom=bottom)
-            # Insert rows
-            for _ in range(extra):
-                ws.insert_rows(insert_at)
-            # Demote original last item row → inner row
-            for col in col_list:
-                try:
-                    ws[f"{col}{template_last_item}"].border = _item_border(col, bottom=thin)
-                except Exception:
-                    pass
-            # Format all inserted rows
-            for offset in range(extra):
-                target_row = insert_at + offset
-                _copy_row_format(ws, template_last_item, target_row, col_list)
-                for col in col_list:
-                    try:
-                        ws[f"{col}{target_row}"].border = _item_border(col,
-                            bottom=thick if offset == extra - 1 else thin)
-                    except Exception:
-                        pass
+        # VO title
+        _set_cell(ws, 'B11', f"VO{variation.get('vo_number', '')} - {variation.get('vo_title', '')}")
+        ws['B11'].font = FONT_BOLD
+        ws['B11'].border = Border(bottom=MEDIUM)
 
-        # Item area bounds: start_row → last_item_row
-        last_item_row = start_row + items_needed - 1
+        # ── 2. Item Table Header (rows 12–13) ──────────────────────
+        header_cells_12 = [
+            ('A12', 'Item', _hdr_border('A'), ALIGN_CENTER),
+            ('F12', 'Cost', _hdr_border(COL_F), ALIGN_CENTER),
+        ]
+        for ref, val, border, align in header_cells_12:
+            c = ws[ref]; c.value = val; c.font = FONT_BOLD; c.border = border; c.alignment = align
+        # Description: B12:E12 merged
+        ws.merge_cells('B12:E12')
+        c = ws['B12']; c.value = 'Description'; c.font = FONT_BOLD
+        c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM); c.alignment = ALIGN_CENTER
+        # Credit
+        c = ws['G12']; c.value = 'Credit'; c.font = FONT_BOLD
+        c.border = Border(left=THIN, right=MEDIUM, top=MEDIUM, bottom=MEDIUM); c.alignment = ALIGN_CENTER
 
-        # Clear ALL rows from start to template end (removes old data in unused slots too)
-        clear_end = max(last_item_row, template_last_item)
-        for row in range(start_row, clear_end + 1):
+        # Row 13 sub-headers
+        sub_cols = {'C': 'Qty', 'D': 'Unit', 'E': 'Rate ($)'}
+        for col_letter, label in sub_cols.items():
+            c = ws[f'{col_letter}13']; c.value = label; c.font = FONT_BOLD
+            c.border = _subhdr_border(col_letter); c.alignment = ALIGN_CENTER
+        # Other row-13 cells: borders only, no text
+        for col_letter in ['A', 'B', COL_F, COL_G]:
+            c = ws[f'{col_letter}13']; c.border = _subhdr_border(col_letter)
+
+        # ── 3. Item Rows (dynamic, starting at row 14) ─────────────
+        ITEM_START = 14
+        items_count = len(items)
+        for i in range(items_count):
+            row = ITEM_START + i
+            is_last = (i == items_count - 1)
             for col_letter in col_list:
-                ws[f"{col_letter}{row}"] = None
+                c = ws[f'{col_letter}{row}']
+                c.border = _item_border(col_letter,
+                    top=HAIR if i > 0 else HAIR,
+                    bottom=MEDIUM if is_last else HAIR)
+                c.font = FONT
+                c.alignment = ALIGN_CENTER
+            # Item number
+            ws[f'A{row}'] = i + 1
+            # Description
+            ws[f'B{row}'] = items[i].get("description", "")
+            ws[f'B{row}'].alignment = ALIGN_LEFT
+            # Qty, Unit, Rate
+            _set_cell(ws, f'{qty_col}{row}', items[i].get("qty", 0))
+            _set_cell(ws, f'{cols.get("unit", "D")}{row}', items[i].get("unit", "item"))
+            _set_cell(ws, f'{rate_col}{row}', items[i].get("rate", 0))
+            # Cost formula
+            ws[f'{cost_col}{row}'] = f'={qty_col}{row}*{rate_col}{row}'
+            # Credit
+            _set_cell(ws, f'{credit_col}{row}', items[i].get("credit", 0))
 
-        # Write items
-        for i in range(items_needed):
-            row = start_row + i
-            item = items[i]
-            _set_cell(ws, f"{cols.get('item', 'A')}{row}", i + 1)
-            _set_cell(ws, f"{cols.get('description', 'B')}{row}", item.get("description", ""))
-            _set_cell(ws, f"{cols.get('qty', 'C')}{row}", item.get("qty", 0))
-            _set_cell(ws, f"{cols.get('unit', 'D')}{row}", item.get("unit", "item"))
-            _set_cell(ws, f"{cols.get('rate', 'E')}{row}", item.get("rate", 0))
-            ws[f"{cost_col}{row}"] = f"={qty_col}{row}*{rate_col}{row}"
-            _set_cell(ws, f"{cols.get('credit', 'G')}{row}", item.get("credit", 0))
+        last_item_row = ITEM_START + items_count - 1
 
-        # Store for summary positioning
-        self._last_items_count = items_needed
-        self._last_item_end_row = last_item_row
-
-    def fill_vo_formulas(self, ws) -> None:
-        """Build the summary section (SUB TOTAL → TOTAL INCL GST) dynamically
-        exactly 2 rows below the last item row. Does NOT use label detection —
-        positions are calculated from item count."""
-        m = self.mapping
-        items_count = getattr(self, '_last_items_count', 0) or 0
-        if items_count == 0:
-            return
-        start_row = m.vo_items_start_row
-        last_item = start_row + items_count - 1
-        cost_col = m.vo_item_col("cost") or "F"
-        credit_col = m.vo_item_col("credit") or "G"
-        col_list = list(m.config.get("vo_sheet", {}).get("items_columns", {}).values())
-        col_first = col_list[0]
-        col_last = col_list[-1]
-
-        # Read border styles from item table
-        ref_cell = ws[f"A{last_item}"]
-        thick = ref_cell.border.left if ref_cell.border.left and ref_cell.border.left.style else Side(style='medium')
-        thin = Side(style='thin')
-
-        def _summary_border(col_letter, top=thin, bottom=thin):
-            return Border(
-                left=thick if col_letter == col_first else thin,
-                right=thick if col_letter == col_last else thin,
-                top=top, bottom=bottom)
-
-        # Summary starts 2 rows below the last item
-        sr = last_item + 3  # +1 gap, +2 gap, then summary row
-        labels = m.totals_labels
-        bold_font = Font(name='Arial', size=10, bold=True)
-
-        # Row layout:
-        #   sr+0: (blank separator)
-        #   sr+1: SUB TOTAL         | =SUM(cost)  =SUM(credit)
-        #   sr+2: NETT VARIATION    | =sub−credit
-        #   sr+3: MARGIN (10%)      | =nett*0.1
-        #   sr+4: EXCL GST          | =nett+margin
-        #   sr+5: GST (10%)         | =excl*0.1
-        #   sr+6: TOTAL INCL GST    | =excl+gst
-        #   sr+7: (blank)
-        #   sr+8: Variation Raised By: | AC
-
-        summary_start = sr + 1
-        # Clear and write summary labels + formulas
+        # ── 4. Summary Section (2 blank rows below last item) ──────
+        SUMMARY = last_item_row + 3  # +1 gap, +2 gap, then first summary row
         summary_rows = [
-            (labels.get("sub_total", "SUB TOTAL"),
-             f"=SUM({cost_col}{start_row}:{cost_col}{last_item})",
-             f"=SUM({credit_col}{start_row}:{credit_col}{last_item})", False),
-            (labels.get("nett_cost", "NETT VARIATION COST"),
-             f"={cost_col}{summary_start}-{credit_col}{summary_start}", "", True),
-            (labels.get("margin", "MARGIN AND OVERHEAD COSTS"),
-             f"={cost_col}{summary_start + 1}*0.1", "", False),
-            (labels.get("excl_gst", "VARIATION COST EXCLUDING GST"),
-             f"={cost_col}{summary_start + 1}+{cost_col}{summary_start + 2}", "", False),
-            (labels.get("gst", "GST"),
-             f"={cost_col}{summary_start + 3}*0.1", "", False),
-            (labels.get("total", "TOTAL INCLUDING GST"),
-             f"={cost_col}{summary_start + 3}+{cost_col}{summary_start + 4}", "", True),
+            ("SUB TOTAL",
+             f"=SUM({cost_col}{ITEM_START}:{cost_col}{last_item_row})",
+             f"=SUM({credit_col}{ITEM_START}:{credit_col}{last_item_row})",
+             False),
+            ("NETT VARIATION COST",
+             f"={cost_col}{SUMMARY}-{credit_col}{SUMMARY}", "", True),
+            ("MARGIN AND OVERHEAD COSTS (10%)",
+             f"={cost_col}{SUMMARY + 1}*0.1", "", False),
+            ("VARIATION COST EXCLUDING GST",
+             f"={cost_col}{SUMMARY + 1}+{cost_col}{SUMMARY + 2}", "", False),
+            ("GST",
+             f"={cost_col}{SUMMARY + 3}*0.1", "", False),
+            ("TOTAL INCLUDING GST",
+             f"={cost_col}{SUMMARY + 3}+{cost_col}{SUMMARY + 4}", "", True),
         ]
 
-        for i, (label, cost_formula, credit_formula, is_total) in enumerate(summary_rows):
-            row = summary_start + i
-            # Clear row first
-            for col in col_list:
-                ws[f"{col}{row}"] = None
-            # Label in column A
-            label_cell = ws[f"A{row}"]
-            label_cell.value = label
-            label_cell.font = bold_font if is_total else Font(name='Arial', size=10)
-            # Cost formula in cost column
-            cost_cell = ws[f"{cost_col}{row}"]
-            cost_cell.value = cost_formula
-            cost_cell.font = bold_font if is_total else Font(name='Arial', size=10)
-            # Credit formula (only for SUB TOTAL row)
-            if credit_formula:
-                credit_cell = ws[f"{credit_col}{row}"]
-                credit_cell.value = credit_formula
-                credit_cell.font = Font(name='Arial', size=10)
-            # Borders on all columns
-            bot = thick if (is_total and i == len(summary_rows) - 1) else thin
-            for col in col_list:
-                try:
-                    ws[f"{col}{row}"].border = _summary_border(col, top=thin, bottom=bot)
-                except Exception:
-                    pass
+        for i, (label, cost_formula, credit_formula, is_key) in enumerate(summary_rows):
+            row = SUMMARY + i
+            is_last_summary = (i == len(summary_rows) - 1)
+            # Label column A
+            cA = ws[f'A{row}']; cA.value = label; cA.font = FONT_LABEL
+            # Cost value column F
+            cF = ws[f'{cost_col}{row}']
+            cF.value = cost_formula
+            cF.font = FONT_VALUE_BOLD if is_last_summary else FONT_VALUE
+            cF.alignment = ALIGN_RIGHT if is_last_summary else ALIGN_CENTER
+            cF.border = _summary_border(cost_col,
+                top=MEDIUM if i == 0 else THIN,
+                bottom=MEDIUM if i == 4 else (MEDIUM if is_last_summary else THIN))
+            # Borders for other columns
+            for col_letter in col_list:
+                if col_letter in ('A', cost_col):
+                    continue
+                c = ws[f'{col_letter}{row}']
+                if col_letter == credit_col and credit_formula:
+                    c.value = credit_formula
+                    c.font = FONT_VALUE
+                c.border = _summary_border(col_letter,
+                    top=MEDIUM if i == 0 else THIN,
+                    bottom=MEDIUM if i == 4 else (MEDIUM if is_last_summary else THIN))
 
-        # Store where summary ends for raised_by positioning
-        self._summary_end_row = summary_start + len(summary_rows) - 1
+        summary_end = SUMMARY + len(summary_rows) - 1
 
-    def fill_vo_raised_by(self, ws, initials: str = "AC") -> None:
-        """Fill the 'Variation Raised By' field, positioned 2 rows below summary."""
-        m = self.mapping
-        summary_end = getattr(self, '_summary_end_row', None)
-        if summary_end is None:
-            return
-        rb_row = summary_end + 3  # 2-row gap below summary
-        rb_col = m.config.get("vo_sheet", {}).get("raised_by_value_col", "F")
-        label_cell = ws[f"A{rb_row}"]
-        label_cell.value = m.totals_labels.get("raised_by", "Variation Raised By:")
-        label_cell.font = Font(name='Arial', size=10)
-        ws[f"{rb_col}{rb_row}"] = initials
+        # ── 5. Variation Raised By (2 rows below summary) ──────────
+        rb_row = summary_end + 3
+        c = ws[f'F{rb_row}']; c.value = "Variation Raised By:"
+        c.font = FONT_LABEL; c.border = Border(left=MEDIUM, top=MEDIUM)
+        c.alignment = ALIGN_LEFT
+        ws[f'G{rb_row}'].border = Border(right=MEDIUM, top=MEDIUM)
+        # Initials
+        init_row = rb_row + 1
+        c = ws[f'F{init_row}']; c.value = initials
+        c.font = FONT_SIGN; c.border = Border(left=MEDIUM); c.alignment = ALIGN_CENTER
+        ws[f'G{init_row}'].border = Border(right=MEDIUM)
+
+        # ── 6. Acceptance Footer ───────────────────────────────────
+        acc_row = init_row + 2
+        ws[f'A{acc_row}'] = "ACCEPTED FOR AND ON BEHALF OF CLIENT:"
+        ws[f'A{acc_row}'].font = FONT_LABEL
+        c = ws[f'F{acc_row}']; c.value = "Authorised By:"
+        c.font = FONT_LABEL; c.border = Border(left=MEDIUM); c.alignment = ALIGN_LEFT
+        ws[f'G{acc_row}'].border = Border(right=MEDIUM)
 
     # ── Register Sheet ────────────────────────────────────────────────
 
@@ -929,11 +925,7 @@ def compile_project_to_xlsx(project: dict, variations: list[dict],
         var_for_sheet["job_number"] = project.get("job_number", var.get("job_number", ""))
         var_for_sheet["company_name"] = project.get("company_name", var.get("company_name", "Welink Construction"))
 
-        builder.fill_vo_project_info(ws, var_for_sheet)
-        items = var.get("items", [])
-        builder.fill_vo_items(ws, items)
-        builder.fill_vo_formulas(ws)
-        builder.fill_vo_raised_by(ws, initials=var.get("raised_by", "AC"))
+        builder.build_vo_sheet(ws, var_for_sheet, var.get("items", []))
 
     # ── 3. Reorder: VO sheets first (in creation order = sort_order), then Register, Internal VO Register ──
     # VO sheets were created in active_variations order (sorted by sort_order).
