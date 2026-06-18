@@ -304,10 +304,17 @@ class VariationExcelBuilder:
             # Insert blank rows just below the last item row (above SUB TOTAL)
             for _ in range(extra):
                 ws.insert_rows(sub_row)
-            # Copy formatting from last template row to each newly inserted row
+            # Copy non-border formatting from source, then apply thin inner borders
+            thin = Side(style='thin')
             for offset in range(extra):
                 target_row = sub_row + offset
                 _copy_row_format(ws, source_row, target_row, cols.values())
+                for col in cols.values():
+                    try:
+                        ws[f"{col}{target_row}"].border = Border(
+                            left=thin, right=thin, top=thin, bottom=thin)
+                    except Exception:
+                        pass
             # SUB TOTAL row shifted down by `extra` rows
             sub_row += extra
 
@@ -533,8 +540,9 @@ def _set_cell(ws, cell_ref: str, value: Any) -> None:
 
 
 def _copy_row_format(ws, source_row: int, target_row: int, col_letters: list[str]) -> None:
-    """Copy cell formatting (border, font, alignment, fill, number_format)
-    from source_row to target_row for all given column letters."""
+    """Copy cell formatting (font, alignment, fill, number_format — NOT border)
+    from source_row to target_row for all given column letters.
+    Borders are handled separately to ensure thin inner lines."""
     from copy import copy
     for col in col_letters:
         try:
@@ -542,7 +550,6 @@ def _copy_row_format(ws, source_row: int, target_row: int, col_letters: list[str
             dst_cell = ws[f"{col}{target_row}"]
             if src_cell.has_style:
                 dst_cell.font = copy(src_cell.font)
-                dst_cell.border = copy(src_cell.border)
                 dst_cell.fill = copy(src_cell.fill)
                 dst_cell.number_format = src_cell.number_format
                 dst_cell.alignment = copy(src_cell.alignment)
