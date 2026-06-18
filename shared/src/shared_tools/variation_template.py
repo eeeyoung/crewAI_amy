@@ -243,7 +243,7 @@ class VariationExcelBuilder:
         ws = self.wb.create_sheet(title=sheet_name)
         return sheet_name
 
-    def build_vo_sheet(self, ws, variation: dict, items: list[dict]) -> None:
+    def build_vo_sheet(self, ws, variation: dict, items: list[dict], initials: str = "AC") -> None:
         """Build an entire VO sheet from scratch — no template dependency.
         Project info, item table, summary section, raised_by, and acceptance
         are all written in pure code at calculated positions."""
@@ -925,7 +925,8 @@ def compile_project_to_xlsx(project: dict, variations: list[dict],
         var_for_sheet["job_number"] = project.get("job_number", var.get("job_number", ""))
         var_for_sheet["company_name"] = project.get("company_name", var.get("company_name", "Welink Construction"))
 
-        builder.build_vo_sheet(ws, var_for_sheet, var.get("items", []))
+        builder.build_vo_sheet(ws, var_for_sheet, var.get("items", []),
+                               initials=var.get("raised_by", "AC"))
 
     # ── 3. Reorder: VO sheets first (in creation order = sort_order), then Register, Internal VO Register ──
     # VO sheets were created in active_variations order (sorted by sort_order).
