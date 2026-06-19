@@ -17,7 +17,7 @@ from pathlib import Path
 from PyQt6.QtCore import QObject, pyqtSignal
 
 _AMAIL_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "tools", "amail")
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "tools", "amail")
 )
 _KNOWLEDGE_DIR = os.path.join(_AMAIL_ROOT, "knowledge")
 

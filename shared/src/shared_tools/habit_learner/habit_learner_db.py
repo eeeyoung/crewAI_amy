@@ -32,8 +32,8 @@ def _resolve_data_dir() -> Path:
     """Resolve the data directory (same logic as ipc_bridge.py)."""
     if "LILAMY_DATA_DIR" in os.environ:
         return Path(os.environ["LILAMY_DATA_DIR"])
-    # habit_learner_db.py is at shared/src/shared_tools/ → 4 levels up to root
-    project_root = Path(__file__).resolve().parent.parent.parent.parent
+    # habit_learner_db.py is at shared/src/shared_tools/habit_learner/ → 5 levels up to root
+    project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
     return project_root / "data"
 
 

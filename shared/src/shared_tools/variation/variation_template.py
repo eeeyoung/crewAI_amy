@@ -924,7 +924,7 @@ def compile_project_to_xlsx(project: dict, variations: list[dict],
     active_variations.sort(key=lambda v: (v.get("sort_order", 0) or 0, v.get("vo_number", 0) or 0))
 
     # Find template
-    knowledge_dir = Path(__file__).parent.parent.parent.parent / "knowledge"
+    knowledge_dir = Path(__file__).parent.parent.parent.parent.parent / "knowledge"
     cleaned = knowledge_dir / "variation_template.xlsx"
     original = knowledge_dir / "drafted simple workflow" / "20260602 47CBR - Welink Construction Client Variations.xlsx"
     template_path = cleaned if cleaned.exists() else original

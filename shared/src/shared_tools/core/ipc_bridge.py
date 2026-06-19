@@ -22,8 +22,8 @@ def _resolve_data_dir() -> Path:
     """Resolve the data directory from env var or fall back to project_root/data."""
     if "LILAMY_DATA_DIR" in os.environ:
         return Path(os.environ["LILAMY_DATA_DIR"])
-    # ipc_bridge.py is at shared/src/shared_tools/ipc_bridge.py → 4 levels up to project root
-    project_root = Path(__file__).resolve().parent.parent.parent.parent
+    # ipc_bridge.py is at shared/src/shared_tools/core/ipc_bridge.py → 5 levels up to project root
+    project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
     return project_root / "data"
 
 

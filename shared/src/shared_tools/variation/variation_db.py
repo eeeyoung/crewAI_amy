@@ -14,7 +14,7 @@ from pathlib import Path
 def _resolve_data_dir() -> Path:
     if "LILAMY_DATA_DIR" in os.environ:
         return Path(os.environ["LILAMY_DATA_DIR"])
-    project_root = Path(__file__).resolve().parent.parent.parent.parent
+    project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
     return project_root / "data"
 
 

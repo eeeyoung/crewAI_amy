@@ -260,7 +260,7 @@ class VariationService(QObject):
 
         # Load template mapping
         try:
-            mapping_path = Path(__file__).parent.parent.parent.parent / "knowledge" / "variation_template_mapping.yaml"
+            mapping_path = Path(__file__).parent.parent.parent.parent.parent / "knowledge" / "variation_template_mapping.yaml"
             if mapping_path.exists():
                 mapping = TemplateMapping.from_yaml(mapping_path)
             else:
@@ -317,7 +317,7 @@ class VariationService(QObject):
     def _find_template(self, mapping: TemplateMapping) -> Path:
         """Find the template file. Checks DB first, then knowledge/ folder."""
         # Check knowledge folder for cleaned template
-        knowledge_dir = Path(__file__).parent.parent.parent.parent / "knowledge"
+        knowledge_dir = Path(__file__).parent.parent.parent.parent.parent / "knowledge"
         cleaned = knowledge_dir / "variation_template.xlsx"
         if cleaned.exists():
             return cleaned
