@@ -63,7 +63,7 @@ else:
     )
 
 # ── Imports ────────────────────────────────────────────────────────────
-from shared_tools.memory_service import MemoryService
+from shared_tools.memory.memory_service import MemoryService
 
 
 def _fmt_bytes(b: int) -> str:
@@ -158,7 +158,7 @@ def main():
     data_root = os.environ["LILAMY_DATA_DIR"]
     reg_stats = None
     try:
-        from shared_tools.file_registry import FileRegistry
+        from shared_tools.memory.file_registry import FileRegistry
         reg = FileRegistry(data_root)
         reg.init_db()
         reg_stats = reg.stats()

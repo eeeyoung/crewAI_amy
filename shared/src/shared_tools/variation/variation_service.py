@@ -32,7 +32,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 def _resolve_output_dir() -> Path:
     """Resolve the variations output directory."""
-    from shared_tools.ipc_bridge import CREWAI_DIR
+    from shared_tools.core.ipc_bridge import CREWAI_DIR
     var_dir = CREWAI_DIR / "variations"
     var_dir.mkdir(parents=True, exist_ok=True)
     return var_dir
@@ -78,7 +78,7 @@ class VariationService(QObject):
         self._output_dir = _resolve_output_dir()
 
         # Initialize DB on creation
-        from shared_tools.variation_db import init_variation_db
+        from shared_tools.variation.variation_db import init_variation_db
         init_variation_db()
 
     # ── Lifecycle ─────────────────────────────────────────────────────
@@ -128,14 +128,14 @@ class VariationService(QObject):
         data.setdefault("vo_type", "Head Contract VO")
         data.setdefault("company_name", "Welink Construction")
 
-        from shared_tools.variation_db import upsert_variation
+        from shared_tools.variation.variation_db import upsert_variation
         upsert_variation(data)
         self.variation_created.emit(entry_id)
         return entry_id
 
     def update_variation(self, entry_id: str, **fields) -> bool:
         """Update variation fields. Emits variation_updated."""
-        from shared_tools.variation_db import update_variation as db_update
+        from shared_tools.variation.variation_db import update_variation as db_update
         ok = db_update(entry_id, **fields)
         if ok:
             self.variation_updated.emit(entry_id)
@@ -143,7 +143,7 @@ class VariationService(QObject):
 
     def get_variation(self, entry_id: str) -> dict | None:
         """Return a full variation with items."""
-        from shared_tools.variation_db import get_variation as db_get, get_variation_items
+        from shared_tools.variation.variation_db import get_variation as db_get, get_variation_items
         var = db_get(entry_id)
         if var:
             var["items"] = get_variation_items(entry_id)
@@ -152,7 +152,7 @@ class VariationService(QObject):
     def list_variations(self, project_entry_id: str = "", project: str | None = None,
                         status: str | None = None) -> list[dict]:
         """Return filtered variations. Each includes item count and totals."""
-        from shared_tools.variation_db import get_variations as db_list, get_variation_items
+        from shared_tools.variation.variation_db import get_variations as db_list, get_variation_items
         variations = db_list(project_entry_id=project_entry_id or None,
                             project=project, status=status)
         for var in variations:
@@ -160,13 +160,13 @@ class VariationService(QObject):
             var["items"] = items
             var["item_count"] = len(items)
             if items:
-                from shared_tools.variation_template import calculate_variation_costs
+                from shared_tools.variation.variation_template import calculate_variation_costs
                 var["totals"] = calculate_variation_costs(items)
         return variations
 
     def delete_variation(self, entry_id: str) -> bool:
         """Soft-delete a variation (status → 'void')."""
-        from shared_tools.variation_db import delete_variation as db_delete
+        from shared_tools.variation.variation_db import delete_variation as db_delete
         return db_delete(entry_id)
 
     # ── Line Items ────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ class VariationService(QObject):
     def add_item(self, variation_entry_id: str, item_data: dict) -> int | None:
         """Add a line item. Emits variation_updated."""
         item_data["variation_entry_id"] = variation_entry_id
-        from shared_tools.variation_db import upsert_variation_item, get_variation_items
+        from shared_tools.variation.variation_db import upsert_variation_item, get_variation_items
         item_id = upsert_variation_item(item_data)
         if item_id:
             self.variation_updated.emit(variation_entry_id)
@@ -182,18 +182,18 @@ class VariationService(QObject):
 
     def update_item(self, item_id: int, **fields) -> bool:
         """Update a line item. Emits variation_updated."""
-        from shared_tools.variation_db import upsert_variation_item, get_variation_items
+        from shared_tools.variation.variation_db import upsert_variation_item, get_variation_items
         fields["id"] = item_id
         result = upsert_variation_item(fields)
         if result:
             # Find the parent variation to emit
-            from shared_tools.variation_db import get_variation_items as get_items
+            from shared_tools.variation.variation_db import get_variation_items as get_items
             items = get_items("")  # can't look up parent directly, skip for now
         return result is not None
 
     def remove_item(self, item_id: int, variation_entry_id: str) -> bool:
         """Delete a line item. Emits variation_updated."""
-        from shared_tools.variation_db import delete_variation_item
+        from shared_tools.variation.variation_db import delete_variation_item
         ok = delete_variation_item(item_id)
         if ok:
             self.variation_updated.emit(variation_entry_id)
@@ -201,7 +201,7 @@ class VariationService(QObject):
 
     def reorder_items(self, variation_entry_id: str, item_ids: list[int]) -> bool:
         """Reorder line items. Emits variation_updated."""
-        from shared_tools.variation_db import reorder_variation_items
+        from shared_tools.variation.variation_db import reorder_variation_items
         ok = reorder_variation_items(variation_entry_id, item_ids)
         if ok:
             self.variation_updated.emit(variation_entry_id)
@@ -212,8 +212,8 @@ class VariationService(QObject):
     def calculate_costs(self, variation_entry_id: str) -> dict:
         """Run deterministic cost math. Never uses LLM.
         Updates item costs and variation totals in DB. Emits variation_updated."""
-        from shared_tools.variation_db import get_variation_items, upsert_variation_item
-        from shared_tools.variation_template import calculate_variation_costs
+        from shared_tools.variation.variation_db import get_variation_items, upsert_variation_item
+        from shared_tools.variation.variation_template import calculate_variation_costs
 
         items = get_variation_items(variation_entry_id)
         result = calculate_variation_costs(items)
@@ -243,8 +243,8 @@ class VariationService(QObject):
 
     def _handle_generate_excel(self, entry_id: str) -> None:
         """Worker: generate the variation Excel file."""
-        from shared_tools.variation_db import get_variation, get_variation_items, update_variation as db_update
-        from shared_tools.variation_template import (
+        from shared_tools.variation.variation_db import get_variation, get_variation_items, update_variation as db_update
+        from shared_tools.variation.variation_template import (
             TemplateMapping, VariationExcelBuilder, calculate_variation_costs,
         )
 
@@ -293,7 +293,7 @@ class VariationService(QObject):
             builder.fill_register_project_info(reg_ws, var)
             builder.fill_register_vo_row(reg_ws, var, calculated)
             # Load all variations for totals
-            from shared_tools.variation_db import get_variations as db_list
+            from shared_tools.variation.variation_db import get_variations as db_list
             all_vars = db_list(project=var.get("project_name"))
             builder.update_register_totals(reg_ws, all_vars)
 
@@ -336,7 +336,7 @@ class VariationService(QObject):
 
     def _handle_export_pdf(self, entry_id: str) -> None:
         """Worker: export the variation Excel to PDF."""
-        from shared_tools.variation_db import get_variation, update_variation as db_update
+        from shared_tools.variation.variation_db import get_variation, update_variation as db_update
 
         var = get_variation(entry_id)
         if not var:
@@ -425,9 +425,9 @@ class VariationService(QObject):
 
     def _handle_generate_email(self, entry_id: str) -> None:
         """Worker: generate submission email using LLM."""
-        from shared_tools.variation_db import get_variation, get_variation_items
-        from shared_tools.variation_template import calculate_variation_costs
-        from shared_tools.llm_config import get_llm
+        from shared_tools.variation.variation_db import get_variation, get_variation_items
+        from shared_tools.variation.variation_template import calculate_variation_costs
+        from shared_tools.core.llm_config import get_llm
 
         var = get_variation(entry_id)
         if not var:
@@ -497,7 +497,7 @@ Output ONLY the email text. Start with "Subject:" on the first line."""
                                cc_recipients: str = "", subject: str = "",
                                body: str = "") -> bool:
         """Send the submission email via Outlook. Emits email_sent."""
-        from shared_tools.variation_db import get_variation, update_variation as db_update
+        from shared_tools.variation.variation_db import get_variation, update_variation as db_update
         from datetime import datetime
 
         var = get_variation(entry_id)
@@ -512,7 +512,7 @@ Output ONLY the email text. Start with "Subject:" on the first line."""
     def _handle_send_email(self, entry_id: str, to: str, cc: str,
                             subject: str, body: str) -> None:
         """Worker: send email via Outlook COM."""
-        from shared_tools.variation_db import get_variation, update_variation as db_update
+        from shared_tools.variation.variation_db import get_variation, update_variation as db_update
 
         var = get_variation(entry_id)
         if not var:
@@ -555,11 +555,11 @@ Output ONLY the email text. Start with "Subject:" on the first line."""
     def create_from_email(self, email_entry_id: str) -> str | None:
         """Parse an email to pre-fill variation fields (LLM-assisted).
         Returns the new variation entry_id, or None on failure."""
-        from shared_tools.ipc_bridge import get_processed_email
+        from shared_tools.core.ipc_bridge import get_processed_email
 
         email = get_processed_email(email_entry_id)
         if not email:
-            from shared_tools.outlook_tool import fetch_inbox_emails
+            from shared_tools.outlook.outlook_tool import fetch_inbox_emails
             # Try to fetch from Outlook
             pass  # For now, error if not in processed store
 
@@ -569,7 +569,7 @@ Output ONLY the email text. Start with "Subject:" on the first line."""
 
         # Use LLM to extract variation details from email
         with self._llm_semaphore:
-            from shared_tools.llm_config import get_llm
+            from shared_tools.core.llm_config import get_llm
 
             subject = email.get("subject", "")
             body = email.get("body", "")[:3000]
@@ -638,7 +638,7 @@ Output ONLY the JSON object, no other text."""
 
     def _handle_export_project_pdf(self, entry_id: str, xlsx_path: str) -> None:
         """Worker: export project xlsx to PDF."""
-        from shared_tools.variation_db import get_project, update_project
+        from shared_tools.variation.variation_db import get_project, update_project
         try:
             pdf_path = self._excel_to_pdf(xlsx_path, {"vo_number": 1})
             if pdf_path.exists():
@@ -667,7 +667,7 @@ Output ONLY the JSON object, no other text."""
 
     def create_project(self, data: dict) -> str:
         """Create a new project. Returns entry_id."""
-        from shared_tools.variation_db import upsert_project
+        from shared_tools.variation.variation_db import upsert_project
         entry_id = data.get("entry_id") or _new_entry_id()
         data["entry_id"] = entry_id
         data.setdefault("source_type", "new")
@@ -677,8 +677,8 @@ Output ONLY the JSON object, no other text."""
     def import_project(self, xlsx_path: str) -> str | None:
         """Import an existing xlsx: parse project + VOs + items into DB.
         Returns project_entry_id or None on failure."""
-        from shared_tools.variation_template import import_project_from_xlsx
-        from shared_tools.variation_db import upsert_project, upsert_variation, upsert_variation_item
+        from shared_tools.variation.variation_template import import_project_from_xlsx
+        from shared_tools.variation.variation_db import upsert_project, upsert_variation, upsert_variation_item
 
         try:
             result = import_project_from_xlsx(xlsx_path)
@@ -711,8 +711,8 @@ Output ONLY the JSON object, no other text."""
         """Compile all VOs + Registers into xlsx with backup. Returns output path."""
         import shutil
         from datetime import datetime
-        from shared_tools.variation_db import get_project, get_variations, get_variation_items, update_project
-        from shared_tools.variation_template import compile_project_to_xlsx
+        from shared_tools.variation.variation_db import get_project, get_variations, get_variation_items, update_project
+        from shared_tools.variation.variation_template import compile_project_to_xlsx
 
         project = get_project(project_entry_id)
         if not project:
@@ -750,8 +750,8 @@ Output ONLY the JSON object, no other text."""
 
     def get_register(self, project_entry_id: str) -> dict:
         """Compute the Register view for a project."""
-        from shared_tools.variation_db import get_project, get_variations, get_variation_items
-        from shared_tools.variation_template import calculate_variation_costs
+        from shared_tools.variation.variation_db import get_project, get_variations, get_variation_items
+        from shared_tools.variation.variation_template import calculate_variation_costs
 
         project = get_project(project_entry_id)
         if not project:
@@ -839,8 +839,8 @@ Output ONLY the JSON object, no other text."""
         """Compute the Internal VO Register view for a project.
         Uses same status-based logic as the main Register.
         Approved VOs: approval_type determines bank vs client column."""
-        from shared_tools.variation_db import get_project, get_variations, get_variation_items
-        from shared_tools.variation_template import calculate_variation_costs
+        from shared_tools.variation.variation_db import get_project, get_variations, get_variation_items
+        from shared_tools.variation.variation_template import calculate_variation_costs
 
         project = get_project(project_entry_id)
         if not project:
@@ -905,7 +905,7 @@ Output ONLY the JSON object, no other text."""
 
     def list_projects(self) -> list[dict]:
         """Return all projects with VO counts."""
-        from shared_tools.variation_db import get_projects, get_project_vo_count
+        from shared_tools.variation.variation_db import get_projects, get_project_vo_count
         projects = get_projects()
         for p in projects:
             p["vo_count"] = get_project_vo_count(p["entry_id"])
@@ -913,13 +913,13 @@ Output ONLY the JSON object, no other text."""
 
     def delete_project(self, entry_id: str) -> bool:
         """Delete a project and all its VOs + items."""
-        from shared_tools.variation_db import delete_project as db_delete
+        from shared_tools.variation.variation_db import delete_project as db_delete
         return db_delete(entry_id)
 
     # ── Utility ───────────────────────────────────────────────────────
 
     def get_next_vo_number(self, project_entry_id: str) -> int:
         """Return the next VO number: count of active (non-void) VOs + 1."""
-        from shared_tools.variation_db import get_variations
+        from shared_tools.variation.variation_db import get_variations
         existing = get_variations(project_entry_id=project_entry_id)  # excludes void
         return len(existing) + 1

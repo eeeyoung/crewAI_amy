@@ -39,7 +39,7 @@ class PushFromEmailsRequest(BaseModel):
 @router.get("/counts")
 async def get_counts():
     """Return counts for all statuses in one lightweight call."""
-    from shared_tools.ipc_bridge import get_todo_items
+    from shared_tools.core.ipc_bridge import get_todo_items
     all_items = get_todo_items(status=None, limit=0)
     pending = get_todo_items(status="pending", limit=0)
     done = get_todo_items(status="done", limit=0)
@@ -55,7 +55,7 @@ async def get_counts():
 @router.get("/items")
 async def list_items(status: str = Query(None), limit: int = Query(0)):
     """Return all to-do items, optional status filter (pending/done/cancelled)."""
-    from shared_tools.todo_service import get_todo_service
+    from shared_tools.todo.todo_service import get_todo_service
     svc = get_todo_service()
     items = svc.load_items(status=status, limit=limit)
     return {"count": len(items), "items": items}
@@ -64,7 +64,7 @@ async def list_items(status: str = Query(None), limit: int = Query(0)):
 @router.get("/items/{entry_id}")
 async def get_item(entry_id: str):
     """Return a single to-do item by its UUID entry_id."""
-    from shared_tools.ipc_bridge import get_todo_item
+    from shared_tools.core.ipc_bridge import get_todo_item
     item = get_todo_item(entry_id)
     if not item:
         return {"error": "To-do item not found"}
@@ -74,7 +74,7 @@ async def get_item(entry_id: str):
 @router.post("/items")
 async def create_item(data: TodoItemCreate):
     """Create a manual to-do item (no linked source email)."""
-    from shared_tools.todo_service import get_todo_service
+    from shared_tools.todo.todo_service import get_todo_service
     svc = get_todo_service()
     ok = svc.create_item(data.model_dump())
     return {"ok": ok}
@@ -84,7 +84,7 @@ async def create_item(data: TodoItemCreate):
 async def update_item(entry_id: str, data: TodoItemUpdate):
     """Partially update a to-do item. Only provided fields are changed.
     Auto-sets updated_at. Returns the updated item."""
-    from shared_tools.ipc_bridge import get_todo_item, update_todo_item
+    from shared_tools.core.ipc_bridge import get_todo_item, update_todo_item
 
     fields = {k: v for k, v in data.model_dump().items() if v is not None}
     if not fields:
@@ -102,7 +102,7 @@ async def update_item(entry_id: str, data: TodoItemUpdate):
 @router.delete("/items/{entry_id}")
 async def delete_item(entry_id: str):
     """Soft-delete a to-do item (sets status = 'cancelled')."""
-    from shared_tools.todo_service import get_todo_service
+    from shared_tools.todo.todo_service import get_todo_service
     svc = get_todo_service()
     ok = svc.delete_item(entry_id)
     return {"ok": ok}
@@ -113,7 +113,7 @@ async def push_from_emails(data: PushFromEmailsRequest):
     """Push selected emails into the to-do list.
     Reads todos_json + deadlines_json from each email and creates todo_items.
     Returns the count of items created."""
-    from shared_tools.todo_service import get_todo_service
+    from shared_tools.todo.todo_service import get_todo_service
     svc = get_todo_service()
     count = svc.push_from_emails_sync(data.email_ids)
     return {"ok": True, "count": count}
@@ -122,7 +122,7 @@ async def push_from_emails(data: PushFromEmailsRequest):
 @router.post("/items/{entry_id}/restore")
 async def restore_item(entry_id: str):
     """Restore a cancelled to-do item back to pending status."""
-    from shared_tools.ipc_bridge import restore_todo_item, get_todo_item
+    from shared_tools.core.ipc_bridge import restore_todo_item, get_todo_item
     ok = restore_todo_item(entry_id)
     if not ok:
         return {"error": "Restore failed"}
@@ -133,7 +133,7 @@ async def restore_item(entry_id: str):
 @router.delete("/items/{entry_id}/permanent")
 async def permanent_delete_item(entry_id: str):
     """Permanently delete a to-do item from the database."""
-    from shared_tools.ipc_bridge import hard_delete_todo_item
+    from shared_tools.core.ipc_bridge import hard_delete_todo_item
     ok = hard_delete_todo_item(entry_id)
     return {"ok": ok}
 
@@ -144,8 +144,8 @@ async def push_to_calendar(data: dict):
     Requires each item to have both deadline_date AND deadline_time set.
     Body: {"todo_ids": ["uuid1", "uuid2"]}
     Returns list of results and a list of items missing deadline datetime."""
-    from shared_tools.ipc_bridge import get_todo_item
-    from shared_tools.outlook_tool import create_calendar_event
+    from shared_tools.core.ipc_bridge import get_todo_item
+    from shared_tools.outlook.outlook_tool import create_calendar_event
 
     todo_ids = data.get("todo_ids", [])
     if not todo_ids:

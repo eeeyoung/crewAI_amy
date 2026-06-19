@@ -1,7 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from pydantic import BaseModel
-from shared_tools.llm_config import get_llm
+from shared_tools.core.llm_config import get_llm
 
 
 class ExtractedDate(BaseModel):

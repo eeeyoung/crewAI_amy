@@ -66,10 +66,10 @@ def main():
     import sys as _sys
     _app = QApplication.instance() or QApplication(_sys.argv)
 
-    from shared_tools.pdf_vision_service import (
+    from shared_tools.pdf_vision.pdf_vision_service import (
         PDFVisionService, PHASE1_FOLDER_KEYWORDS, PHASE2_FOLDER_KEYWORDS
     )
-    from shared_tools.file_registry import FileRegistry
+    from shared_tools.memory.file_registry import FileRegistry
 
     reg = FileRegistry(data_dir)
     reg.init_db()

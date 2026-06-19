@@ -33,7 +33,7 @@ from pathlib import Path
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
-from shared_tools.email_parser import (
+from shared_tools.core.email_parser import (
     extract_domain,
     extract_sender_email,
     normalize_subject,
@@ -218,11 +218,11 @@ class HabitLearnerService(QObject):
         self._intent_priors_by_tier: dict[str, dict] = {}
 
         # Ensure DB is initialized
-        from shared_tools.habit_learner_db import init_db
+        from shared_tools.habit_learner.habit_learner_db import init_db
         init_db()
 
         # Ensure mail_fetch directories exist
-        from shared_tools.habit_learner_db import MAIL_FETCH_DIR
+        from shared_tools.habit_learner.habit_learner_db import MAIL_FETCH_DIR
         MAIL_FETCH_DIR.mkdir(parents=True, exist_ok=True)
         (MAIL_FETCH_DIR / "inbox").mkdir(parents=True, exist_ok=True)
         (MAIL_FETCH_DIR / "sent").mkdir(parents=True, exist_ok=True)
@@ -262,7 +262,7 @@ class HabitLearnerService(QObject):
     def load_profiles(self) -> bool:
         """Load pre-built profiles from DB into memory. Called after build or at startup."""
         try:
-            from shared_tools.habit_learner_db import (
+            from shared_tools.habit_learner.habit_learner_db import (
                 get_all_sender_profiles,
                 get_all_style_entries,
                 get_intent_priors,
@@ -494,17 +494,17 @@ class HabitLearnerService(QObject):
 
     def get_learning_summary(self) -> dict:
         """Return stats about what was learned."""
-        from shared_tools.habit_learner_db import get_learning_summary
+        from shared_tools.habit_learner.habit_learner_db import get_learning_summary
         return get_learning_summary()
 
     def get_unmatched_received(self, limit: int = 100) -> list[dict]:
         """Return received emails that had NO matching reply."""
-        from shared_tools.habit_learner_db import get_unmatched_received
+        from shared_tools.habit_learner.habit_learner_db import get_unmatched_received
         return get_unmatched_received(limit)
 
     def get_sender_detail(self, sender_email: str) -> dict | None:
         """Full profile for one sender including example replies."""
-        from shared_tools.habit_learner_db import (
+        from shared_tools.habit_learner.habit_learner_db import (
             get_sender_profile,
             get_all_reply_pairs,
         )
@@ -539,7 +539,7 @@ class HabitLearnerService(QObject):
         skipped_stages = []
 
         try:
-            from shared_tools.habit_learner_db import start_learning_session
+            from shared_tools.habit_learner.habit_learner_db import start_learning_session
 
             session_id = start_learning_session()
             self.build_started.emit(5 - start_stage)
@@ -608,7 +608,7 @@ class HabitLearnerService(QObject):
 
             # Update session
             if session_id:
-                from shared_tools.habit_learner_db import (
+                from shared_tools.habit_learner.habit_learner_db import (
                     complete_learning_session,
                     get_sent_message_count,
                     get_received_message_count,
@@ -653,8 +653,8 @@ class HabitLearnerService(QObject):
         cutoff = (datetime.now(timezone.utc) - timedelta(days=months_back * 30))
         cutoff_str = cutoff.strftime("%Y-%m-%dT00:00:00")
 
-        from shared_tools.outlook_tool import fetch_inbox_emails, fetch_sent_emails
-        from shared_tools.habit_learner_db import (
+        from shared_tools.outlook.outlook_tool import fetch_inbox_emails, fetch_sent_emails
+        from shared_tools.habit_learner.habit_learner_db import (
             MAIL_FETCH_DIR, insert_raw_inbox, insert_raw_sent,
             get_raw_inbox_count, get_raw_sent_count,
         )
@@ -777,7 +777,7 @@ class HabitLearnerService(QObject):
 
     def _save_raw_inbox(self, email: dict):
         """Save a raw inbox email to JSON file + DB."""
-        from shared_tools.habit_learner_db import MAIL_FETCH_DIR, insert_raw_inbox
+        from shared_tools.habit_learner.habit_learner_db import MAIL_FETCH_DIR, insert_raw_inbox
 
         entry_id = email.get("entry_id", "")
         sender_raw = email.get("sender", "")
@@ -825,7 +825,7 @@ class HabitLearnerService(QObject):
 
     def _save_raw_sent(self, email: dict):
         """Save a raw sent email to JSON file + DB."""
-        from shared_tools.habit_learner_db import MAIL_FETCH_DIR, insert_raw_sent
+        from shared_tools.habit_learner.habit_learner_db import MAIL_FETCH_DIR, insert_raw_sent
 
         entry_id = email.get("entry_id", "")
         sender_raw = email.get("sender", "")
@@ -876,7 +876,7 @@ class HabitLearnerService(QObject):
 
     def _stage_normalize(self) -> dict:
         """Extract normalized messages from raw_inbox / raw_sent tables."""
-        from shared_tools.habit_learner_db import (
+        from shared_tools.habit_learner.habit_learner_db import (
             get_raw_inbox_emails, get_raw_sent_emails,
             insert_sent_message, insert_received_message,
         )
@@ -965,7 +965,7 @@ class HabitLearnerService(QObject):
            reply was outside the 9-month fetch window, or the reply
            was sent from a different device/account)
         """
-        from shared_tools.habit_learner_db import (
+        from shared_tools.habit_learner.habit_learner_db import (
             get_all_sent_messages, get_all_received_messages,
             insert_reply_pair, update_received_reply,
         )
@@ -1194,11 +1194,11 @@ class HabitLearnerService(QObject):
 
     def _stage_classify(self) -> dict:
         """LLM-classify each reply pair for intent and style features."""
-        from shared_tools.habit_learner_db import (
+        from shared_tools.habit_learner.habit_learner_db import (
             get_all_reply_pairs, get_unclassified_pairs,
             update_reply_pair_classification, get_pair_count,
         )
-        from shared_tools.llm_config import get_llm
+        from shared_tools.core.llm_config import get_llm
 
         pairs = get_unclassified_pairs()
         # Also classify any pairs that exist
@@ -1326,7 +1326,7 @@ class HabitLearnerService(QObject):
 
     def _stage_build(self) -> dict:
         """Compute statistical profiles from labeled reply pairs."""
-        from shared_tools.habit_learner_db import (
+        from shared_tools.habit_learner.habit_learner_db import (
             get_all_reply_pairs, get_all_sender_profiles, get_sender_profile,
             upsert_sender_profile, upsert_style_entry, upsert_intent_prior,
             update_reply_pair_classification,
@@ -1447,7 +1447,7 @@ class HabitLearnerService(QObject):
         formalities = [p.get("formality_level", 0) for p in pairs if p.get("formality_level")]
 
         # ── Real received/replied counts from received_messages ─────
-        from shared_tools.habit_learner_db import get_sender_received_stats
+        from shared_tools.habit_learner.habit_learner_db import get_sender_received_stats
         stats = get_sender_received_stats(sender_email)
         total_received = stats["total_received"]
         total_replied = stats["total_replied"]
@@ -1642,7 +1642,7 @@ class HabitLearnerService(QObject):
     def _select_examples(self, sender_email: str, category: str,
                           k: int = 3) -> list[dict]:
         """Select K most behaviorally similar historical replies."""
-        from shared_tools.habit_learner_db import get_all_reply_pairs
+        from shared_tools.habit_learner.habit_learner_db import get_all_reply_pairs
 
         all_pairs = get_all_reply_pairs()
         if not all_pairs:

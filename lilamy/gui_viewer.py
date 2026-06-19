@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QKeySequence, QShortcut
 
-from shared_tools.mail_service import MailService
+from shared_tools.mail.mail_service import MailService
 
 # ── Styles ────────────────────────────────────────────────────────────
 
@@ -312,7 +312,7 @@ class DetailPanel(QWidget):
         threading.Thread(target=self._do_refine, args=(instr,), daemon=True).start()
 
     def _do_refine(self, instr: str):
-        from shared_tools.llm_config import get_llm
+        from shared_tools.core.llm_config import get_llm
         em = self._email
         prompt = (
             f"ORIGINAL EMAIL SUBJECT: {em.get('subject', '')}\n"
@@ -341,7 +341,7 @@ class DetailPanel(QWidget):
 
     def _remove(self):
         if self._email:
-            from shared_tools.ipc_bridge import remove_processed_email
+            from shared_tools.core.ipc_bridge import remove_processed_email
             remove_processed_email(self._email.get("entry_id", ""))
             self.clear()
 

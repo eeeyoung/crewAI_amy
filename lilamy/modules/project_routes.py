@@ -54,7 +54,7 @@ async def list_projects():
 @router.get("/{entry_id}")
 async def get_project(entry_id: str):
     """Get a single project."""
-    from shared_tools.variation_db import get_project
+    from shared_tools.variation.variation_db import get_project
     p = get_project(entry_id)
     if not p:
         return {"error": "Project not found"}
@@ -96,7 +96,7 @@ async def import_project_upload(file: UploadFile = File(...)):
             tmp_path = tmp.name
 
         # Also save a permanent copy to data/variations/ for reference
-        from shared_tools.variation_db import DATA_DIR
+        from shared_tools.variation.variation_db import DATA_DIR
         dest_dir = DATA_DIR / "variations"
         dest_dir.mkdir(parents=True, exist_ok=True)
         dest_path = dest_dir / file.filename
@@ -120,7 +120,7 @@ async def import_project_upload(file: UploadFile = File(...)):
 @router.patch("/{entry_id}")
 async def update_project(entry_id: str, data: ProjectUpdate):
     """Update project fields."""
-    from shared_tools.variation_db import update_project as db_update
+    from shared_tools.variation.variation_db import update_project as db_update
     fields = {k: v for k, v in data.model_dump().items() if v is not None}
     if not fields:
         return {"error": "No fields to update"}
@@ -161,7 +161,7 @@ async def get_internal_register(entry_id: str):
 @router.post("/{entry_id}/export-pdf")
 async def export_project_pdf(entry_id: str):
     """Export the project xlsx to PDF (requires Excel COM)."""
-    from shared_tools.variation_db import get_project
+    from shared_tools.variation.variation_db import get_project
     project = get_project(entry_id)
     if not project or not project.get("xlsx_path"):
         return {"error": "Project has no xlsx — push first"}

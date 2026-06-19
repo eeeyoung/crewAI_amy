@@ -12,11 +12,11 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
 
-from shared_tools.ipc_bridge import (
+from shared_tools.core.ipc_bridge import (
     get_app_status,
 )
-from shared_tools.outlook_tool import OutlookSendTool
-from shared_tools.calendar_service import CalendarService
+from shared_tools.outlook.outlook_tool import OutlookSendTool
+from shared_tools.calendar.calendar_service import CalendarService
 
 # ── icons for date types ──
 TYPE_ICONS = {
@@ -816,7 +816,7 @@ class CalendarWindow(QMainWindow):
     # ── Cleanup ─────────────────────────────────────────────────────────
 
     def closeEvent(self, event):
-        from shared_tools.ipc_bridge import unregister_app
+        from shared_tools.core.ipc_bridge import unregister_app
 
         self.amail_poll_timer.stop()
         self.triage_poll_timer.stop()

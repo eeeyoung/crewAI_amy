@@ -15,7 +15,7 @@ async def analyze_request(
     Accepts text + file uploads (PDFs, images).
     Returns structured analysis + project match + suggested VO plan.
     """
-    from shared_tools.variation_agent import analyze_variation_request
+    from shared_tools.variation.variation_agent import analyze_variation_request
 
     # Read file contents into memory
     file_data = []

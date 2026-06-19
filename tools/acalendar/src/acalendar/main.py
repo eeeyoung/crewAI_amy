@@ -13,7 +13,7 @@ def run():
     if not app:
         app = QApplication(sys.argv)
 
-    from shared_tools.ipc_bridge import register_app, init_shared_db
+    from shared_tools.core.ipc_bridge import register_app, init_shared_db
     register_app("acalendar")
     init_shared_db()
 

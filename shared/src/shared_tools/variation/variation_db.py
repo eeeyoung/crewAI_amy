@@ -143,7 +143,7 @@ def init_variation_db() -> None:
 
 def _migrate_from_shared_db(conn) -> None:
     """Copy variation data from mail_history.db if it exists there and variations.db is empty."""
-    from shared_tools.ipc_bridge import CREWAI_DIR as SHARED_DATA_DIR, DB_PATH as SHARED_DB_PATH
+    from shared_tools.core.ipc_bridge import CREWAI_DIR as SHARED_DATA_DIR, DB_PATH as SHARED_DB_PATH
 
     shared_db = SHARED_DB_PATH
     if not shared_db.exists():

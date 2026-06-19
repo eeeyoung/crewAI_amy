@@ -3,7 +3,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import DirectoryReadTool
 from pydantic import BaseModel
-from shared_tools.llm_config import get_llm
+from shared_tools.core.llm_config import get_llm
 
 from amail.mail_knowledge import search_facts
 

@@ -106,7 +106,7 @@ def _match_project(project_name: str) -> dict | None:
     if not project_name:
         return None
 
-    from shared_tools.variation_db import get_projects
+    from shared_tools.variation.variation_db import get_projects
 
     projects = get_projects()
     if not projects:
@@ -197,7 +197,7 @@ def analyze_variation_request(
     # ── Get next VO number if project matched ─────────────────────────
     next_vo = None
     if match:
-        from shared_tools.variation_db import get_variations
+        from shared_tools.variation.variation_db import get_variations
 
         variations = get_variations(project_entry_id=match["entry_id"])
         active = [v for v in variations if v.get("status") != "void"]
@@ -205,7 +205,7 @@ def analyze_variation_request(
         next_vo = max_vo + 1
 
     # ── List all projects for the frontend ────────────────────────────
-    from shared_tools.variation_db import get_projects
+    from shared_tools.variation.variation_db import get_projects
 
     all_projects = get_projects()
 

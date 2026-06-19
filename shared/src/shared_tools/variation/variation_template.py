@@ -130,7 +130,7 @@ class TemplateMapping:
     @classmethod
     def from_db(cls, project_name: str | None = None) -> "TemplateMapping | None":
         """Load mapping from the variation_templates DB table."""
-        from shared_tools.ipc_bridge import get_template_mapping as db_get
+        from shared_tools.core.ipc_bridge import get_template_mapping as db_get
         record = db_get(project_name)
         if record and record.get("mapping"):
             return cls(record["mapping"])

@@ -75,14 +75,14 @@ class TodoService(QObject):
 
     def load_items(self, status: str | None = None, limit: int = 0) -> list[dict]:
         """Reload items from DB and emit todos_changed. Returns the list."""
-        from shared_tools.ipc_bridge import get_todo_items
+        from shared_tools.core.ipc_bridge import get_todo_items
         self._items = get_todo_items(status=status, limit=limit)
         _emit(self.todos_changed, self._items)
         return self._items
 
     def update_item(self, entry_id: str, **fields) -> bool:
         """Update fields of a to-do item. Emits todos_changed on success."""
-        from shared_tools.ipc_bridge import update_todo_item
+        from shared_tools.core.ipc_bridge import update_todo_item
         ok = update_todo_item(entry_id, **fields)
         if ok:
             self.load_items()
@@ -90,7 +90,7 @@ class TodoService(QObject):
 
     def delete_item(self, entry_id: str) -> bool:
         """Soft-delete a to-do item. Emits todos_changed on success."""
-        from shared_tools.ipc_bridge import delete_todo_item
+        from shared_tools.core.ipc_bridge import delete_todo_item
         ok = delete_todo_item(entry_id)
         if ok:
             self.load_items()
@@ -98,7 +98,7 @@ class TodoService(QObject):
 
     def create_item(self, data: dict) -> bool:
         """Create a single manual to-do item (no source email)."""
-        from shared_tools.ipc_bridge import upsert_todo_item
+        from shared_tools.core.ipc_bridge import upsert_todo_item
         item = {
             "entry_id": str(uuid.uuid4()),
             "source_email_id": data.get("source_email_id"),
@@ -154,7 +154,7 @@ class TodoService(QObject):
     def _handle_push_emails(self, email_ids: list[str]) -> int:
         """For each email ID, read its todos_json + deadlines_json from
         processed_emails and create todo_items rows."""
-        from shared_tools.ipc_bridge import get_processed_email, upsert_todo_item
+        from shared_tools.core.ipc_bridge import get_processed_email, upsert_todo_item
 
         count = 0
         for eid in email_ids:

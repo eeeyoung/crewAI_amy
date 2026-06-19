@@ -15,11 +15,11 @@ from PyQt6.QtGui import QFont, QShortcut, QKeySequence
 
 from amail.crew import MessageFilterCrew, TriageSingleCrew, ReplyGeneratorCrew, WorkflowGeneratorCrew, FactExtractorCrew
 from amail.mail_knowledge import init_db, search_facts, save_facts
-from shared_tools.outlook_tool import (
+from shared_tools.outlook.outlook_tool import (
     OutlookSendTool, mark_email_as_read, mark_email_as_unread,
     fetch_attachments_for_email, save_attachment, fetch_outlook_contacts,
 )
-from shared_tools.ipc_bridge import (
+from shared_tools.core.ipc_bridge import (
     register_app, unregister_app, init_shared_db,
     push_categorized_email, pull_calendar_events,
 )
@@ -39,7 +39,7 @@ def _resolve_signature_images(html: str) -> str:
     return html
 
 from amail.mail_lister import MailListerDialog
-from shared_tools.mail_service import MailService
+from shared_tools.mail.mail_service import MailService
 
 
 # =============================================================================
@@ -1702,7 +1702,7 @@ class TriageWindow(QMainWindow):
 
     def _poll_nav_requests(self):
         """Check if ACalendar has requested navigation to a specific email."""
-        from shared_tools.ipc_bridge import CREWAI_DIR
+        from shared_tools.core.ipc_bridge import CREWAI_DIR
         nav_path = CREWAI_DIR / "nav_request.json"
         if not nav_path.exists():
             return

@@ -119,7 +119,7 @@ class MailService(QObject):
         self._running = True
 
         from amail.mail_knowledge import init_db
-        from shared_tools.ipc_bridge import init_shared_db, register_app
+        from shared_tools.core.ipc_bridge import init_shared_db, register_app
 
         init_db()
         init_shared_db()
@@ -145,7 +145,7 @@ class MailService(QObject):
             q.put(None)  # poison pill
         for t in self._threads:
             t.join(timeout=3)
-        from shared_tools.ipc_bridge import unregister_app
+        from shared_tools.core.ipc_bridge import unregister_app
         unregister_app("amail")
 
     # ------------------------------------------------------------------
@@ -155,11 +155,11 @@ class MailService(QObject):
     def load_emails_from_db(self, status: str = "active", limit: int = 100) -> list[dict]:
         """Load processed emails from the shared DB (fast, no Outlook call).
         Emits ``emails_loaded`` with the result list."""
-        from shared_tools.ipc_bridge import get_processed_emails, get_latest_received_time
+        from shared_tools.core.ipc_bridge import get_processed_emails, get_latest_received_time
         emails = get_processed_emails(status=status, limit=limit)
         self._latest_received_time = get_latest_received_time()
         # Prime the session dedup set
-        from shared_tools.ipc_bridge import get_processed_entry_ids
+        from shared_tools.core.ipc_bridge import get_processed_entry_ids
         self._processed_entry_ids = get_processed_entry_ids()
         self.emails_loaded.emit(emails)
         return emails
@@ -180,8 +180,8 @@ class MailService(QObject):
             return
 
         import pythoncom; pythoncom.CoInitialize()
-        from shared_tools.outlook_tool import fetch_inbox_emails
-        from shared_tools.ipc_bridge import (
+        from shared_tools.outlook.outlook_tool import fetch_inbox_emails
+        from shared_tools.core.ipc_bridge import (
             get_processed_entry_ids, get_latest_received_time,
             upsert_processed_email,
         )
@@ -321,7 +321,7 @@ class MailService(QObject):
 
     def remove_email(self, entry_id: str):
         """Soft-delete an email from the processed store."""
-        from shared_tools.ipc_bridge import remove_processed_email
+        from shared_tools.core.ipc_bridge import remove_processed_email
         remove_processed_email(entry_id)
         self._processed_entry_ids.discard(entry_id)
 
@@ -338,8 +338,8 @@ class MailService(QObject):
         if not self._running:
             return
         import pythoncom; pythoncom.CoInitialize()
-        from shared_tools.outlook_tool import fetch_inbox_emails
-        from shared_tools.ipc_bridge import (
+        from shared_tools.outlook.outlook_tool import fetch_inbox_emails
+        from shared_tools.core.ipc_bridge import (
             get_earliest_received_time, get_processed_entry_ids,
             upsert_processed_email,
         )
@@ -402,8 +402,8 @@ class MailService(QObject):
             return
         import pythoncom
         pythoncom.CoInitialize()
-        from shared_tools.outlook_tool import fetch_inbox_emails
-        from shared_tools.ipc_bridge import (
+        from shared_tools.outlook.outlook_tool import fetch_inbox_emails
+        from shared_tools.core.ipc_bridge import (
             get_earliest_received_time, get_latest_received_time,
             get_processed_entry_ids, get_active_entry_ids_in_range,
             upsert_processed_email, get_processed_emails,
@@ -496,7 +496,7 @@ class MailService(QObject):
 
     def _summarize_batch(self, emails: list[dict], _emit) -> int:
         """Summarize a batch of emails and persist. Returns count added."""
-        from shared_tools.ipc_bridge import upsert_processed_email
+        from shared_tools.core.ipc_bridge import upsert_processed_email
         summarized = 0
         total = len(emails)
 
@@ -629,7 +629,7 @@ class MailService(QObject):
     def send_email(self, idx: int, recipient: str, cc: str,
                    subject: str, body_html: str) -> bool:
         """Send reply via Outlook and mark original as read."""
-        from shared_tools.outlook_tool import (
+        from shared_tools.outlook.outlook_tool import (
             OutlookSendTool, mark_email_as_read,
         )
         sig_path = os.path.join(_KNOWLEDGE_DIR, "amy_signature.html")
@@ -662,7 +662,7 @@ class MailService(QObject):
         """Skip an email, optionally marking it as read in Outlook."""
         entry_id = self._emails[idx].get("entry_id", "")
         if mark_read and entry_id:
-            from shared_tools.outlook_tool import mark_email_as_read
+            from shared_tools.outlook.outlook_tool import mark_email_as_read
             mark_email_as_read(entry_id)
         if entry_id:
             self._processed_entry_ids.add(entry_id)
@@ -785,12 +785,12 @@ class MailService(QObject):
         entry_id = self._emails[idx].get("entry_id", "")
         if not entry_id:
             return []
-        from shared_tools.outlook_tool import fetch_attachments_for_email
+        from shared_tools.outlook.outlook_tool import fetch_attachments_for_email
         return fetch_attachments_for_email(entry_id)
 
     def save_attachment(self, idx: int, att_index: int, save_dir: str) -> str:
         entry_id = self._emails[idx].get("entry_id", "")
-        from shared_tools.outlook_tool import save_attachment
+        from shared_tools.outlook.outlook_tool import save_attachment
         return save_attachment(entry_id, att_index, save_dir)
 
     def fetch_contacts_async(self):
@@ -801,7 +801,7 @@ class MailService(QObject):
     def check_nav_request(self) -> str | None:
         """Check if ACalendar requested navigation to a specific email.
         Returns the target ``EntryID`` or ``None``."""
-        from shared_tools.ipc_bridge import CREWAI_DIR
+        from shared_tools.core.ipc_bridge import CREWAI_DIR
         nav_path = CREWAI_DIR / "nav_request.json"
         if not nav_path.exists():
             return None
@@ -913,7 +913,7 @@ class MailService(QObject):
 
             # Push to IPC for ACalendar
             try:
-                from shared_tools.ipc_bridge import push_categorized_email, push_calendar_events
+                from shared_tools.core.ipc_bridge import push_categorized_email, push_calendar_events
                 push_categorized_email({
                     "email_entry_id": email.get("entry_id", ""),
                     "email_subject": email.get("subject", ""),
@@ -977,7 +977,7 @@ class MailService(QObject):
 
             cal_ctx = "No calendar data available."
             try:
-                from shared_tools.ipc_bridge import pull_calendar_events
+                from shared_tools.core.ipc_bridge import pull_calendar_events
                 evs = pull_calendar_events()
                 if evs:
                     lines = [
@@ -992,10 +992,10 @@ class MailService(QObject):
             behavioral_text = ""
             print(f"\n  ── Habit Learner ──────────────────────────────────────")
             try:
-                from shared_tools.habit_learner_service import get_habit_service
+                from shared_tools.habit_learner.habit_learner_service import get_habit_service
                 habit_svc = get_habit_service()
                 sender_raw = email.get("sender", "")
-                from shared_tools.email_parser import extract_sender_email
+                from shared_tools.core.email_parser import extract_sender_email
                 sender_email = extract_sender_email(sender_raw)
                 print(f"  Sender email: {sender_email or '(not extractable)'}")
 
@@ -1124,7 +1124,7 @@ class MailService(QObject):
         self.grammar_polished.emit(idx, polished)
 
     def _run_contact_fetch(self):
-        from shared_tools.outlook_tool import fetch_outlook_contacts
+        from shared_tools.outlook.outlook_tool import fetch_outlook_contacts
         contacts = fetch_outlook_contacts()
         self._contacts_cache = contacts
         self.contacts_loaded.emit(contacts)

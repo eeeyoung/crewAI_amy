@@ -3,7 +3,7 @@
 import os
 os.environ['LILAMY_DATA_DIR'] = r'C:\crewAI\crewAI_amy\tools\amail\historical_emails'
 
-from shared_tools.memory_service import MemoryService
+from shared_tools.memory.memory_service import MemoryService
 
 svc = MemoryService()
 

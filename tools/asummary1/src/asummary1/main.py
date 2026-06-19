@@ -19,7 +19,7 @@ if sys.platform == "win32":
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-from shared_tools.ipc_bridge import DB_PATH  # noqa: E402 — import after path setup
+from shared_tools.core.ipc_bridge import DB_PATH  # noqa: E402 — import after path setup
 
 
 def _get_connection() -> sqlite3.Connection:
@@ -174,7 +174,7 @@ def run():
 
     # Ensure shared DB exists (auto-init if missing)
     if not DB_PATH.exists():
-        from shared_tools.ipc_bridge import init_shared_db
+        from shared_tools.core.ipc_bridge import init_shared_db
         init_shared_db()
         print(f"📦 Initialized shared database at {DB_PATH}\n")
 

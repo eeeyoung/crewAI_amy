@@ -16,7 +16,7 @@ Architecture (follows lilAmy service pattern)::
 
 Usage::
 
-    from shared_tools.pdf_vision_service import PDFVisionService
+    from shared_tools.pdf_vision.pdf_vision_service import PDFVisionService
 
     svc = PDFVisionService(data_root="D:/Projects/ClientName")
     svc.page_complete.connect(lambda fid, pg, txt: print(f"Page {pg} done"))
@@ -146,10 +146,10 @@ class PDFVisionService(QObject):
     def _get_services(self):
         """Lazy-init MemoryService and FileRegistry."""
         if self._memory_svc is None:
-            from shared_tools.memory_service import MemoryService
+            from shared_tools.memory.memory_service import MemoryService
             self._memory_svc = MemoryService(data_root=str(self._data_root))
         if self._registry is None:
-            from shared_tools.file_registry import FileRegistry
+            from shared_tools.memory.file_registry import FileRegistry
             self._registry = FileRegistry(self._data_root)
             self._registry.init_db()
         return self._memory_svc, self._registry
@@ -337,7 +337,7 @@ class PDFVisionService(QObject):
         Also persists a plain-text cache to ``.lilamy_vision_cache/{file_id}.txt``
         so the Gemini output survives ChromaDB resets.  The cache is the
         authoritative copy — ChromaDB can be rebuilt from it instantly."""
-        from shared_tools.memory_service import _md5, _chunk_text
+        from shared_tools.memory.memory_service import _md5, _chunk_text
 
         # Build full text from all page descriptions
         pages_text = []

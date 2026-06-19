@@ -13,7 +13,7 @@ _habit_service = None
 def _get_service():
     global _service
     if _service is None:
-        from shared_tools.mail_service import MailService
+        from shared_tools.mail.mail_service import MailService
         _service = MailService(auto_refresh=False)
         _service.start()
     return _service
@@ -22,7 +22,7 @@ def _get_service():
 def _get_habit_service():
     global _habit_service
     if _habit_service is None:
-        from shared_tools.habit_learner_service import get_habit_service
+        from shared_tools.habit_learner.habit_learner_service import get_habit_service
         _habit_service = get_habit_service()
     return _habit_service
 
@@ -66,7 +66,7 @@ class EmailList(BaseModel):
 @router.get("/emails")
 async def get_emails(status: str = Query("active"), limit: int = Query(0)):
     """Return all processed emails enriched with sort_label from habit learner."""
-    from shared_tools.ipc_bridge import get_processed_emails
+    from shared_tools.core.ipc_bridge import get_processed_emails
     emails = get_processed_emails(status=status, limit=limit)
 
     # Enrich each email with sort_label from habit learner
@@ -127,7 +127,7 @@ async def generate_reply(entry_id: str, data: dict = {}):
     """Generate an AI reply for a specific email (lazy).
     Optional body: {prompt_guide: "..."} — user guidance that becomes the primary
     instruction for the reply agent, with behavioral context as secondary input."""
-    from shared_tools.ipc_bridge import get_processed_email, upsert_processed_email
+    from shared_tools.core.ipc_bridge import get_processed_email, upsert_processed_email
     prompt_guide = (data.get("prompt_guide") or "").strip() if data else ""
     email = get_processed_email(entry_id)
     if not email:
@@ -251,7 +251,7 @@ async def generate_reply(entry_id: str, data: dict = {}):
         print(f"  User prompt: {prompt_guide[:200]}...")
         print(f"  behavioral_context (secondary): {len(behavioral_text)} chars")
 
-        from shared_tools.llm_config import get_llm
+        from shared_tools.core.llm_config import get_llm
 
         prompt = f"""You are {email.get('assignee', 'Amy Chen')} ({email.get('assignee_email', 'amy@welink.com.au')}), a construction contract administrator.
 
@@ -349,7 +349,7 @@ Output ONLY the raw body text."""
     print(f"{'═'*70}\n")
 
     # Persist the draft
-    from shared_tools.ipc_bridge import upsert_processed_email
+    from shared_tools.core.ipc_bridge import upsert_processed_email
     email["reply_draft"] = draft.strip()
     upsert_processed_email(email)
 
@@ -363,7 +363,7 @@ Output ONLY the raw body text."""
 @router.post("/emails/{entry_id}/remove")
 async def remove_email(entry_id: str):
     """Soft-delete an email from the store."""
-    from shared_tools.ipc_bridge import remove_processed_email
+    from shared_tools.core.ipc_bridge import remove_processed_email
     ok = remove_processed_email(entry_id)
     return {"ok": ok}
 
@@ -375,7 +375,7 @@ class BatchEntryIds(BaseModel):
 @router.post("/emails/mark-read")
 async def mark_emails_read(data: BatchEntryIds):
     """Mark one or more Outlook emails as READ."""
-    from shared_tools.outlook_tool import mark_email_as_read
+    from shared_tools.outlook.outlook_tool import mark_email_as_read
     count = 0
     for eid in data.entry_ids:
         if mark_email_as_read(eid):
@@ -386,7 +386,7 @@ async def mark_emails_read(data: BatchEntryIds):
 @router.post("/emails/mark-unread")
 async def mark_emails_unread(data: BatchEntryIds):
     """Mark one or more Outlook emails as UNREAD."""
-    from shared_tools.outlook_tool import mark_email_as_unread
+    from shared_tools.outlook.outlook_tool import mark_email_as_unread
     count = 0
     for eid in data.entry_ids:
         if mark_email_as_unread(eid):
@@ -397,7 +397,7 @@ async def mark_emails_unread(data: BatchEntryIds):
 @router.post("/emails/mark-flagged")
 async def mark_emails_flagged(data: BatchEntryIds):
     """Flag one or more Outlook emails (set follow-up flag)."""
-    from shared_tools.outlook_tool import mark_email_as_flagged
+    from shared_tools.outlook.outlook_tool import mark_email_as_flagged
     count = 0
     for eid in data.entry_ids:
         if mark_email_as_flagged(eid):
@@ -409,7 +409,7 @@ async def mark_emails_flagged(data: BatchEntryIds):
 async def check_attachments(data: BatchEntryIds):
     """Batch check which emails have non-inline attachments.
     Returns {entry_id: count} mapping."""
-    from shared_tools.outlook_tool import fetch_attachments_for_email
+    from shared_tools.outlook.outlook_tool import fetch_attachments_for_email
     result = {}
     for eid in data.entry_ids:
         try:
@@ -423,7 +423,7 @@ async def check_attachments(data: BatchEntryIds):
 @router.get("/emails/{entry_id}/attachments")
 async def list_attachments(entry_id: str):
     """List non-inline attachments for an email."""
-    from shared_tools.outlook_tool import fetch_attachments_for_email
+    from shared_tools.outlook.outlook_tool import fetch_attachments_for_email
     try:
         atts = fetch_attachments_for_email(entry_id)
         return {"ok": True, "attachments": atts}
@@ -437,7 +437,7 @@ async def download_attachment(entry_id: str, index: int, open_inline: bool = Fal
     If open_inline=True, uses inline disposition so browser may open it directly."""
     import tempfile
     from pathlib import Path
-    from shared_tools.outlook_tool import save_attachment, fetch_attachments_for_email
+    from shared_tools.outlook.outlook_tool import save_attachment, fetch_attachments_for_email
 
     # Get filename first
     atts = fetch_attachments_for_email(entry_id)
@@ -479,8 +479,8 @@ async def download_attachment(entry_id: str, index: int, open_inline: bool = Fal
 @router.post("/emails/{entry_id}/refine")
 async def refine_reply(entry_id: str, data: dict):
     """Refine an existing draft based on user instructions."""
-    from shared_tools.llm_config import get_llm
-    from shared_tools.ipc_bridge import get_processed_email, upsert_processed_email
+    from shared_tools.core.llm_config import get_llm
+    from shared_tools.core.ipc_bridge import get_processed_email, upsert_processed_email
 
     email = get_processed_email(entry_id)
     if not email:
@@ -513,7 +513,7 @@ async def refine_reply(entry_id: str, data: dict):
 async def get_email_detail(entry_id: str):
     """Return a single email with full detail.
     If body is empty, fetches from Outlook on demand."""
-    from shared_tools.ipc_bridge import get_processed_email, upsert_processed_email
+    from shared_tools.core.ipc_bridge import get_processed_email, upsert_processed_email
     email = get_processed_email(entry_id)
     if not email:
         return {"error": "Email not found"}

@@ -33,7 +33,7 @@ def run_triage():
         "d92815c2-ccaa-451d-96ba-96fb35ad993c",  # Azure AD app registration
     )
     if graph_client_id:
-        from shared_tools.graph_service import GraphService
+        from shared_tools.graph.graph_service import GraphService
         graph_svc = GraphService(client_id=graph_client_id)
 
     from amail.mail_lister import MailListerDialog
@@ -95,7 +95,7 @@ def build_habits():
             start_stage = int(args[idx + 1])
 
     from PyQt6.QtWidgets import QApplication
-    from shared_tools.habit_learner_service import HabitLearnerService
+    from shared_tools.habit_learner.habit_learner_service import HabitLearnerService
 
     app = QApplication.instance()
     if not app:
@@ -173,11 +173,11 @@ def view_habits():
     import json
     import sys
 
-    from shared_tools.habit_learner_db import (
+    from shared_tools.habit_learner.habit_learner_db import (
         get_learning_summary, get_all_sender_profiles, get_all_reply_pairs,
         get_unmatched_received, get_sender_profile,
     )
-    from shared_tools.email_parser import extract_sender_email
+    from shared_tools.core.email_parser import extract_sender_email
 
     args = sys.argv[1:]
 
@@ -280,7 +280,7 @@ def view_habits():
         if not email:
             print("Usage: uv run view_habits --sender <email>")
             return
-        from shared_tools.habit_learner_service import get_habit_service
+        from shared_tools.habit_learner.habit_learner_service import get_habit_service
         svc = get_habit_service()
         detail = svc.get_sender_detail(email)
         if not detail:

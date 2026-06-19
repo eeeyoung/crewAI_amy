@@ -14,7 +14,7 @@ _service = None
 def _get_service():
     global _service
     if _service is None:
-        from shared_tools.variation_service import VariationService
+        from shared_tools.variation.variation_service import VariationService
         _service = VariationService()
         _service.start()
     return _service
@@ -150,7 +150,7 @@ async def delete_variation(entry_id: str):
 @router.post("/{entry_id}/restore")
 async def restore_variation(entry_id: str):
     """Restore a voided variation back to draft."""
-    from shared_tools.variation_db import restore_variation as db_restore
+    from shared_tools.variation.variation_db import restore_variation as db_restore
     ok = db_restore(entry_id)
     return {"ok": ok}
 
@@ -158,7 +158,7 @@ async def restore_variation(entry_id: str):
 @router.delete("/{entry_id}/permanent")
 async def permanent_delete_variation(entry_id: str):
     """Permanently delete a variation and all its items."""
-    from shared_tools.variation_db import hard_delete_variation
+    from shared_tools.variation.variation_db import hard_delete_variation
     ok = hard_delete_variation(entry_id)
     return {"ok": ok}
 
@@ -170,7 +170,7 @@ class ReorderRequest(BaseModel):
 @router.put("/reorder")
 async def reorder_variations(data: ReorderRequest):
     """Update sort_order for a list of variations based on their position in the list."""
-    from shared_tools.variation_db import reorder_variations as db_reorder
+    from shared_tools.variation.variation_db import reorder_variations as db_reorder
     ok = db_reorder(data.ordered_ids)
     return {"ok": ok}
 
@@ -211,8 +211,8 @@ async def export_single_vo_pdf(entry_id: str):
     """Generate a PDF for a single VO and return it for download."""
     import tempfile
     from pathlib import Path
-    from shared_tools.variation_db import get_variation, get_variation_items
-    from shared_tools.variation_template import TemplateMapping, VariationExcelBuilder, calculate_variation_costs
+    from shared_tools.variation.variation_db import get_variation, get_variation_items
+    from shared_tools.variation.variation_template import TemplateMapping, VariationExcelBuilder, calculate_variation_costs
 
     var = get_variation(entry_id)
     if not var:
@@ -221,7 +221,7 @@ async def export_single_vo_pdf(entry_id: str):
     items = get_variation_items(entry_id)
 
     # Get project info for the header
-    from shared_tools.variation_db import get_project
+    from shared_tools.variation.variation_db import get_project
     proj = get_project(var.get("project_entry_id", "")) if var.get("project_entry_id") else None
 
     # Load mapping and template
@@ -262,7 +262,7 @@ async def export_single_vo_pdf(entry_id: str):
     builder.build_vo_sheet(ws, var_for_sheet, items, initials=var.get("raised_by", "AC"))
 
     # Copy logo images from VOXX and set fonts
-    from shared_tools.variation_template import _extract_images as _ext, _add_image_to_sheet as _add_img, _set_all_fonts_arial
+    from shared_tools.variation.variation_template import _extract_images as _ext, _add_image_to_sheet as _add_img, _set_all_fonts_arial
     if "VOXX" in builder.wb.sheetnames:
         for img_info in _ext(builder.wb["VOXX"]):
             _add_img(ws, img_info)

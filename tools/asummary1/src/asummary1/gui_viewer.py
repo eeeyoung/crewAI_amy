@@ -16,11 +16,11 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont, QAction, QKeySequence, QShortcut
 
-from shared_tools.outlook_tool import fetch_inbox_emails, mark_email_as_read
+from shared_tools.outlook.outlook_tool import fetch_inbox_emails, mark_email_as_read
 from asummary1.crew import SummarizerCrew
 from asummary1.reply_crew import ReplyCrew
 
-from shared_tools.ipc_bridge import DB_PATH
+from shared_tools.core.ipc_bridge import DB_PATH
 
 # ── Styles ────────────────────────────────────────────────────────────
 
@@ -311,7 +311,7 @@ class RefineWorker(QThread):
         self.instructions = instructions
 
     def run(self):
-        from shared_tools.llm_config import get_llm
+        from shared_tools.core.llm_config import get_llm
         prompt = (
             f"ORIGINAL EMAIL SUBJECT: {self.email_data.get('subject', '')}\n"
             f"ORIGINAL EMAIL SENDER: {self.email_data.get('sender', '')}\n\n"

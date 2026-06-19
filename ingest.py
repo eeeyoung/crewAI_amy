@@ -171,8 +171,8 @@ def main():
     os.environ["LILAMY_DATA_DIR"] = str(root)
 
     # Late imports (after env setup)
-    from shared_tools.file_registry import FileRegistry
-    from shared_tools.memory_service import MemoryService, _md5, _extract_text
+    from shared_tools.memory.file_registry import FileRegistry
+    from shared_tools.memory.memory_service import MemoryService, _md5, _extract_text
 
     registry = FileRegistry(root)
     registry.init_db()
