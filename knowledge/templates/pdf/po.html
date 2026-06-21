@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Purchase Order {{ reference_number }}</title>
+</head>
+<body>
+
+<!-- ═══════════════ PAGE 1: PURCHASE ORDER ═══════════════ -->
+
+<!-- Company Header -->
+<table class="company-header">
+  <tr>
+    <td width="180" style="vertical-align: top;">
+      {% if logo_path %}
+      <img src="file:///{{ logo_path }}" style="max-width: 170px; max-height: 48px;" alt="Logo">
+      {% endif %}
+    </td>
+    <td style="vertical-align: top;">
+      <div class="company-name">{{ company_name|default('Welink Construction Pty Ltd') }}</div>
+      <div class="company-info">{{ company_address|default('') }}</div>
+      <div class="company-info">{{ company_suburb|default('') }}</div>
+      <div class="company-info">ABN: {{ company_abn|default('92 623 700 269') }}</div>
+    </td>
+  </tr>
+</table>
+
+<!-- Title -->
+<div class="po-title">PURCHASE ORDER</div>
+
+<!-- Supplier + Order Info (4-column table with rowspan) -->
+<table class="info-table">
+  <tr>
+    <td class="label" width="12%">Supplier</td>
+    <td width="33%">{{ vendor_name|default('') }}</td>
+    <td width="41%" rowspan="4" style="font-size: 8pt; color: #555; vertical-align: middle;">
+      Order Number must be quoted on Delivery Dockets and Invoices.<br><br>
+      All Enquiries and Correspondence must be addressed to:<br>
+      &#9993; {{ company_email|default('admin@welink.com.au') }}<br>
+      &#9742; {{ company_phone|default('(02) 9979 8200') }}
+    </td>
+    <td width="14%" style="padding: 2pt 4pt;">
+      <div><span class="bold">Order No:</span> {{ order_number|default('') }}</div>
+      <div><span class="bold">Date:</span> {{ order_date|default('') }}</div>
+      <div><span class="bold">Creditor Phone:</span> {{ creditor_phone|default('') }}</div>
+      <div><span class="bold">Creditor Code:</span> {{ creditor_code|default('') }}</div>
+    </td>
+  </tr>
+  <tr>
+    <td class="label">Address</td>
+    <td>{{ vendor_address_line1|default('') }}</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>{{ vendor_address_line2|default('') }}</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>ABN: {{ vendor_abn|default('') }}</td>
+  </tr>
+</table>
+
+<!-- Scope Statement -->
+<p class="scope-text">
+  <span class="bold">{{ scope_label|default('Scope:') }}</span>
+  {{ scope_text|default('The Supplier agrees to supply the Goods and/or Services described below strictly in accordance with the terms and conditions set out in this Purchase Order (including any special conditions).') }}
+</p>
+<p class="scope-text">
+  These Goods/Services are intended for use in the project detailed below:
+</p>
+
+<!-- Project / Delivery Info -->
+<table class="info-table">
+  <tr>
+    <td class="label" width="17%">Project:</td>
+    <td width="43%">{{ project_name|default('') }}{% if project_location %} &mdash; {{ project_location }}{% endif %}</td>
+    <td class="label" width="17%">Project Code:</td>
+    <td width="23%">{{ project_code|default('') }}</td>
+  </tr>
+  <tr>
+    <td class="label">Delivery Instructions:</td>
+    <td>{{ delivery_instructions|default('') }}</td>
+    <td class="label">Delivery date required:</td>
+    <td>{{ delivery_date|default('') }}</td>
+  </tr>
+  <tr>
+    <td class="label">Attention:</td>
+    <td colspan="3">{{ attention|default('') }}</td>
+  </tr>
+</table>
+
+<!-- Items Table -->
+<table class="items-table">
+  <thead>
+    <tr>
+      <th class="col-item">Item</th>
+      <th class="col-desc">Description</th>
+      <th class="col-qty">Qty</th>
+      <th class="col-unit">Unit</th>
+      <th class="col-rate">Rate</th>
+      <th class="col-discount">Discount</th>
+      <th class="col-amount">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    {% if item.unit == 'NOTE' or item.is_note %}
+    <tr class="note-row">
+      <td class="text-center">{{ loop.index }}</td>
+      <td colspan="3">{{ item.description }}</td>
+      <td class="text-right">N/A</td>
+      <td class="text-right">N/A</td>
+      <td class="text-right">N/A</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td class="text-center">{{ loop.index }}</td>
+      <td>{{ item.description }}</td>
+      <td class="text-right">{{ "%.2f"|format(item.qty|default(0)) }}</td>
+      <td class="text-center">{{ item.unit|default('item') }}</td>
+      <td class="currency">{{ "$%.2f"|format(item.rate|default(0)) }}</td>
+      <td class="currency">{{ "$%.2f"|format(item.discount|default(0)) }}</td>
+      <td class="currency">{{ "$%.2f"|format(item.amount|default(item.qty*item.rate if item.qty and item.rate else 0)) }}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Totals -->
+<table class="totals-table">
+  <tr>
+    <td class="total-label">Total $</td>
+    <td class="total-value">{{ "$%.2f"|format(total_ex_gst|default(0)) }}</td>
+  </tr>
+  <tr>
+    <td class="total-label">GST</td>
+    <td class="total-value">{{ "$%.2f"|format(gst|default(0)) }}</td>
+  </tr>
+  <tr>
+    <td class="total-label bold" style="font-size: 10pt;">Gross</td>
+    <td class="total-value bold" style="font-size: 10pt;">{{ "$%.2f"|format(gross|default(0)) }}</td>
+  </tr>
+</table>
+
+<!-- Special Instructions -->
+{% if special_instructions %}
+<div class="special-instructions">
+  <div class="label">Special Instructions:</div>
+  <div>{{ special_instructions }}</div>
+</div>
+{% endif %}
+
+<!-- Footer Box -->
+<table class="footer-box">
+  <tr>
+    <td width="25%" class="divider bold">PURCHASING<br>OFFICER</td>
+    <td width="25%" class="divider"></td>
+    <td width="25%" class="divider">Requested by<br><span style="color: #999;">&lt;&lt;REQ&gt;&gt;</span></td>
+    <td width="25%">Approved by<br><span class="bold">{{ approved_by|default('ACHEN') }}</span></td>
+  </tr>
+</table>
+
+<!-- ═══════════════ PAGE 2: TERMS & CONDITIONS ═══════════════ -->
+<div class="page-break"></div>
+
+<div class="terms-title">PURCHASE ORDER TERMS &amp; CONDITIONS</div>
+<div class="terms-subtitle">Purchase Order {{ order_number|default(reference_number) }} &mdash; Continued</div>
+
+{% for clause in terms %}
+<div class="terms-clause">
+  <div class="clause-title">{{ clause.number }} {{ clause.title }}</div>
+  <div class="clause-body">{{ clause.body }}</div>
+</div>
+{% endfor %}
+
+</body>
+</html>

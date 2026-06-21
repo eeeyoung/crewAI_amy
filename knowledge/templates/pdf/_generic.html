@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ schema.name }}</title>
+</head>
+<body>
+
+<div class="page-container" style="
+  position: relative;
+  width: {{ page_width }}mm;
+  height: {{ page_height }}mm;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+">
+
+{% for el in elements %}
+{% if el.type == 'image' %}
+  <!-- image: {{ el.id }} -->
+  {% if el.bind and context.get(el.bind) %}
+  <img src="file:///{{ context[el.bind] }}" data-el-id="{{ el.id }}"
+       style="position: absolute; left: {{ el.x }}mm; top: {{ el.y }}mm;
+              {% if el.w %}width: {{ el.w }}mm;{% endif %}
+              {% if el.h %}height: {{ el.h }}mm;{% endif %}
+              {{ _style_str(el.style) }}"
+       alt="{{ el.id }}">
+  {% endif %}
+
+{% elif el.type == 'table' %}
+  <!-- table: {{ el.id }} -->
+  {% if el.bind and context.get(el.bind) %}
+  <table class="schema-table" data-el-id="{{ el.id }}" style="
+    position: absolute; left: {{ el.x }}mm; top: {{ el.y }}mm;
+    width: {{ el.w }}mm; border-collapse: collapse;
+    {{ _style_str(el.style) }}">
+    <thead>
+      <tr>
+      {% for col in el.columns %}
+        <th style="
+          width: {{ col.width }}mm;
+          text-align: {{ col.align or 'left' }};
+          {% if col.bg %}background-color: {{ col.bg }};{% endif %}
+          font-weight: bold; font-size: 8pt; padding: 3pt;
+          border: 1px solid #000;">{{ col.header }}</th>
+      {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% set rows = context[el.bind] %}
+    {% for row in rows %}
+      <tr>
+      {% for col in el.columns %}
+        <td style="
+          width: {{ col.width }}mm;
+          text-align: {{ col.align or 'left' }};
+          {% if col.bold and loop.last %}font-weight: bold;{% endif %}
+          font-size: 9pt; padding: 2pt 4pt;
+          border: 1px solid #ccc;">{{ _fmt(row[col.bind], col.format) }}</td>
+      {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+{% elif el.type == 'text' %}
+  <!-- text: {{ el.id }} -->
+  {% set val = context[el.bind] if el.bind else '' %}
+  {% if val or el.prefix %}
+  <div data-el-id="{{ el.id }}" style="
+    position: absolute; left: {{ el.x }}mm; top: {{ el.y }}mm;
+    width: {{ el.w }}mm;{% if el.h %} height: {{ el.h }}mm;{% endif %}
+    overflow: hidden; white-space: pre-wrap;
+    {{ _style_str(el.style) }}">{{ el.prefix or '' }}{{ val }}</div>
+  {% endif %}
+
+{% elif el.type == 'signature' %}
+  <!-- signature: {{ el.id }} -->
+  <div data-el-id="{{ el.id }}" style="
+    position: absolute; left: {{ el.x }}mm; top: {{ el.y }}mm;
+    width: {{ el.w }}mm;{% if el.h %} height: {{ el.h }}mm;{% endif %}
+    font-family: 'Rage Italic', cursive; font-size: 18pt;
+    text-align: center;
+    {{ _style_str(el.style) }}">{{ context.get(el.bind, '') or el.default or '' }}</div>
+
+{% elif el.type == 'rect' %}
+  <!-- rect: {{ el.id }} -->
+  <div style="
+    position: absolute; left: {{ el.x }}mm; top: {{ el.y }}mm;
+    width: {{ el.w }}mm; height: {{ el.h }}mm;
+    {{ _style_str(el.style) }}"></div>
+
+{% elif el.type == 'page-break' %}
+  <div class="page-break" style="position: absolute; left: 0; top: {{ page_height }}mm; width: 0; height: 0;"></div>
+
+{% endif %}
+{% endfor %}
+
+</div><!-- /page-container -->
+
+</body>
+</html>

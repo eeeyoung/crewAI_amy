@@ -1,0 +1,97 @@
+{
+  "name": "vo_v2",
+  "description": "Variation Order — JSON schema template (editable via canvas)",
+  "page": { "size": "A4", "orientation": "landscape" },
+  "elements": [
+    {
+      "id": "vo-title",
+      "type": "text",
+      "x": 15, "y": 12,
+      "w": 267, "h": 10,
+      "bind": "title_text",
+      "style": { "fontSize": "12pt", "fontWeight": "bold", "textAlign": "center" }
+    },
+    {
+      "id": "project-info",
+      "type": "table",
+      "x": 15, "y": 26,
+      "w": 267, "h": null,
+      "bind": "project_rows",
+      "style": { "fontSize": "9pt" },
+      "columns": [
+        { "header": "", "bind": "label", "width": 35, "align": "left", "bold": true },
+        { "header": "", "bind": "value", "width": 110, "align": "left" },
+        { "header": "", "bind": "label2", "width": 35, "align": "right", "bold": true },
+        { "header": "", "bind": "value2", "width": 87, "align": "left" }
+      ]
+    },
+    {
+      "id": "vo-header",
+      "type": "text",
+      "x": 15, "y": 44,
+      "w": 267, "h": 8,
+      "bind": "vo_header",
+      "style": { "fontSize": "10pt", "fontWeight": "bold", "borderBottom": "2px solid #000" }
+    },
+    {
+      "id": "items-table",
+      "type": "table",
+      "x": 15, "y": 56,
+      "w": 267, "h": null,
+      "bind": "items",
+      "style": { "fontSize": "9pt", "headerBg": "#D9E2F3" },
+      "columns": [
+        { "header": "Item", "bind": "item_number", "width": 14, "align": "center" },
+        { "header": "Description", "bind": "description", "width": 91, "align": "left" },
+        { "header": "Qty", "bind": "qty", "width": 20, "align": "right", "format": "%.2f" },
+        { "header": "Unit", "bind": "unit", "width": 18, "align": "center" },
+        { "header": "Rate ($)", "bind": "rate", "width": 26, "align": "right", "format": "$%.2f" },
+        { "header": "Cost", "bind": "cost", "width": 28, "align": "right", "format": "$%.2f" },
+        { "header": "Credit", "bind": "credit", "width": 28, "align": "right", "format": "$%.2f" }
+      ]
+    },
+    {
+      "id": "summary-table",
+      "type": "table",
+      "x": 145, "y": null,
+      "w": 137, "h": null,
+      "bind": "summary_rows",
+      "style": { "fontSize": "9pt" },
+      "columns": [
+        { "header": "", "bind": "label", "width": 82, "align": "right", "bold": true },
+        { "header": "", "bind": "value", "width": 55, "align": "right", "format": "$%.2f" }
+      ]
+    },
+    {
+      "id": "signature-box",
+      "type": "rect",
+      "x": 170, "y": null,
+      "w": 85, "h": 30,
+      "style": { "border": "2px solid #000", "padding": "4pt" }
+    },
+    {
+      "id": "signature-raised-by",
+      "type": "text",
+      "x": 178, "y": null,
+      "w": 70, "h": 6,
+      "bind": "raised_by_label",
+      "style": { "fontSize": "8pt", "fontWeight": "bold" }
+    },
+    {
+      "id": "signature-initials",
+      "type": "signature",
+      "x": 178, "y": null,
+      "w": 70, "h": 12,
+      "bind": "initials",
+      "style": { "fontFamily": "Rage Italic", "fontSize": "18pt", "textAlign": "center" }
+    },
+    {
+      "id": "client-acceptance",
+      "type": "text",
+      "x": 15, "y": 182,
+      "w": 150, "h": 6,
+      "bind": "client_acceptance_label",
+      "style": { "fontSize": "9pt", "fontWeight": "bold" }
+    }
+  ]
+}

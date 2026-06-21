@@ -1,0 +1,82 @@
+/* _base.css — Shared styles for all PDF documents.
+   Used by both PO and VO templates.
+   Page size is controlled by the PdfRenderer service (landscape/portrait). */
+
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', 'Helvetica Neue', sans-serif;
+  font-size: 9pt;
+  line-height: 1.35;
+  color: #1a1a1a;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── Typography ───────────────────────────────────────────────────── */
+
+h1 { font-size: 16pt; font-weight: bold; }
+h2 { font-size: 12pt; font-weight: bold; }
+h3 { font-size: 10pt; font-weight: bold; }
+
+.bold { font-weight: bold; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-top { vertical-align: top; }
+
+.small { font-size: 8pt; }
+.normal { font-size: 9pt; }
+
+.currency { text-align: right; white-space: nowrap; }
+
+/* ── Signature font ───────────────────────────────────────────────── */
+
+.signature {
+  font-family: 'Rage Italic', 'Segoe Script', 'Brush Script MT', cursive;
+  font-size: 18pt;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────── */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  page-break-inside: auto;
+}
+
+tr {
+  page-break-inside: avoid;
+}
+
+th, td {
+  padding: 3px 5px;
+  vertical-align: top;
+}
+
+/* ── Page breaks ──────────────────────────────────────────────────── */
+
+.page-break {
+  page-break-before: always;
+}
+
+/* ── Borders ──────────────────────────────────────────────────────── */
+
+.border-thin { border: 1px solid #000; }
+.border-medium { border: 2px solid #000; }
+.border-bottom { border-bottom: 1px solid #000; }
+.border-bottom-medium { border-bottom: 2px solid #000; }
+.border-top { border-top: 1px solid #000; }
+.border-top-medium { border-top: 2px solid #000; }
+
+/* ── Colors ───────────────────────────────────────────────────────── */
+
+.bg-light-gray { background-color: #f2f2f2; }
+
+/* ── Page numbering (rendered natively by Playwright footer) ──────── */

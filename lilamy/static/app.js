@@ -72,12 +72,18 @@ function switchModule(id) {
   const amailView = document.getElementById('module-content');
   const todoView = document.getElementById('todo-content');
   const varView = document.getElementById('variation-content');
+  const subView = document.getElementById('subcontractor-content');
+  const kpView = document.getElementById('knowledge-content');
   const amailCtrls = document.getElementById('amail-controls');
   const todoCtrls = document.getElementById('todo-controls');
+  const dbBar = document.getElementById('db-bar');
+  const infoBar = document.getElementById('info-bar');
 
-  // Hide all
-  [amailView, todoView, varView].forEach(v => { if (v) v.style.display = 'none'; });
+  // Hide module content, bars
+  [amailView, todoView, varView, subView, kpView].forEach(v => { if (v) v.style.display = 'none'; });
   [amailCtrls, todoCtrls].forEach(c => { if (c) c.style.display = 'none'; });
+  if (dbBar) dbBar.style.display = 'none';
+  if (infoBar) infoBar.style.display = 'none';
 
   if (id === 'todo') {
     if (todoView) todoView.style.display = 'flex';
@@ -95,6 +101,24 @@ function switchModule(id) {
     loadProjects().then(() => {
       if (selectedProjectId) varSwitchProject();
     });
+  } else if (id === 'subcontractors') {
+    if (subView) subView.style.display = 'flex';
+    document.getElementById('module-title').textContent = '🏗️ Subcontractors';
+    document.getElementById('btn-agent').style.display = '';
+    subLoadProjects().then(() => {
+      if (subSelectedProjectId) subSwitchProject();
+    });
+  } else if (id === 'knowledge_pool') {
+    if (dbBar) dbBar.style.display = 'flex';
+    if (kpView) {
+      kpView.style.display = 'flex';
+      kpView.style.flexDirection = 'column';
+    }
+    document.getElementById('module-title').textContent = '🧠 Knowledge Pool';
+    document.getElementById('btn-agent').style.display = 'none';
+    document.getElementById('kp-placeholder').style.display = 'flex';
+    document.getElementById('kp-data').style.display = 'none';
+    loadKpCounts();
   } else {
     document.getElementById('btn-agent').style.display = 'none';
     // Default: AMail
@@ -3625,6 +3649,957 @@ varCreateProject = async function() {
     window._agentPendingVO = null;
   }
 };
+
+// ── Subcontractors Module ─────────────────────────────────────────────
+
+let subCommitments = [];
+let subSelectedProjectId = null;
+let subSelectedId = null;
+let _subSaveTimer = null;
+
+// ── Project management ─────────────────────────────────────────────
+
+async function subLoadProjects() {
+  try {
+    const res = await fetch(`${API}/api/subcontractors/projects`);
+    const data = await res.json();
+    const projects = data.projects || [];
+    const sel = document.getElementById('sub-project-select');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- Select Project --</option>' +
+      projects.map(p => `<option value="${p.entry_id}">${esc(p.name || 'Unnamed')} (${p.job_number || ''})</option>`).join('');
+  } catch (e) { /* silent */ }
+}
+
+function subNewProject() {
+  const name = prompt('Project name:');
+  if (!name) return;
+  fetch(`${API}/api/subcontractors/projects`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name, job_number: '', location: '', head_contract_sum: 0}),
+  }).then(r => r.json()).then(d => {
+    if (d.entry_id) {
+      subLoadProjects().then(() => {
+        document.getElementById('sub-project-select').value = d.entry_id;
+        subSwitchProject();
+      });
+      notify('Project created', 'success');
+    }
+  }).catch(() => notify('Failed to create project', 'error'));
+}
+
+async function subSwitchProject() {
+  const sel = document.getElementById('sub-project-select');
+  subSelectedProjectId = sel?.value || null;
+  if (subSelectedProjectId) {
+    await subLoadVendors();
+    await subLoadCommitments();
+  } else {
+    subCommitments = [];
+    subRenderCards();
+  }
+}
+
+// ── Vendor loading ──────────────────────────────────────────────────
+
+async function subLoadVendors() {
+  try {
+    const res = await fetch(`${API}/api/subcontractors/vendors`);
+    const data = await res.json();
+    const vendors = data.vendors || [];
+    const sel = document.getElementById('sub-edit-vendor');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- Select Vendor --</option>' +
+      vendors.map(v => `<option value="${v.entry_id}">${esc(v.company_name)} (${v.vendor_type})</option>`).join('');
+  } catch (e) { /* silent */ }
+}
+
+// ── Commitment loading ─────────────────────────────────────────────
+
+async function subLoadCommitments(type, status) {
+  if (!subSelectedProjectId) { subRenderCards(); return; }
+  try {
+    let url = `${API}/api/subcontractors/commitments?project_entry_id=${subSelectedProjectId}`;
+    if (type) url += `&commitment_type=${type}`;
+    if (status) url += `&status=${status}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    subCommitments = data.commitments || [];
+
+    // Update filter counts
+    try {
+      const rAll = await fetch(`${API}/api/subcontractors/commitments?project_entry_id=${subSelectedProjectId}`);
+      const dAll = await rAll.json();
+      setText('sub-count-all', dAll.count || 0);
+      const rPO = await fetch(`${API}/api/subcontractors/commitments?project_entry_id=${subSelectedProjectId}&commitment_type=purchase_order`);
+      setText('sub-count-po', (await rPO.json()).count || 0);
+      const rSC = await fetch(`${API}/api/subcontractors/commitments?project_entry_id=${subSelectedProjectId}&commitment_type=subcontract`);
+      setText('sub-count-sc', (await rSC.json()).count || 0);
+    } catch (_) {}
+
+    document.getElementById('sub-count-header').textContent = `${subCommitments.length} commitments`;
+    subRenderCards();
+  } catch (e) { notify('Failed to load commitments', 'error'); }
+}
+
+function subRenderCards() {
+  const container = document.getElementById('sub-cards-container');
+  const empty = document.getElementById('sub-cards-empty');
+  if (!subCommitments.length) {
+    container.innerHTML = '';
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+
+  container.innerHTML = subCommitments.map(c => {
+    const typeIcon = c.commitment_type === 'subcontract' ? '📋' : '📦';
+    const typeLabel = c.commitment_type === 'subcontract' ? 'Subcontract' : 'PO';
+    const ref = c.reference_number || '—';
+    const status = c.status || 'draft';
+    return `
+      <div class="card" id="subcard-${c.entry_id}" onclick="subSelectCommitment('${c.entry_id}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;color:var(--yellow);">${esc(ref)}</span>
+          <span style="font-size:10px;color:var(--muted);">${typeIcon} ${typeLabel}</span>
+        </div>
+        <div style="font-size:13px;color:var(--blue);margin-top:2px;">${esc(c.title || '(no title)')}</div>
+        <div style="font-size:12px;color:var(--green);margin-top:2px;">$${(c.commitment_value || 0).toLocaleString()}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">${c.item_count || 0} items · ${status}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── New commitment ─────────────────────────────────────────────────
+
+async function subNew() {
+  if (!subSelectedProjectId) { notify('Select a project first', 'warning'); return; }
+  try {
+    const res = await fetch(`${API}/api/subcontractors/commitments`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        project_entry_id: subSelectedProjectId,
+        commitment_type: 'purchase_order',
+        title: 'New Commitment',
+        commitment_value: 0,
+        status: 'draft',
+      }),
+    });
+    const data = await res.json();
+    if (data.entry_id) {
+      await subLoadCommitments();
+      subSelectCommitment(data.entry_id);
+      notify('Commitment created', 'success');
+    }
+  } catch (e) { notify('Failed to create', 'error'); }
+}
+
+// ── Select and load detail ──────────────────────────────────────────
+
+async function subSelectCommitment(entryId) {
+  subSelectedId = entryId;
+  try {
+    const res = await fetch(`${API}/api/subcontractors/commitments/${entryId}`);
+    const c = await res.json();
+    if (c.error) { notify(c.error, 'error'); return; }
+
+    document.getElementById('sub-detail-empty').style.display = 'none';
+    document.getElementById('sub-detail').style.display = 'flex';
+
+    document.getElementById('sub-edit-title').value = c.title || '';
+    document.getElementById('sub-edit-type').value = c.commitment_type || 'purchase_order';
+    document.getElementById('sub-edit-status').value = c.status || 'draft';
+    document.getElementById('sub-edit-ref').value = c.reference_number || '';
+    document.getElementById('sub-edit-value').value = c.commitment_value || 0;
+    document.getElementById('sub-edit-retention').value = c.retention_pct || 0;
+    document.getElementById('sub-edit-desc').value = c.description || '';
+    if (c.vendor_entry_id) document.getElementById('sub-edit-vendor').value = c.vendor_entry_id;
+
+    // Show/hide retention for subcontracts
+    const isSub = c.commitment_type === 'subcontract';
+    document.getElementById('sub-edit-retention').parentElement.style.display = isSub ? '' : 'none';
+
+    // Render items
+    subRenderItems(c.items || []);
+    subUpdateTotals(c.items || []);
+
+    // Doc link
+    if (c.document_path) {
+      const link = document.getElementById('sub-doc-link');
+      link.style.display = 'block';
+      link.innerHTML = `📄 <a href="/api/subcontractors/commitments/${entryId}/download" style="color:var(--blue);">Download Document</a>`;
+    }
+
+    // Highlight card
+    document.querySelectorAll('#sub-cards-container .card').forEach(el => el.classList.remove('selected'));
+    const card = document.getElementById(`subcard-${entryId}`);
+    if (card) card.classList.add('selected');
+
+  } catch (e) { notify('Failed to load commitment', 'error'); }
+}
+
+// ── Type change → show/hide retention ──────────────────────────────
+
+function subTypeChanged() {
+  const type = document.getElementById('sub-edit-type')?.value || '';
+  document.getElementById('sub-edit-retention').parentElement.style.display = type === 'subcontract' ? '' : 'none';
+  if (type === 'subcontract') {
+    document.getElementById('sub-edit-retention').value = document.getElementById('sub-edit-retention').value || 5;
+  }
+  subAutoSave();
+}
+
+// ── Items rendering ─────────────────────────────────────────────────
+
+function subRenderItems(items) {
+  const container = document.getElementById('sub-items-rows');
+  if (!items.length) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px;">No items — click "+ Add Item"</div>';
+    return;
+  }
+  container.innerHTML = items.map((it, i) => {
+    const amount = it.amount || (it.qty || 0) * (it.rate || 0);
+    return `
+    <div style="display:grid;grid-template-columns:40px 1fr 60px 55px 80px 80px 35px;gap:4px;padding:4px 0;align-items:center;border-bottom:1px solid #1a1a2e;">
+      <span style="font-size:12px;color:var(--muted);text-align:center;">${i+1}</span>
+      <input type="text" value="${esc(it.description || '')}" onchange="subItemUpdate(${it.id},'description',this.value)"
+        style="background:var(--base);border:1px solid var(--overlay);border-radius:4px;padding:4px 6px;color:var(--text);font-size:12px;width:100%;">
+      <input type="number" value="${it.qty || 0}" onchange="subItemQtyRateChanged(${it.id},'qty',this)" step="any"
+        style="background:var(--base);border:1px solid var(--overlay);border-radius:4px;padding:4px 6px;color:var(--text);font-size:12px;width:100%;text-align:center;">
+      <input type="text" value="${esc(it.unit || 'item')}" onchange="subItemUpdate(${it.id},'unit',this.value)"
+        style="background:var(--base);border:1px solid var(--overlay);border-radius:4px;padding:4px 6px;color:var(--text);font-size:12px;width:100%;">
+      <input type="number" value="${it.rate || 0}" onchange="subItemQtyRateChanged(${it.id},'rate',this)" step="any"
+        style="background:var(--base);border:1px solid var(--overlay);border-radius:4px;padding:4px 6px;color:var(--text);font-size:12px;width:100%;text-align:right;">
+      <span class="sub-item-amount" style="font-size:12px;color:var(--green);text-align:right;padding-right:4px;">$${amount.toFixed(2)}</span>
+      <button onclick="subRemoveItem(${it.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:2px;">×</button>
+    </div>
+  `;}).join('');
+}
+
+function subUpdateTotals(items) {
+  if (!items || !items.length) {
+    document.getElementById('sub-totals').style.display = 'none';
+    return;
+  }
+  document.getElementById('sub-totals').style.display = 'block';
+  const total = items.reduce((s, i) => s + (i.amount || (i.qty || 0) * (i.rate || 0)), 0);
+  const gst = total * 0.10;
+  document.getElementById('sub-total-ex').textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2});
+  document.getElementById('sub-total-gst').textContent = gst.toLocaleString(undefined, {minimumFractionDigits: 2});
+  document.getElementById('sub-total-incl').textContent = (total + gst).toLocaleString(undefined, {minimumFractionDigits: 2});
+}
+
+// ── Item CRUD ────────────────────────────────────────────────────────
+
+async function subAddItem() {
+  if (!subSelectedId) return;
+  const rows = document.querySelectorAll('#sub-items-rows > div');
+  try {
+    const res = await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/items`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({item_number: rows.length + 1, description: '', qty: 0, unit: 'item', rate: 0}),
+    });
+    if ((await res.json()).ok) await subSelectCommitment(subSelectedId);
+  } catch (_) {}
+}
+
+async function subItemUpdate(itemId, field, value) {
+  if (!subSelectedId) return;
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/items/${itemId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({[field]: isNaN(value) ? value : parseFloat(value) || 0}),
+    });
+  } catch (_) {}
+}
+
+async function subItemQtyRateChanged(itemId, field, inputEl) {
+  if (!subSelectedId) return;
+  const row = inputEl.closest('div');
+  const inputs = row.querySelectorAll('input[type="number"]');
+  const qty = parseFloat(inputs[0]?.value) || 0;
+  const rate = parseFloat(inputs[1]?.value) || 0;
+  const amount = qty * rate;
+  const amtSpan = row.querySelector('.sub-item-amount');
+  if (amtSpan) amtSpan.textContent = `$${amount.toFixed(2)}`;
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/items/${itemId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({[field]: parseFloat(inputEl.value) || 0, amount}),
+    });
+    subRecalc();
+  } catch (_) {}
+}
+
+async function subRemoveItem(itemId) {
+  if (!subSelectedId) return;
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/items/${itemId}`, {method: 'DELETE'});
+    await subSelectCommitment(subSelectedId);
+  } catch (_) {}
+}
+
+function subRecalc() {
+  const rows = document.querySelectorAll('#sub-items-rows > div');
+  const items = [];
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input[type="number"]');
+    if (inputs.length >= 2) {
+      items.push({qty: parseFloat(inputs[0]?.value) || 0, rate: parseFloat(inputs[1]?.value) || 0,
+        amount: (parseFloat(inputs[0]?.value)||0) * (parseFloat(inputs[1]?.value)||0)});
+    }
+  });
+  subUpdateTotals(items);
+}
+
+// ── Auto-save ────────────────────────────────────────────────────────
+
+const subAutoSave = debounce(async () => {
+  if (!subSelectedId) return;
+  const fields = {
+    title: document.getElementById('sub-edit-title')?.value || '',
+    commitment_type: document.getElementById('sub-edit-type')?.value || 'purchase_order',
+    status: document.getElementById('sub-edit-status')?.value || 'draft',
+    vendor_entry_id: document.getElementById('sub-edit-vendor')?.value || '',
+    commitment_value: parseFloat(document.getElementById('sub-edit-value')?.value) || 0,
+    retention_pct: parseFloat(document.getElementById('sub-edit-retention')?.value) || 0,
+    description: document.getElementById('sub-edit-desc')?.value || '',
+  };
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(fields),
+    });
+    // Update card list silently
+    const ref = document.getElementById('sub-edit-ref')?.value;
+    if (ref) {
+      const card = document.getElementById(`subcard-${subSelectedId}`);
+      if (card) {
+        const titleEl = card.querySelector('div:nth-child(2)');
+        const valEl = card.querySelector('div:nth-child(3)');
+        if (titleEl) titleEl.textContent = fields.title;
+        if (valEl) valEl.textContent = `$${(fields.commitment_value || 0).toLocaleString()}`;
+      }
+    }
+  } catch (_) {}
+}, 600);
+
+async function subSave() {
+  if (!subSelectedId) return;
+  await subAutoSave();
+  notify('Saved', 'success');
+}
+
+// ── Document generation ──────────────────────────────────────────────
+
+async function subGenerateDoc() {
+  if (!subSelectedId) return;
+  const btn = document.getElementById('sub-btn-generate');
+  btn.disabled = true; btn.textContent = '⏳ Generating...';
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/generate`, {method: 'POST'});
+    let pollCount = 0;
+    const poll = setInterval(async () => {
+      const r = await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}`);
+      const c = await r.json();
+      pollCount++;
+      if (c.document_path || pollCount > 30) {
+        clearInterval(poll);
+        btn.disabled = false; btn.textContent = '📊 Generate Document';
+        if (c.document_path) {
+          document.getElementById('sub-doc-link').style.display = 'block';
+          document.getElementById('sub-doc-link').innerHTML = `✅ <a href="/api/subcontractors/commitments/${subSelectedId}/download" style="color:var(--green);">Download Document</a>`;
+          notify('Document generated!', 'success');
+        }
+      }
+    }, 1000);
+  } catch (e) { btn.disabled = false; btn.textContent = '📊 Generate Document'; notify('Failed', 'error'); }
+}
+
+async function subExportPdf() {
+  if (!subSelectedId) return;
+  const btn = document.getElementById('sub-btn-pdf');
+  btn.disabled = true; btn.textContent = '⏳ Exporting...';
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/export-pdf`, {method: 'POST'});
+    let pollCount = 0;
+    const poll = setInterval(async () => {
+      const r = await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}`);
+      const c = await r.json();
+      pollCount++;
+      if (c.pdf_path || pollCount > 30) {
+        clearInterval(poll);
+        btn.disabled = false; btn.textContent = '📄 Export PDF';
+        if (c.pdf_path) notify('PDF exported!', 'success');
+      }
+    }, 1000);
+  } catch (e) { btn.disabled = false; btn.textContent = '📄 Export PDF'; }
+}
+
+async function subGenerateEmail() {
+  if (!subSelectedId) return;
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/generate-email`, {method: 'POST'});
+    document.getElementById('sub-email-card').style.display = 'block';
+    document.getElementById('sub-btn-send').disabled = false;
+    setTimeout(async () => {
+      try {
+        const r = await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}`);
+        const c = await r.json();
+        if (c.email_draft) {
+          const lines = c.email_draft.split('\n');
+          const subjLine = lines.find(l => l.startsWith('Subject:'));
+          if (subjLine) {
+            document.getElementById('sub-email-subject').value = subjLine.replace('Subject:', '').trim();
+            document.getElementById('sub-email-body').value = lines.slice(1).join('\n').trim();
+          }
+        }
+      } catch (_) {}
+    }, 2000);
+    notify('Email draft generated', 'success');
+  } catch (_) { notify('Failed', 'error'); }
+}
+
+async function subSendEmail() {
+  if (!subSelectedId) return;
+  const to = document.getElementById('sub-email-to')?.value || '';
+  if (!to) { notify('Enter recipient', 'warning'); return; }
+  try {
+    const res = await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}/send`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        to, cc: '',
+        subject: document.getElementById('sub-email-subject')?.value || '',
+        body: document.getElementById('sub-email-body')?.value || '',
+      }),
+    });
+    if ((await res.json()).ok) {
+      notify('Email sent!', 'success');
+      await subSelectCommitment(subSelectedId);
+    }
+  } catch (_) { notify('Failed to send', 'error'); }
+}
+
+// ── Delete ───────────────────────────────────────────────────────────
+
+async function subDelete() {
+  if (!subSelectedId) return;
+  if (!confirm('Delete this commitment?')) return;
+  try {
+    await fetch(`${API}/api/subcontractors/commitments/${subSelectedId}`, {method: 'DELETE'});
+    subSelectedId = null;
+    document.getElementById('sub-detail').style.display = 'none';
+    document.getElementById('sub-detail-empty').style.display = 'flex';
+    await subLoadCommitments();
+    notify('Deleted', 'success');
+  } catch (_) { notify('Failed', 'error'); }
+}
+
+// ── Agent integration ────────────────────────────────────────────────
+
+// Override the agent modal button behavior for subcontractors
+const _origOpenAgentModal = openAgentModal;
+openAgentModal = function() {
+  if (currentModule === 'subcontractors') {
+    subOpenAgentModal();
+    return;
+  }
+  _origOpenAgentModal();
+};
+
+function subOpenAgentModal() {
+  document.getElementById('agent-modal').classList.add('show');
+  document.getElementById('agent-text').value = '';
+  document.getElementById('agent-text').placeholder = 'Upload a construction quote PDF to extract vendor, trade, line items, and rates...';
+  _agentFiles = [];
+  renderAgentFiles();
+  document.getElementById('agent-results').style.display = 'none';
+}
+
+// Override agent analyze for subcontractors
+const _origAgentAnalyze = agentAnalyze;
+agentAnalyze = async function() {
+  if (currentModule === 'subcontractors') {
+    await subAgentAnalyze();
+    return;
+  }
+  await _origAgentAnalyze();
+};
+
+async function subAgentAnalyze() {
+  const text = document.getElementById('agent-text')?.value?.trim() || '';
+  if (!_agentFiles.length) { notify('Please attach a quote PDF', 'warning'); return; }
+
+  const btn = document.getElementById('btn-agent-analyze');
+  const spinner = document.getElementById('agent-spinner');
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  document.getElementById('agent-results').style.display = 'none';
+
+  try {
+    const formData = new FormData();
+    formData.append('text', text);
+    formData.append('project_entry_id', subSelectedProjectId || '');
+    for (const af of _agentFiles) formData.append('files', af.file);
+
+    const t0 = Date.now();
+    const res = await fetch(`${API}/api/subcontractors/agent/analyze-quote`, {method: 'POST', body: formData});
+    const data = await res.json();
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+
+    if (data.error) { notify(data.error, 'error'); return; }
+    subRenderAgentResults(data, elapsed);
+  } catch (e) { notify('Analysis failed: ' + e.message, 'error'); }
+  finally { btn.disabled = false; spinner.style.display = 'none'; }
+}
+
+function subRenderAgentResults(data, elapsed) {
+  const panel = document.getElementById('agent-results');
+  const content = document.getElementById('agent-results-content');
+  panel.style.display = 'block';
+
+  const a = data.analysis || {};
+  const match = data.vendor_match;
+
+  if (a.parse_error) {
+    content.innerHTML = `<div style="color:var(--red);">⚠️ Could not parse. Raw: ${esc(a.raw_response || '')}</div>`;
+    return;
+  }
+
+  const type = data.vendor_type_suggestion || 'subcontractor';
+  const typeIcon = type === 'subcontractor' ? '🔨' : '📦';
+  const total = a.total_incl_gst || a.total_ex_gst || a.total_estimated_cost || 0;
+  const items = a.line_items || [];
+  const over100k = type === 'subcontractor' && total >= 100000;
+  const docLabel = over100k ? 'Subcontract' : 'Purchase Order';
+
+  let html = `
+    <div class="agent-card" style="margin-bottom:8px;">
+      <div class="agent-card-title">🏢 Vendor</div>
+      <div style="font-weight:600;color:var(--blue);">${esc(a.vendor_name || 'Unknown')}</div>
+      <div style="font-size:11px;color:var(--muted);">${typeIcon} ${type} · Trade: ${esc(a.trade_name || '?')}</div>
+      ${match ? `<div style="font-size:11px;color:var(--green);">✅ Matched: ${esc(match.name)}</div>` :
+        `<div style="font-size:11px;color:var(--yellow);">New vendor — will be created</div>`}
+    </div>
+    <div class="agent-card" style="margin-bottom:8px;">
+      <div class="agent-card-title">📋 Will Create: ${docLabel}</div>
+      <div style="font-weight:600;color:var(--green);">$${total.toLocaleString()} (${elapsed}s)</div>
+      ${over100k ? '<div style="color:var(--yellow);font-size:11px;">⚠️ Subcontractor ≥ $100K → Subcontract with retention</div>' : ''}
+      <div style="font-size:11px;color:var(--muted);">${items.length} line items extracted</div>
+    </div>`;
+
+  if (items.length) {
+    html += `<div class="agent-card" style="margin-bottom:8px;"><div class="agent-card-title">📊 Items</div>`;
+    items.forEach((it, i) => {
+      html += `<div style="font-size:11px;padding:2px 0;border-bottom:1px solid #1a1a2e;">
+        ${i+1}. ${esc(it.description || 'Item')} — ${it.qty||0} ${esc(it.unit||'item')} × $${(it.rate||0).toLocaleString()} = <b>$${((it.qty||0)*(it.rate||0)).toLocaleString()}</b></div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (a.notes) {
+    html += `<div class="agent-card" style="margin-bottom:8px;"><div class="agent-card-title">📝 Notes</div>
+      <div style="font-size:11px;color:var(--subtext);">${esc(a.notes)}</div></div>`;
+  }
+
+  html += `<button class="btn btn-primary" onclick="subCreateFromAnalysis()" style="width:100%;padding:10px;">✅ Create ${docLabel} & Open in Editor</button>`;
+  content.innerHTML = html;
+  window._subLastAnalysis = data;
+}
+
+async function subCreateFromAnalysis() {
+  if (!window._subLastAnalysis) return;
+  if (!subSelectedProjectId) { notify('Select a project first', 'warning'); return; }
+
+  const data = window._subLastAnalysis;
+  try {
+    const res = await fetch(`${API}/api/subcontractors/agent/create-from-analysis`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        analysis: JSON.stringify(data.analysis),
+        project_entry_id: subSelectedProjectId,
+        vendor_type: data.vendor_type_suggestion || 'subcontractor',
+      }),
+    });
+    const result = await res.json();
+    if (result.entry_id) {
+      closeAgentModal();
+      await subLoadCommitments();
+      await subLoadVendors();
+      subSelectCommitment(result.entry_id);
+      notify('Created! Review & edit before generating document.', 'success');
+    } else {
+      notify(result.error || 'Failed', 'error');
+    }
+  } catch (e) { notify('Failed: ' + e.message, 'error'); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Knowledge Pool — browse learned databases
+// ═══════════════════════════════════════════════════════════════════════
+
+let kpCurrentDb = null;     // 'subcontractors' | 'variations' | 'mails'
+let kpCurrentTab = null;    // 'vendors' | 'quotes' | 'commitments' | 'benchmarks' | 'clauses' | 'competitive'
+let kpVendors = [];
+let kpQuotes = [];
+let kpCommitments = [];
+let kpBenchmarks = [];
+let kpClauses = [];
+let kpCompetitive = [];
+
+async function loadKpCounts() {
+  if (kpCurrentDb !== 'subcontractors') return;
+  try {
+    const [v,q,c] = await Promise.all([
+      fetch(`${API}/api/subcontractors/vendors`).then(r=>r.json()),
+      fetch(`${API}/api/subcontractors/quotes`).then(r=>r.json()),
+      fetch(`${API}/api/subcontractors/commitments`).then(r=>r.json()),
+    ]);
+    document.getElementById('info-count-vendors').textContent = v.count || 0;
+    document.getElementById('info-count-quotes').textContent = q.count || 0;
+    document.getElementById('info-count-commitments').textContent = c.count || 0;
+    // Approximate counts for KB tables
+    fetch(`${API}/api/subcontractors/commitments`).then(r=>r.json()).then(d => {
+      document.getElementById('info-count-benchmarks').textContent = '~';
+      document.getElementById('info-count-clauses').textContent = '~';
+      document.getElementById('info-count-competitive').textContent = '~';
+    });
+  } catch(e) {}
+}
+
+function switchDatabase(db) {
+  kpCurrentDb = db;
+  // Highlight active db-item
+  document.querySelectorAll('#db-bar .db-item').forEach(el => el.classList.remove('active'));
+  const items = document.querySelectorAll('#db-bar .db-item');
+  items.forEach(el => {
+    if (el.onclick && el.getAttribute('onclick').includes(`'${db}'`)) el.classList.add('active');
+  });
+
+  const infoBar = document.getElementById('info-bar');
+  const placeholder = document.getElementById('kp-placeholder');
+  const dataView = document.getElementById('kp-data');
+
+  if (db === 'variations' || db === 'mails') {
+    // Placeholder — coming soon
+    if (infoBar) infoBar.style.display = 'flex';
+    document.getElementById('info-bar-title').textContent = db === 'variations' ? '📝 Variations' : '✉️ Mails';
+    if (placeholder) { placeholder.style.display = 'flex'; placeholder.innerHTML = '<div style=\"text-align:center;\"><div style=\"font-size:48px;margin-bottom:12px;\">🚧</div><div>Coming soon — database browser for ' + (db==='variations'?'Variations':'Mails') + '</div></div>'; }
+    if (dataView) dataView.style.display = 'none';
+    // Hide all info items
+    document.querySelectorAll('#info-bar .info-item').forEach(el => el.style.display = 'none');
+    return;
+  }
+
+  // Subcontract database
+  if (infoBar) infoBar.style.display = 'flex';
+  document.getElementById('info-bar-title').textContent = '🏗️ Subcontract';
+  document.querySelectorAll('#info-bar .info-item').forEach(el => el.style.display = 'flex');
+  if (placeholder) placeholder.style.display = 'flex';
+  if (dataView) dataView.style.display = 'none';
+  // Reset info bar highlights
+  document.querySelectorAll('#info-bar .info-item').forEach(el => el.classList.remove('active'));
+  kpCurrentTab = null;
+  loadKpCounts();
+}
+
+function switchInfoTab(tab) {
+  kpCurrentTab = tab;
+  // Highlight active
+  document.querySelectorAll('#info-bar .info-item').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('info-' + tab);
+  if (target) target.classList.add('active');
+
+  // Show data area, hide placeholder
+  document.getElementById('kp-placeholder').style.display = 'none';
+  document.getElementById('kp-data').style.display = 'block';
+
+  // Hide all sections
+  ['vendors','quotes','commitments','benchmarks','clauses','competitive'].forEach(t => {
+    const el = document.getElementById('kp-' + t);
+    if (el) el.style.display = 'none';
+  });
+
+  // Show the active section
+  const active = document.getElementById('kp-' + tab);
+  if (active) active.style.display = 'block';
+
+  // Load data
+  switch(tab) {
+    case 'vendors': loadVendors(); break;
+    case 'quotes': loadQuotes(); break;
+    case 'commitments': loadCommitments(); break;
+    case 'benchmarks': loadBenchmarks(); break;
+    case 'clauses': loadClauses(); break;
+    case 'competitive': loadCompetitive(); break;
+  }
+}
+
+// ── Vendors ─────────────────────────────────────────────────────────
+
+async function loadVendors() {
+  try {
+    const res = await fetch(`${API}/api/subcontractors/vendors`);
+    const data = await res.json();
+    kpVendors = data.vendors || [];
+    renderVendors();
+  } catch(e) { console.error(e); }
+}
+
+function renderVendors() {
+  const typeFilter = document.getElementById('kp-vendor-filter-type')?.value || '';
+  const tradeFilter = (document.getElementById('kp-vendor-filter-trade')?.value || '').toLowerCase();
+  let list = kpVendors;
+  if (typeFilter) list = list.filter(v => v.vendor_type === typeFilter);
+  if (tradeFilter) list = list.filter(v => (v.trade_categories || '').toLowerCase().includes(tradeFilter));
+
+  const html = `<table class="kp-table">
+    <thead><tr><th>Company</th><th>Type</th><th>Conf</th><th>Trades</th><th style=\"width:120px;\">Actions</th></tr></thead>
+    <tbody>${list.map(v => `<tr>
+      <td><strong>${escHtml(v.company_name)}</strong></td>
+      <td><span class="kp-badge ${v.vendor_type==='subcontractor'?'sub':'sup'}">${v.vendor_type}</span></td>
+      <td>${v.vendor_type_confidence||'-'}</td>
+      <td style=\"font-size:11px;color:var(--subtext);\">${(v.trade_categories||'[]')}</td>
+      <td><div class="kp-actions">
+        <button onclick="kpDeleteVendor('${escAttr(v.entry_id)}','${escAttr(v.company_name)}')" title="Delete">🗑</button>
+        <button onclick="kpReclassifyVendor('${escAttr(v.entry_id)}','${escAttr(v.company_name)}')" title="Toggle type">🔄</button>
+        <button onclick="kpRenameVendor('${escAttr(v.entry_id)}','${escAttr(v.company_name)}')" title="Rename">✏️</button>
+      </div></td>
+    </tr>`).join('')}</tbody></table>`;
+  document.getElementById('kp-vendors-table').innerHTML = html;
+}
+
+async function kpDeleteVendor(eid, name) {
+  if (!confirm('Delete vendor: ' + name + '?')) return;
+  await fetch(`${API}/api/subcontractors/vendors/${eid}`, {method:'DELETE'});
+  loadVendors();
+}
+
+async function kpReclassifyVendor(eid, name) {
+  const v = kpVendors.find(x => x.entry_id === eid);
+  if (!v) return;
+  const newType = v.vendor_type === 'subcontractor' ? 'supplier' : 'subcontractor';
+  if (!confirm(`Reclassify "${name}" from ${v.vendor_type} to ${newType}?`)) return;
+  await fetch(`${API}/api/subcontractors/vendors/${eid}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({vendor_type: newType, vendor_type_confidence: 'manual'}),
+  });
+  loadVendors();
+}
+
+async function kpRenameVendor(eid, oldName) {
+  const newName = prompt('New name:', oldName);
+  if (!newName || newName === oldName) return;
+  await fetch(`${API}/api/subcontractors/vendors/${eid}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({company_name: newName}),
+  });
+  loadVendors();
+}
+
+// ── Quotes ──────────────────────────────────────────────────────────
+
+async function loadQuotes() {
+  try {
+    const res = await fetch(`${API}/api/subcontractors/quotes`);
+    const data = await res.json();
+    kpQuotes = data.quotes || [];
+    renderQuotes();
+  } catch(e) { console.error(e); }
+}
+
+function renderQuotes() {
+  const html = `<table class="kp-table">
+    <thead><tr><th></th><th>Vendor</th><th>Trade</th><th>Value</th><th>Items</th><th>Status</th></tr></thead>
+    <tbody>${kpQuotes.map((q,i) => `<tr onclick="kpToggleQuoteItems(${i})" style="cursor:pointer;">
+      <td><span id="kp-q-arrow-${i}">▶</span></td>
+      <td><strong>${escHtml(q.vendor_name||'?')}</strong></td>
+      <td>${escHtml(q.trade_name||'')}</td>
+      <td>$${(q.total_amount||0).toLocaleString()}</td>
+      <td>${(q.items||[]).length}</td>
+      <td><span class="kp-badge ${q.is_awarded?'sub':'sup'}">${q.is_awarded?'awarded':'sample'}</span></td>
+    </tr>
+    <tr id="kp-q-items-${i}" style="display:none;"><td colspan="6" style="padding:0;">
+      <div style="background:var(--surface);padding:8px 16px;font-size:12px;">
+        <table style="width:100%;border-collapse:collapse;">
+          ${(q.items||[]).map(it => `<tr>
+            <td style="padding:3px 8px;color:var(--subtext);">#${it.item_number}</td>
+            <td style="padding:3px 8px;">${escHtml(it.description)}</td>
+            <td style="padding:3px 8px;text-align:right;">${it.qty} ${it.unit}</td>
+            <td style="padding:3px 8px;text-align:right;">$${(it.rate||0).toLocaleString()}</td>
+            <td style="padding:3px 8px;text-align:right;font-weight:600;">$${(it.amount||0).toLocaleString()}</td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('kp-quotes-table').innerHTML = html;
+}
+
+function kpToggleQuoteItems(i) {
+  const row = document.getElementById('kp-q-items-' + i);
+  const arrow = document.getElementById('kp-q-arrow-' + i);
+  if (!row || !arrow) return;
+  if (row.style.display === 'none') { row.style.display = ''; arrow.textContent = '▼'; }
+  else { row.style.display = 'none'; arrow.textContent = '▶'; }
+}
+
+// ── Commitments ─────────────────────────────────────────────────────
+
+async function loadCommitments() {
+  try {
+    const filt = document.getElementById('kp-commit-filter-type')?.value || '';
+    let url = `${API}/api/subcontractors/commitments`;
+    if (filt) url += '?commitment_type=' + filt;
+    const res = await fetch(url);
+    const data = await res.json();
+    kpCommitments = data.commitments || [];
+    renderCommitments();
+  } catch(e) { console.error(e); }
+}
+
+function renderCommitments() {
+  const html = `<table class="kp-table">
+    <thead><tr><th></th><th>Ref</th><th>Type</th><th>Vendor</th><th>Value</th><th>Status</th></tr></thead>
+    <tbody>${kpCommitments.map((c,i) => `<tr onclick="kpToggleCommitItems(${i})" style="cursor:pointer;">
+      <td><span id="kp-c-arrow-${i}">${(c.items||[]).length ? '▶' : '·'}</span></td>
+      <td><strong>${escHtml(c.reference_number)}</strong></td>
+      <td><span class="kp-badge ${c.commitment_type==='subcontract'?'sub':'sup'}">${c.commitment_type==='subcontract'?'Sub':'PO'}</span></td>
+      <td>${escHtml(c.vendor_name||'?')}</td>
+      <td>$${(c.commitment_value||0).toLocaleString()}</td>
+      <td>${c.status||'draft'}</td>
+    </tr>
+    <tr id="kp-c-items-${i}" style="display:none;"><td colspan="6" style="padding:0;">
+      <div style="background:var(--surface);padding:8px 16px;font-size:12px;">
+        <table style="width:100%;border-collapse:collapse;">
+          ${(c.items||[]).map(it => `<tr>
+            <td style="padding:3px 8px;color:var(--subtext);">#${it.item_number}</td>
+            <td style="padding:3px 8px;">${escHtml(it.description||'')}</td>
+            <td style="padding:3px 8px;text-align:right;">${it.qty||0} ${it.unit||'item'}</td>
+            <td style="padding:3px 8px;text-align:right;">$${(it.rate||0).toLocaleString()}</td>
+            <td style="padding:3px 8px;text-align:right;font-weight:600;">$${(it.amount||0).toLocaleString()}</td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('kp-commitments-table').innerHTML = html;
+}
+
+function kpToggleCommitItems(i) {
+  const row = document.getElementById('kp-c-items-' + i);
+  const arrow = document.getElementById('kp-c-arrow-' + i);
+  if (!row || !arrow) return;
+  if (row.style.display === 'none') { row.style.display = ''; arrow.textContent = '▼'; }
+  else { row.style.display = 'none'; arrow.textContent = '▶'; }
+}
+
+// ── Benchmarks ──────────────────────────────────────────────────────
+
+async function loadBenchmarks() {
+  try {
+    const res = await fetch(`${API}/api/subcontractors/knowledge/benchmarks`);
+    const data = await res.json();
+    kpBenchmarks = data.benchmarks || [];
+    // Populate filter dropdown
+    const trades = [...new Set(kpBenchmarks.map(b => b.trade_name))].sort();
+    const sel = document.getElementById('kp-bench-filter-trade');
+    if (sel) {
+      sel.innerHTML = '<option value="">All Trades</option>' + trades.map(t => `<option>${t}</option>`).join('');
+    }
+    renderBenchmarks();
+  } catch(e) { console.error(e); }
+}
+
+function renderBenchmarks() {
+  const tradeFilter = document.getElementById('kp-bench-filter-trade')?.value || '';
+  let list = kpBenchmarks;
+  if (tradeFilter) list = list.filter(b => b.trade_name === tradeFilter);
+  const html = `<table class="kp-table">
+    <thead><tr><th>Trade</th><th>Scope</th><th>Unit</th><th>Avg Rate</th><th>Min</th><th>Max</th><th>N</th></tr></thead>
+    <tbody>${list.map(b => `<tr>
+      <td>${escHtml(b.trade_name)}</td>
+      <td style=\"font-size:11px;\">${escHtml((b.scope_keyword||'').substring(0,50))}</td>
+      <td>${b.unit}</td>
+      <td>$${(b.avg_rate||0).toLocaleString()}</td>
+      <td style=\"color:var(--green);\">$${(b.min_rate||0).toLocaleString()}</td>
+      <td style=\"color:var(--red);\">$${(b.max_rate||0).toLocaleString()}</td>
+      <td>${b.sample_count}</td>
+    </tr>`).join('')}</tbody></table>`;
+  document.getElementById('kp-benchmarks-table').innerHTML = html;
+}
+
+// ── Clauses ─────────────────────────────────────────────────────────
+
+async function loadClauses() {
+  try {
+    const filt = document.getElementById('kp-clause-filter-sub')?.value || '';
+    let url = `${API}/api/subcontractors/knowledge/clauses`;
+    if (filt) url += '?subcontract=' + filt;
+    const res = await fetch(url);
+    const data = await res.json();
+    kpClauses = data.clauses || [];
+    // Populate filter
+    const subs = [...new Set(kpClauses.map(c => c.source_commitment_ref))].sort();
+    const sel = document.getElementById('kp-clause-filter-sub');
+    if (sel && sel.options.length <= 1) {
+      sel.innerHTML = '<option value="">All Subcontracts</option>' + subs.map(s => `<option>${s}</option>`).join('');
+    }
+    renderClauses();
+  } catch(e) { console.error(e); }
+}
+
+function renderClauses() {
+  const html = `<table class="kp-table">
+    <thead><tr><th>#</th><th>Title</th><th>Subcontract</th><th>Text Preview</th></tr></thead>
+    <tbody>${kpClauses.map(c => `<tr>
+      <td>${c.clause_number}</td>
+      <td><strong>${escHtml(c.clause_title)}</strong></td>
+      <td><span class="kp-badge sub">${c.source_commitment_ref}</span></td>
+      <td style=\"font-size:11px;color:var(--subtext);max-width:400px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;\">${escHtml((c.clause_text||'').substring(0,120))}</td>
+    </tr>`).join('')}</tbody></table>`;
+  document.getElementById('kp-clauses-table').innerHTML = html;
+}
+
+// ── Competitive Sets ────────────────────────────────────────────────
+
+async function loadCompetitive() {
+  try {
+    const res = await fetch(`${API}/api/subcontractors/knowledge/competitive`);
+    const data = await res.json();
+    kpCompetitive = data.competitive_sets || [];
+    renderCompetitive();
+  } catch(e) { console.error(e); }
+}
+
+function renderCompetitive() {
+  const html = `<table class="kp-table">
+    <thead><tr><th>Trade</th><th>Bidders</th><th>Vendors</th></tr></thead>
+    <tbody>${kpCompetitive.map(cs => `<tr>
+      <td><strong>${escHtml(cs.trade_name)}</strong></td>
+      <td>${cs.quote_count}</td>
+      <td style=\"font-size:11px;color:var(--subtext);\">${(cs.vendor_names||[]).join(', ')}</td>
+    </tr>`).join('')}</tbody></table>`;
+  document.getElementById('kp-competitive-table').innerHTML = html;
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+}
+function escAttr(s) {
+  if (!s) return '';
+  return String(s).replace(/'/g, '\\x27').replace(/"/g, '&quot;');
+}
 
 // ── Boot ─────────────────────────────────────────────────────────────
 

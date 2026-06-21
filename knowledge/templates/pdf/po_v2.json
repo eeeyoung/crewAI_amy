@@ -1,0 +1,368 @@
+{
+  "name": "po_v2",
+  "description": "Purchase Order \u2014 JSON schema template (editable via canvas)",
+  "page": {
+    "size": "A4",
+    "orientation": "portrait"
+  },
+  "data_contract": {
+    "description": "Context fields this template expects. Data providers must supply these.",
+    "fields": {
+      "logo_path":       {"type": "string",  "note": "Absolute file path to logo image"},
+      "company_name":    {"type": "string",  "note": "Company display name"},
+      "company_address": {"type": "string",  "note": "Company street address"},
+      "company_abn":     {"type": "string",  "note": "Company ABN"},
+      "title":           {"type": "string",  "note": "Document title, e.g. 'PURCHASE ORDER'"},
+      "info_rows":       {"type": "table",   "note": "Supplier/Order info \u2014 columns: label, value, note, field_label"},
+      "scope_text":      {"type": "string",  "note": "Scope statement text"},
+      "project_rows":    {"type": "table",   "note": "Project/delivery info \u2014 columns: label, value, label2, value2"},
+      "items":           {"type": "table",   "note": "Line items \u2014 columns: item_number,description,qty,unit,rate,discount,amount"},
+      "totals_rows":     {"type": "table",   "note": "Totals \u2014 columns: label, value"},
+      "special_instructions_label": {"type": "string", "note": "Label above special instructions"},
+      "special_instructions":       {"type": "string", "note": "Special instructions text"},
+      "footer_text":     {"type": "string",  "note": "Footer text with officer names"},
+      "terms_title":     {"type": "string",  "note": "Terms page title"},
+      "terms_body":      {"type": "string",  "note": "Terms & conditions body text"}
+    }
+  },
+  "elements": [
+    {
+      "id": "logo",
+      "type": "image",
+      "x": 15,
+      "y": 12,
+      "w": 45,
+      "h": 13,
+      "bind": "logo_path",
+      "style": {
+        "maxWidth": "45mm",
+        "maxHeight": "13mm"
+      }
+    },
+    {
+      "id": "company-name",
+      "type": "text",
+      "x": 65,
+      "y": 12,
+      "w": 130,
+      "h": 18,
+      "bind": "company_name",
+      "style": {
+        "fontSize": "14pt",
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "company-address",
+      "type": "text",
+      "x": 65,
+      "y": 21,
+      "w": 130,
+      "h": 10,
+      "bind": "company_address",
+      "style": {
+        "fontSize": "9pt",
+        "color": "#333"
+      }
+    },
+    {
+      "id": "company-abn",
+      "type": "text",
+      "x": 65,
+      "y": 27,
+      "w": 130,
+      "h": 5,
+      "bind": "company_abn",
+      "prefix": "ABN: ",
+      "style": {
+        "fontSize": "9pt"
+      }
+    },
+    {
+      "id": "po-title",
+      "type": "text",
+      "x": 15,
+      "y": 36,
+      "w": 180,
+      "h": 10,
+      "bind": "title",
+      "style": {
+        "fontSize": "16pt",
+        "fontWeight": "bold",
+        "textAlign": "center",
+        "borderBottom": "2px solid #000",
+        "borderTop": "1px solid #000",
+        "padding": "6pt 0"
+      }
+    },
+    {
+      "id": "info-table",
+      "type": "table",
+      "x": 15,
+      "y": 54,
+      "w": 180,
+      "h": null,
+      "bind": "info_rows",
+      "style": {
+        "fontSize": "9pt"
+      },
+      "columns": [
+        {
+          "header": "",
+          "bind": "label",
+          "width": 25,
+          "align": "left",
+          "bold": true,
+          "bg": "#f7f7f7"
+        },
+        {
+          "header": "",
+          "bind": "value",
+          "width": 65,
+          "align": "left"
+        },
+        {
+          "header": "",
+          "bind": "note",
+          "width": 60,
+          "align": "left",
+          "rowspan": 4
+        },
+        {
+          "header": "",
+          "bind": "field_label",
+          "width": 30,
+          "align": "left",
+          "bold": true
+        }
+      ]
+    },
+    {
+      "id": "scope",
+      "type": "text",
+      "x": 15,
+      "y": 82,
+      "w": 180,
+      "h": 10,
+      "bind": "scope_text",
+      "prefix": "Scope: ",
+      "style": {
+        "fontSize": "9pt",
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "project-info-table",
+      "type": "table",
+      "x": 15,
+      "y": 92,
+      "w": 180,
+      "h": null,
+      "bind": "project_rows",
+      "style": {
+        "fontSize": "9pt"
+      },
+      "columns": [
+        {
+          "header": "",
+          "bind": "label",
+          "width": 30,
+          "align": "left",
+          "bold": true,
+          "bg": "#f7f7f7"
+        },
+        {
+          "header": "",
+          "bind": "value",
+          "width": 60,
+          "align": "left"
+        },
+        {
+          "header": "",
+          "bind": "label2",
+          "width": 30,
+          "align": "left",
+          "bold": true,
+          "bg": "#f7f7f7"
+        },
+        {
+          "header": "",
+          "bind": "value2",
+          "width": 60,
+          "align": "left"
+        }
+      ]
+    },
+    {
+      "id": "items-table",
+      "type": "table",
+      "x": 15,
+      "y": 113,
+      "w": 180,
+      "h": null,
+      "bind": "items",
+      "style": {
+        "fontSize": "9pt",
+        "headerBg": "#f2f2f2"
+      },
+      "columns": [
+        {
+          "header": "Item",
+          "bind": "item_number",
+          "width": 10,
+          "align": "center"
+        },
+        {
+          "header": "Description",
+          "bind": "description",
+          "width": 62,
+          "align": "left"
+        },
+        {
+          "header": "Qty",
+          "bind": "qty",
+          "width": 16,
+          "align": "right",
+          "format": "%.2f"
+        },
+        {
+          "header": "Unit",
+          "bind": "unit",
+          "width": 14,
+          "align": "center"
+        },
+        {
+          "header": "Rate",
+          "bind": "rate",
+          "width": 20,
+          "align": "right",
+          "format": "$%.2f"
+        },
+        {
+          "header": "Discount",
+          "bind": "discount",
+          "width": 20,
+          "align": "right",
+          "format": "$%.2f"
+        },
+        {
+          "header": "Amount",
+          "bind": "amount",
+          "width": 22,
+          "align": "right",
+          "format": "$%.2f",
+          "bold": true
+        }
+      ]
+    },
+    {
+      "id": "totals-table",
+      "type": "table",
+      "x": 120,
+      "y": 150,
+      "w": 75,
+      "h": null,
+      "bind": "totals_rows",
+      "style": {
+        "fontSize": "9pt"
+      },
+      "columns": [
+        {
+          "header": "",
+          "bind": "label",
+          "width": 40,
+          "align": "right",
+          "bold": true
+        },
+        {
+          "header": "",
+          "bind": "value",
+          "width": 35,
+          "align": "right",
+          "format": "$%.2f"
+        }
+      ]
+    },
+    {
+      "id": "special-instructions-label",
+      "type": "text",
+      "x": 15,
+      "y": null,
+      "w": 180,
+      "h": 5,
+      "bind": "special_instructions_label",
+      "style": {
+        "fontSize": "9pt",
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "special-instructions-text",
+      "type": "text",
+      "x": 15,
+      "y": null,
+      "w": 180,
+      "h": 8,
+      "bind": "special_instructions",
+      "style": {
+        "fontSize": "9pt"
+      }
+    },
+    {
+      "id": "footer-box",
+      "type": "rect",
+      "x": 15,
+      "y": null,
+      "w": 180,
+      "h": 18,
+      "style": {
+        "border": "2px solid #000",
+        "padding": "4pt"
+      }
+    },
+    {
+      "id": "footer-text",
+      "type": "text",
+      "x": 20,
+      "y": null,
+      "w": 170,
+      "h": 14,
+      "bind": "footer_text",
+      "style": {
+        "fontSize": "9pt"
+      }
+    },
+    {
+      "id": "page-break-1",
+      "type": "page-break",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "terms-title",
+      "type": "text",
+      "x": 15,
+      "y": 12,
+      "w": 180,
+      "h": 8,
+      "bind": "terms_title",
+      "style": {
+        "fontSize": "12pt",
+        "fontWeight": "bold"
+      }
+    },
+    {
+      "id": "terms-body",
+      "type": "text",
+      "x": 15,
+      "y": 24,
+      "w": 180,
+      "h": null,
+      "bind": "terms_body",
+      "style": {
+        "fontSize": "9pt",
+        "lineHeight": "1.5"
+      }
+    }
+  ]
+}

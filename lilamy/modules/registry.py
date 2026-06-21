@@ -38,6 +38,26 @@ MODULES = {
             "lilamy.modules.variation_agent_routes:router",
         ],
     },
+    "subcontractors": {
+        "id": "subcontractors",
+        "name": "Subcontractors",
+        "icon": "🏗️",
+        "description": "Quote → PO → Subcontract — agent-driven procurement",
+        "enabled": True,
+        "router_path": "lilamy.modules.subcontractor_routes:router",
+        "extra_routers": [
+            "lilamy.modules.subcontractor_agent_routes:router",
+        ],
+    },
+    "knowledge_pool": {
+        "id": "knowledge_pool",
+        "name": "Knowledge Pool",
+        "icon": "🧠",
+        "description": "Browse learned databases — Variations, Subcontracts, Mail",
+        "enabled": True,
+        "router_path": "",
+        "is_meta": True,
+    },
     # DEPRECATED — superseded by the To-Do List module above
     "acalendar": {
         "id": "acalendar",

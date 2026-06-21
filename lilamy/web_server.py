@@ -60,6 +60,11 @@ for mod in get_enabled_modules():
             router = getattr(module, attr)
             app.include_router(router)
 
+# ── Development / test tools (not in main sidebar) ──────────────────
+
+import lilamy.modules.pdf_test_routes as pdf_test_routes
+app.include_router(pdf_test_routes.router)
+
 
 # ── Platform endpoints ──────────────────────────────────────────────
 

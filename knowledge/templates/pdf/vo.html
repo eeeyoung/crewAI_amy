@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contract Variation VO{{ vo_number }}</title>
+</head>
+<body>
+
+<!-- ═══════════════ VARIATION ORDER ═══════════════ -->
+
+<!-- Title -->
+<div class="vo-title">
+  {% if is_estimate %}CONTRACT VARIATION &mdash; ESTIMATE{% else %}CONTRACT VARIATION{% endif %}
+</div>
+
+<!-- Project Info Grid -->
+<table class="project-info">
+  <tr>
+    <td class="label" width="10%">PROJECT:</td>
+    <td width="42%">{{ project_name|default('') }}</td>
+    <td class="label text-right" width="10%">Date:</td>
+    <td width="38%">{{ date_issued|default('') }}</td>
+  </tr>
+  <tr>
+    <td class="label">NAME:</td>
+    <td>{{ company_name|default('Welink Construction Pty Ltd') }}</td>
+    <td class="label text-right">Site Instruction / Ref:</td>
+    <td>{{ site_instruction_ref|default('') }}</td>
+  </tr>
+  <tr>
+    <td class="label">SITE ADDRESS:</td>
+    <td>{{ project_location|default('') }}</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td class="label">JOB No:</td>
+    <td colspan="3">{{ job_number|default('') }}</td>
+  </tr>
+</table>
+
+<!-- VO Header -->
+<div class="vo-header">VO{{ vo_number }} &mdash; {{ vo_title|default('') }}</div>
+
+<!-- Items Table -->
+<table class="items-table">
+  <thead>
+    <tr>
+      <th class="col-item">Item</th>
+      <th class="col-desc">Description</th>
+      <th class="col-qty">Qty</th>
+      <th class="col-unit">Unit</th>
+      <th class="col-rate">Rate ($)</th>
+      <th class="col-cost">Cost</th>
+      <th class="col-credit">Credit</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td class="text-center">{{ item.item_number|default(loop.index) }}</td>
+      <td>{{ item.description }}</td>
+      <td class="text-right">{{ "%.2f"|format(item.qty|default(0)) }}</td>
+      <td class="text-center">{{ item.unit|default('item') }}</td>
+      <td class="currency">{{ "$%.2f"|format(item.rate|default(0)) }}</td>
+      <td class="currency">{{ "$%.2f"|format(item.cost|default(item.qty * item.rate if item.qty and item.rate else 0)) }}</td>
+      <td class="currency">{{ "$%.2f"|format(item.credit|default(0)) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Summary Section -->
+<div class="summary-section">
+  <table class="summary-table">
+    <tr>
+      <td class="summary-label">SUB TOTAL</td>
+      <td class="summary-value">{{ "$%.2f"|format(sub_total_cost|default(0)) }}</td>
+    </tr>
+    <tr>
+      <td class="summary-label">Less Credits</td>
+      <td class="summary-value">{{ "$%.2f"|format(sub_total_credit|default(0)) }}</td>
+    </tr>
+    <tr>
+      <td class="summary-label">NETT VARIATION COST</td>
+      <td class="summary-value">{{ "$%.2f"|format(nett_variation_cost|default(0)) }}</td>
+    </tr>
+    <tr>
+      <td class="summary-label">MARGIN AND OVERHEAD COSTS (10%)</td>
+      <td class="summary-value">{{ "$%.2f"|format(margin|default(0)) }}</td>
+    </tr>
+    <tr>
+      <td class="summary-label">VARIATION COST EXCLUDING GST</td>
+      <td class="summary-value">{{ "$%.2f"|format(excl_gst|default(0)) }}</td>
+    </tr>
+    <tr>
+      <td class="summary-label">GST</td>
+      <td class="summary-value">{{ "$%.2f"|format(gst|default(0)) }}</td>
+    </tr>
+    <tr class="total-row">
+      <td class="summary-label">TOTAL INCLUDING GST</td>
+      <td class="summary-value">{{ "$%.2f"|format(total_incl_gst|default(0)) }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Signature Box -->
+<div class="signature-box">
+  <div class="label">Variation Raised By:</div>
+  <div class="sig-area">
+    <span class="signature">{{ initials|default('AC') }}</span>
+  </div>
+  <div class="label" style="margin-top: 8pt;">Authorised By:</div>
+  <div class="sig-line"></div>
+</div>
+
+<div class="client-acceptance">ACCEPTED FOR AND ON BEHALF OF CLIENT:</div>
+
+</body>
+</html>

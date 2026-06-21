@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Test — lilAmy</title>
+<style>
+  /* ═══════════ Catppuccin Mocha Theme ═══════════ */
+  :root {
+    --base: #1e1e2e;
+    --mantle: #181825;
+    --crust: #11111b;
+    --surface0: #313244;
+    --surface1: #45475a;
+    --surface2: #585b70;
+    --overlay0: #6c7086;
+    --text: #cdd6f4;
+    --subtext0: #a6adc8;
+    --subtext1: #bac2de;
+    --blue: #89b4fa;
+    --lavender: #b4befe;
+    --green: #a6e3a1;
+    --yellow: #f9e2af;
+    --red: #f38ba8;
+    --peach: #fab387;
+    --teal: #94e2d5;
+    --mauve: #cba6f7;
+    --pink: #f5c2e7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--base);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ─────────────────────────────── */
+  .header {
+    background: var(--mantle);
+    border-bottom: 1px solid var(--surface1);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header h1 { font-size: 18px; font-weight: 600; color: var(--lavender); }
+  .header .badge {
+    font-size: 11px;
+    background: var(--surface0);
+    color: var(--subtext0);
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--surface1);
+  }
+
+  /* ── Tab Bar ────────────────────────────── */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    background: var(--mantle);
+    border-bottom: 1px solid var(--surface1);
+    padding: 0 24px;
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: var(--subtext0);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--surface0); }
+  .tab-btn.active {
+    color: var(--blue);
+    border-bottom-color: var(--blue);
+  }
+
+  /* ── Main Content ────────────────────────── */
+  .main {
+    flex: 1;
+    padding: 20px 24px;
+    display: flex;
+    gap: 20px;
+    overflow: auto;
+  }
+
+  /* ── Panel Card ──────────────────────────── */
+  .panel {
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--subtext0);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--surface1);
+  }
+
+  /* ── Form Grid ───────────────────────────── */
+  .form-grid {
+    display: grid;
+    gap: 8px 16px;
+  }
+  .form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .form-group { display: flex; flex-direction: column; gap: 3px; }
+  .form-group label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--subtext0);
+    text-transform: uppercase;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: var(--base);
+    border: 1px solid var(--surface2);
+    border-radius: 4px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  .form-group input[readonly] {
+    background: var(--mantle);
+    color: var(--subtext1);
+    cursor: default;
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  .form-group input.val-currency {
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  /* ── Items Table ─────────────────────────── */
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .items-table th {
+    background: var(--mantle);
+    color: var(--subtext0);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 6px 8px;
+    border-bottom: 2px solid var(--surface1);
+    text-align: left;
+  }
+  .items-table th.num { text-align: right; }
+  .items-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--surface1);
+    vertical-align: middle;
+  }
+  .items-table input {
+    width: 100%;
+    background: var(--base);
+    border: 1px solid var(--surface2);
+    border-radius: 3px;
+    padding: 4px 6px;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .items-table input:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  .items-table input.num {
+    text-align: right;
+    width: 80px;
+  }
+  .items-table input.desc {
+    min-width: 200px;
+  }
+  .items-table .readonly-val {
+    text-align: right;
+    font-weight: 600;
+    color: var(--green);
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .items-table .item-num {
+    text-align: center;
+    color: var(--subtext0);
+    font-size: 11px;
+    min-width: 24px;
+  }
+  .btn-del {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    border-radius: 3px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .btn-del:hover { background: var(--red); color: var(--base); }
+
+  /* ── Buttons ─────────────────────────────── */
+  .btn {
+    padding: 8px 18px;
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: var(--base);
+    border-color: var(--blue);
+    font-weight: 600;
+  }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-secondary { background: var(--surface0); color: var(--text); }
+  .btn-secondary:hover { background: var(--surface1); }
+  .btn-success {
+    background: var(--green);
+    color: var(--base);
+    border-color: var(--green);
+    font-weight: 600;
+  }
+  .btn-success:hover { filter: brightness(1.1); }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+
+  /* ── Summary Box ─────────────────────────── */
+  .summary-box {
+    background: var(--mantle);
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    padding: 12px 16px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 12px;
+  }
+  .summary-row.total {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--green);
+    border-top: 1px solid var(--surface1);
+    margin-top: 4px;
+    padding-top: 6px;
+  }
+  .summary-row.sub { color: var(--subtext0); }
+
+  /* ── Layout ──────────────────────────────── */
+  .left-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .right-col { width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── Toast ───────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 1000;
+    animation: slideUp 0.3s ease;
+    display: none;
+  }
+  .toast.success { background: var(--green); color: var(--base); }
+  .toast.error { background: var(--red); color: var(--base); }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ── Tab Content ─────────────────────────── */
+  .tab-content { display: none; }
+  .tab-content.active { display: flex; gap: 20px; flex: 1; }
+
+  /* ── Status colors ───────────────────────── */
+  .status-submitted { color: var(--yellow); }
+  .status-approved { color: var(--green); }
+  .status-not-approved { color: var(--red); }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <h1>&#128196; PDF Generation Test</h1>
+  <span class="badge">HTML/CSS &rarr; PDF via Playwright</span>
+  <span class="badge">Dev Tool</span>
+</div>
+
+<!-- ═══════════ TAB BAR ═══════════ -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('vo')">&#128203; Variation Order</button>
+  <button class="tab-btn" onclick="switchTab('po')">&#128203; Purchase Order</button>
+  <button class="tab-btn" onclick="switchTab('canvas')">&#127912; Canvas Editor</button>
+</div>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<div class="main">
+
+<!-- ──────── VO PANEL ──────── -->
+<div id="tab-vo" class="tab-content active">
+
+  <!-- Left: Document Info + Items -->
+  <div class="left-col">
+    <!-- Document Info -->
+    <div class="panel">
+      <div class="panel-title">Document Info</div>
+      <div class="form-grid cols-3">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input id="vo-project" value="Sample Project" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Date Issued</label>
+          <input id="vo-date" value="21/06/2026" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Job Number</label>
+          <input id="vo-job" value="47CBR" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Company Name</label>
+          <input id="vo-company" value="Welink Construction Pty Ltd" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>VO Number</label>
+          <input id="vo-number" type="number" value="3" onchange="voRecalc()" style="width:80px">
+        </div>
+        <div class="form-group">
+          <label>VO Title</label>
+          <input id="vo-title" value="Additional stormwater drainage to Block B" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Site Instruction Ref</label>
+          <input id="vo-ref" value="SI-2026-0042" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Site Address</label>
+          <input id="vo-address" value="12 Sample Rd, Sydney NSW 2000" onchange="voRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Raised By (Initials)</label>
+          <input id="vo-initials" value="AC" maxlength="4" onchange="voRecalc()" style="width:60px">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="vo-estimate" onchange="voRecalc()">
+            <option value="0">Contract Variation</option>
+            <option value="1">Estimate</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="panel" style="flex:1; overflow:auto;">
+      <div class="panel-title">Line Items</div>
+      <table class="items-table" id="vo-items-table">
+        <thead>
+          <tr>
+            <th style="width:28px">#</th>
+            <th>Description</th>
+            <th class="num" style="width:70px">Qty</th>
+            <th style="width:70px">Unit</th>
+            <th class="num" style="width:90px">Rate ($)</th>
+            <th class="num" style="width:100px">Cost</th>
+            <th class="num" style="width:90px">Credit</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="vo-items-body"></tbody>
+      </table>
+      <button class="btn btn-secondary btn-sm" onclick="voAddItem()" style="margin-top:8px">+ Add Item</button>
+    </div>
+  </div>
+
+  <!-- Right: Summary + Export -->
+  <div class="right-col">
+    <div class="panel">
+      <div class="panel-title">Cost Summary</div>
+      <div class="summary-box" id="vo-summary">
+        <div class="summary-row sub"><span>Sub Total</span><span>$0.00</span></div>
+        <div class="summary-row sub"><span>Less Credits</span><span>$0.00</span></div>
+        <div class="summary-row"><span>Nett Variation Cost</span><span>$0.00</span></div>
+        <div class="summary-row"><span>Margin &amp; Overhead (10%)</span><span>$0.00</span></div>
+        <div class="summary-row"><span>Excluding GST</span><span>$0.00</span></div>
+        <div class="summary-row"><span>GST (10%)</span><span>$0.00</span></div>
+        <div class="summary-row total"><span>TOTAL INCL GST</span><span>$0.00</span></div>
+      </div>
+    </div>
+
+    <button class="btn btn-success" onclick="voExportPdf()" style="font-size:15px; padding:12px 24px;">
+      &#128196; Export PDF
+    </button>
+    <button class="btn btn-secondary btn-sm" onclick="voLoadSample()">Load Sample Data</button>
+  </div>
+
+</div><!-- /tab-vo -->
+
+<!-- ──────── PO PANEL ──────── -->
+<div id="tab-po" class="tab-content">
+
+  <!-- Left: Document Info + Items -->
+  <div class="left-col">
+    <div class="panel">
+      <div class="panel-title">Document Info</div>
+      <div class="form-grid cols-3">
+        <div class="form-group">
+          <label>Reference Number</label>
+          <input id="po-ref" value="PO16888" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Order Date</label>
+          <input id="po-date" value="21 JUN 2026" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Project Code</label>
+          <input id="po-code" value="47CBR" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Vendor / Supplier Name</label>
+          <input id="po-vendor" value="Demo Plumbing Pty Ltd" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Vendor Address Line 1</label>
+          <input id="po-addr1" value="12 Sample Rd" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Vendor Address Line 2</label>
+          <input id="po-addr2" value="Sydney NSW 2000" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Vendor ABN</label>
+          <input id="po-abn" value="12 345 678 901" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Creditor Phone</label>
+          <input id="po-phone" value="(02) 9123 4567" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Creditor Code</label>
+          <input id="po-creditor" value="DEM456" onchange="poRecalc()">
+        </div>
+      </div>
+      <div class="form-grid cols-2" style="margin-top: 8px;">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input id="po-project" value="Sample Project" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Project Location</label>
+          <input id="po-location" value="Sydney" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Delivery Date</label>
+          <input id="po-delivery" value="15 JUL 2026" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Delivery Instructions</label>
+          <input id="po-delivery-inst" value="Deliver to site office, Mon-Fri 7am-3pm" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Attention</label>
+          <input id="po-attention" value="Site Manager" onchange="poRecalc()">
+        </div>
+        <div class="form-group">
+          <label>Approved By</label>
+          <input id="po-approved" value="ACHEN" onchange="poRecalc()">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top: 8px;">
+        <label>Special Instructions</label>
+        <textarea id="po-instructions" onchange="poRecalc()">All materials must comply with AS/NZS standards. Provide test certificates on delivery.</textarea>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="panel" style="flex:1; overflow:auto;">
+      <div class="panel-title">Line Items</div>
+      <table class="items-table" id="po-items-table">
+        <thead>
+          <tr>
+            <th style="width:28px">#</th>
+            <th>Description</th>
+            <th class="num" style="width:70px">Qty</th>
+            <th style="width:60px">Unit</th>
+            <th class="num" style="width:90px">Rate ($)</th>
+            <th class="num" style="width:90px">Discount</th>
+            <th class="num" style="width:100px">Amount</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="po-items-body"></tbody>
+      </table>
+      <button class="btn btn-secondary btn-sm" onclick="poAddItem()" style="margin-top:8px">+ Add Item</button>
+    </div>
+  </div>
+
+  <!-- Right: Summary + Export -->
+  <div class="right-col">
+    <div class="panel">
+      <div class="panel-title">Cost Summary</div>
+      <div class="summary-box" id="po-summary">
+        <div class="summary-row sub"><span>Total (ex GST)</span><span>$0.00</span></div>
+        <div class="summary-row"><span>GST (10%)</span><span>$0.00</span></div>
+        <div class="summary-row total"><span>GROSS</span><span>$0.00</span></div>
+      </div>
+    </div>
+
+    <button class="btn btn-success" onclick="poExportPdf()" style="font-size:15px; padding:12px 24px;">
+      &#128196; Export PDF
+    </button>
+    <button class="btn btn-secondary btn-sm" onclick="poLoadSample()">Load Sample Data</button>
+  </div>
+
+</div><!-- /tab-po -->
+
+<!-- ──────── CANVAS EDITOR TAB ──────── -->
+<div id="tab-canvas" class="tab-content">
+
+  <!-- Toolbar -->
+  <div style="display:flex; flex-direction:column; gap:12px; flex:1; min-width:0;">
+    <div class="panel" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <div class="form-group" style="min-width:160px;">
+        <label>Load Template</label>
+        <div style="display:flex; gap:4px;">
+          <select id="canvas-template-select" onchange="canvasLoadTemplate()" style="flex:1;">
+            <option value="">-- select --</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="canvasLoadTemplateList()" title="Refresh list">&#8635;</button>
+        </div>
+      </div>
+      <div class="form-group" style="min-width:120px;">
+        <label>Save As</label>
+        <input id="canvas-save-name" placeholder="my_template" style="width:140px">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="canvasSave()">💾 Save</button>
+      <button class="btn btn-success btn-sm" onclick="canvasExportPdf()">📄 Export PDF</button>
+      <span style="color: var(--subtext0); font-size:11px; margin-left:auto;">Grid: 5mm snap</span>
+    </div>
+
+    <!-- Canvas + Properties split -->
+    <div style="display:flex; gap:16px; flex:1; min-height:0;">
+      <!-- Preview iframe (real rendered template) -->
+      <div id="preview-container" style="flex:1; overflow:auto; background:var(--crust); border-radius:8px; border:1px solid var(--surface1); display:flex; align-items:flex-start; justify-content:center; padding:16px;">
+        <div id="preview-scale-wrapper" style="transform-origin:top center;">
+          <iframe id="preview-iframe" style="width:210mm; height:297mm; border:none; background:#fff; box-shadow:0 2px 16px rgba(0,0,0,0.5);" srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100%;margin:0;font-family:sans-serif;color:#aaa;'>Load a template to preview</body></html>"></iframe>
+        </div>
+      </div>
+
+      <!-- Properties Panel -->
+      <div id="canvas-props" class="panel" style="width:280px; flex-shrink:0; overflow-y:auto;">
+        <div class="panel-title">Properties</div>
+        <div id="canvas-props-content" style="color:var(--subtext0); font-size:12px;">
+          Click a table element on the canvas to edit its properties.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-canvas -->
+
+</div><!-- /main -->
+
+<div id="toast" class="toast"></div>
+
+<script src="/static/test/pdf_test.js"></script>
+</body>
+</html>

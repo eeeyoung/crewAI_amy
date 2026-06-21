@@ -111,6 +111,150 @@
       color: var(--muted);
     }
 
+    /* Database Bar (second sidebar, shown when Knowledge Pool is active) */
+    #db-bar {
+      width: 220px;
+      min-width: 220px;
+      background: #1e1e28;
+      border-right: 1px solid var(--overlay);
+      display: none;
+      flex-direction: column;
+    }
+    #db-bar .header {
+      padding: 16px 14px 12px;
+      border-bottom: 1px solid var(--overlay);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtext);
+    }
+    #db-bar .db-item {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      font-size: 13px;
+    }
+    #db-bar .db-item:hover { background: var(--surface); }
+    #db-bar .db-item.active {
+      background: var(--surface);
+      border-left-color: var(--green);
+      color: var(--green);
+    }
+    #db-bar .db-item .icon { font-size: 16px; width: 22px; text-align: center; }
+    #db-bar .db-item .badge {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--muted);
+      background: var(--overlay);
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+
+    /* Info Bar (third sidebar, shown when a database is selected) */
+    #info-bar {
+      width: 200px;
+      min-width: 200px;
+      background: #1a1a26;
+      border-right: 1px solid var(--overlay);
+      display: none;
+      flex-direction: column;
+    }
+    #info-bar .header {
+      padding: 16px 14px 12px;
+      border-bottom: 1px solid var(--overlay);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtext);
+    }
+    #info-bar .info-item {
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      font-size: 12px;
+    }
+    #info-bar .info-item:hover { background: var(--surface); }
+    #info-bar .info-item.active {
+      background: var(--surface);
+      border-left-color: var(--yellow);
+      color: var(--yellow);
+    }
+    #info-bar .info-item .count {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* Knowledge Pool content area */
+    #knowledge-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: none;
+    }
+    #knowledge-content .kp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    #knowledge-content .kp-table th {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--overlay);
+      color: var(--subtext);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    #knowledge-content .kp-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--surface);
+    }
+    #knowledge-content .kp-table tr:hover td { background: var(--surface); }
+    #knowledge-content .kp-badge {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    #knowledge-content .kp-badge.sub { background: #2a3a2a; color: var(--green); }
+    #knowledge-content .kp-badge.sup { background: #2a2a3a; color: var(--blue); }
+    #knowledge-content .kp-actions { display: flex; gap: 6px; }
+    #knowledge-content .kp-actions button {
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      color: var(--text);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 10px;
+      padding: 2px 8px;
+    }
+    #knowledge-content .kp-actions button:hover { background: var(--overlay); }
+    #knowledge-content .kp-section {
+      margin-bottom: 24px;
+    }
+    #knowledge-content .kp-section h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--subtext);
+    }
+    .kp-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     /* Main workspace */
     #workspace {
       flex: 1;
@@ -962,6 +1106,45 @@
     <div class="status" id="status-text">⚫ Loading...</div>
   </aside>
 
+  <!-- Database Bar (Knowledge Pool) -->
+  <aside id="db-bar">
+    <div class="header">🗄️ Databases</div>
+    <div class="db-item" onclick="switchDatabase('variations')">
+      <span class="icon">📝</span><span>Variations</span>
+      <span class="badge">soon</span>
+    </div>
+    <div class="db-item" onclick="switchDatabase('subcontractors')">
+      <span class="icon">🏗️</span><span>Subcontract</span>
+    </div>
+    <div class="db-item" onclick="switchDatabase('mails')">
+      <span class="icon">✉️</span><span>Mails</span>
+      <span class="badge">soon</span>
+    </div>
+  </aside>
+
+  <!-- Info Bar (Subcontract database detail) -->
+  <aside id="info-bar">
+    <div class="header" id="info-bar-title">🏗️ Subcontract</div>
+    <div class="info-item" onclick="switchInfoTab('vendors')" id="info-vendors">
+      <span>👥 Vendors</span><span class="count" id="info-count-vendors">0</span>
+    </div>
+    <div class="info-item" onclick="switchInfoTab('quotes')" id="info-quotes">
+      <span>💰 Quotes</span><span class="count" id="info-count-quotes">0</span>
+    </div>
+    <div class="info-item" onclick="switchInfoTab('commitments')" id="info-commitments">
+      <span>📋 Commitments</span><span class="count" id="info-count-commitments">0</span>
+    </div>
+    <div class="info-item" onclick="switchInfoTab('benchmarks')" id="info-benchmarks">
+      <span>📊 Benchmarks</span><span class="count" id="info-count-benchmarks">0</span>
+    </div>
+    <div class="info-item" onclick="switchInfoTab('clauses')" id="info-clauses">
+      <span>📜 Clauses</span><span class="count" id="info-count-clauses">0</span>
+    </div>
+    <div class="info-item" onclick="switchInfoTab('competitive')" id="info-competitive">
+      <span>🤝 Competitive</span><span class="count" id="info-count-competitive">0</span>
+    </div>
+  </aside>
+
   <!-- Workspace -->
   <main id="workspace">
     <!-- Top bar -->
@@ -1486,6 +1669,221 @@
         </div>
       </div>
     </div>
+
+    <!-- Subcontractors View -->
+    <div id="subcontractor-content" style="display:none;flex:1;overflow:hidden;">
+      <!-- Left: commitment cards -->
+      <div id="sub-card-panel" style="width:420px;min-width:360px;overflow-y:auto;border-right:1px solid var(--overlay);padding:12px;">
+        <!-- Project selector -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+          <select id="sub-project-select" onchange="subSwitchProject()"
+            style="flex:1;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;font-size:13px;color:var(--text);font-weight:600;">
+            <option value="">-- Select Project --</option>
+          </select>
+          <button class="btn" style="padding:4px 10px;font-size:11px;" onclick="subNewProject()">+ New</button>
+        </div>
+
+        <!-- Filter buttons -->
+        <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;">
+          <button class="btn" style="padding:3px 8px;font-size:10px;" id="sub-btn-all" onclick="subLoadCommitments()">All (<span id="sub-count-all">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;" id="sub-btn-po" onclick="subLoadCommitments('purchase_order')">POs (<span id="sub-count-po">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;" id="sub-btn-sc" onclick="subLoadCommitments('subcontract')">Subs (<span id="sub-count-sc">0</span>)</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px;" id="sub-btn-draft" onclick="subLoadCommitments(null,'draft')">Draft (<span id="sub-count-draft">0</span>)</button>
+        </div>
+
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+          <button class="btn btn-primary" style="padding:4px 12px;font-size:12px;" onclick="subNew()">+ New PO/Sub</button>
+          <span style="font-size:11px;color:var(--muted);" id="sub-count-header">0 commitments</span>
+        </div>
+
+        <div id="sub-cards-container"></div>
+        <div id="sub-cards-empty" class="empty-state" style="display:none">
+          <div class="icon">🏗️</div>
+          <div>No commitments yet</div>
+          <div style="font-size:12px;">Upload a quote or click "+ New PO/Sub"</div>
+        </div>
+      </div>
+
+      <!-- Right: editing form -->
+      <div id="sub-detail-panel" style="flex:1;overflow-y:auto;padding:20px;">
+        <div class="empty-state" id="sub-detail-empty">
+          <div class="icon">🏗️</div>
+          <div>Select a commitment or create new</div>
+        </div>
+        <div id="sub-detail" style="display:none;flex-direction:column;gap:14px;">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="text" id="sub-edit-title" placeholder="Title"
+              style="flex:1;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px 12px;font-size:16px;font-weight:600;color:var(--blue);"
+              onchange="subAutoSave()">
+            <select id="sub-edit-type" onchange="subTypeChanged()"
+              style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text);">
+              <option value="purchase_order">📦 Purchase Order</option>
+              <option value="subcontract">📋 Subcontract</option>
+            </select>
+            <select id="sub-edit-status" onchange="subAutoSave()"
+              style="background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text);">
+              <option value="draft">📝 Draft</option>
+              <option value="issued">📤 Issued</option>
+              <option value="executed">✍️ Executed</option>
+              <option value="closed">✅ Closed</option>
+            </select>
+          </div>
+
+          <!-- Project & Vendor -->
+          <div class="agent-card">
+            <div class="agent-card-title">📋 Details</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Vendor</label>
+                <select id="sub-edit-vendor" onchange="subAutoSave()"
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+                  <option value="">-- Select Vendor --</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Reference</label>
+                <input type="text" id="sub-edit-ref" readonly
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--yellow);font-size:13px;font-weight:600;">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Value (ex GST) $</label>
+                <input type="number" id="sub-edit-value" step="0.01" onchange="subAutoSave()"
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px 12px;color:var(--green);font-size:15px;font-weight:700;">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);">Retention %</label>
+                <input type="number" id="sub-edit-retention" step="0.1" onchange="subAutoSave()"
+                  style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+              </div>
+            </div>
+            <div style="margin-top:8px;">
+              <label style="font-size:11px;color:var(--muted);">Description / Scope</label>
+              <textarea id="sub-edit-desc" onchange="subAutoSave()" rows="2"
+                style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+            </div>
+            <!-- $100K upgrade warning -->
+            <div id="sub-upgrade-warning" style="display:none;margin-top:8px;padding:8px 12px;background:#3a3010;border:1px solid var(--yellow);border-radius:6px;font-size:12px;color:var(--yellow);">
+              ⚠️ Subcontractor + PO ≥ $100K — auto-upgraded to Subcontract
+            </div>
+          </div>
+
+          <!-- Line Items -->
+          <div class="agent-card">
+            <div class="agent-card-title">📊 Line Items</div>
+            <div style="display:grid;grid-template-columns:40px 1fr 60px 55px 80px 80px 35px;gap:4px;font-size:11px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--overlay);">
+              <span>#</span><span>Description</span><span>Qty</span><span>Unit</span><span>Rate ($)</span><span>Amount</span><span></span>
+            </div>
+            <div id="sub-items-rows"></div>
+            <button class="btn" style="margin-top:8px;padding:4px 12px;font-size:11px;" onclick="subAddItem()">+ Add Item</button>
+            <!-- Totals -->
+            <div id="sub-totals" style="margin-top:10px;padding:8px 12px;background:var(--base);border-radius:6px;font-size:12px;line-height:1.8;display:none;">
+              <div style="display:grid;grid-template-columns:1fr auto;gap:8px;color:var(--subtext);">
+                <span>Total (ex GST)</span><span style="color:var(--green);">$<span id="sub-total-ex">0</span></span>
+                <span>GST (10%)</span><span style="color:var(--text);">$<span id="sub-total-gst">0</span></span>
+                <span style="font-weight:700;">TOTAL (incl GST)</span><span style="font-weight:700;color:var(--green);">$<span id="sub-total-incl">0</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="agent-card">
+            <div class="agent-card-title">📄 Actions</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn" id="sub-btn-generate" onclick="subGenerateDoc()" style="font-size:12px;">📊 Generate Document</button>
+              <button class="btn" id="sub-btn-pdf" onclick="subExportPdf()" style="font-size:12px;">📄 Export PDF</button>
+              <button class="btn" id="sub-btn-email" onclick="subGenerateEmail()" style="font-size:12px;">✉️ Draft Email</button>
+              <button class="btn btn-primary" id="sub-btn-send" onclick="subSendEmail()" style="font-size:12px;" disabled>📤 Send via Outlook</button>
+            </div>
+            <div id="sub-doc-link" style="font-size:11px;color:var(--green);margin-top:6px;display:none;"></div>
+          </div>
+
+          <!-- Email fields -->
+          <div class="agent-card" id="sub-email-card" style="display:none;">
+            <div class="agent-card-title">✉️ Email</div>
+            <input type="text" id="sub-email-to" placeholder="To: vendor@example.com"
+              style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;margin-bottom:8px;">
+            <input type="text" id="sub-email-subject" placeholder="Subject"
+              style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;margin-bottom:8px;">
+            <textarea id="sub-email-body" placeholder="Email body..." rows="5"
+              style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+          </div>
+
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn btn-primary" onclick="subSave()" style="font-size:12px;">💾 Save</button>
+            <button class="btn btn-danger" onclick="subDelete()" style="font-size:12px;">🗑 Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Knowledge Pool View -->
+    <div id="knowledge-content" style="display:none;">
+      <div id="kp-placeholder" class="kp-placeholder">
+        <div style="text-align:center;">
+          <div style="font-size:48px;margin-bottom:12px;">🗄️</div>
+          <div>Select a database from the left bar to browse learned knowledge</div>
+        </div>
+      </div>
+      <div id="kp-data" style="display:none;">
+        <!-- Vendors -->
+        <div id="kp-vendors" class="kp-section" style="display:none;">
+          <h3>👥 Vendors</h3>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <select id="kp-vendor-filter-type" onchange="renderVendors()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:4px 8px;font-size:12px;color:var(--text);">
+              <option value="">All Types</option>
+              <option value="subcontractor">Subcontractors</option>
+              <option value="supplier">Suppliers</option>
+            </select>
+            <input id="kp-vendor-filter-trade" placeholder="Filter by trade..." oninput="renderVendors()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:4px 8px;font-size:12px;color:var(--text);width:180px;">
+          </div>
+          <div id="kp-vendors-table"></div>
+        </div>
+        <!-- Quotes -->
+        <div id="kp-quotes" class="kp-section" style="display:none;">
+          <h3>💰 Quotes</h3>
+          <div id="kp-quotes-table"></div>
+        </div>
+        <!-- Commitments -->
+        <div id="kp-commitments" class="kp-section" style="display:none;">
+          <h3>📋 Commitments</h3>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <select id="kp-commit-filter-type" onchange="renderCommitments()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:4px 8px;font-size:12px;color:var(--text);">
+              <option value="">All</option>
+              <option value="purchase_order">Purchase Orders</option>
+              <option value="subcontract">Subcontracts</option>
+            </select>
+          </div>
+          <div id="kp-commitments-table"></div>
+        </div>
+        <!-- Benchmarks -->
+        <div id="kp-benchmarks" class="kp-section" style="display:none;">
+          <h3>📊 Rate Benchmarks</h3>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <select id="kp-bench-filter-trade" onchange="renderBenchmarks()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:4px 8px;font-size:12px;color:var(--text);">
+              <option value="">All Trades</option>
+            </select>
+          </div>
+          <div id="kp-benchmarks-table"></div>
+        </div>
+        <!-- Clauses -->
+        <div id="kp-clauses" class="kp-section" style="display:none;">
+          <h3>📜 Clause Library</h3>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <select id="kp-clause-filter-sub" onchange="renderClauses()" style="background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:4px 8px;font-size:12px;color:var(--text);">
+              <option value="">All Subcontracts</option>
+            </select>
+          </div>
+          <div id="kp-clauses-table"></div>
+        </div>
+        <!-- Competitive Sets -->
+        <div id="kp-competitive" class="kp-section" style="display:none;">
+          <h3>🤝 Competitive Sets</h3>
+          <div id="kp-competitive-table"></div>
+        </div>
+      </div>
+    </div>
+    </div>
   </main>
 
 
@@ -1690,7 +2088,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=43"></script>
+  <script src="/static/app.js?v=44"></script>
 </body>
 
 </html>
