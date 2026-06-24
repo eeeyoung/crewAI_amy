@@ -38,6 +38,14 @@ MODULES = {
             "lilamy.modules.variation_agent_routes:router",
         ],
     },
+    "invoice_allocation": {
+        "id": "invoice_allocation",
+        "name": "Invoice Allocation",
+        "icon": "📄",
+        "description": "Auto-allocate invoice PDFs to project folders",
+        "enabled": True,
+        "router_path": "lilamy.modules.invoice_allocation_routes:router",
+    },
     # DEPRECATED — superseded by the To-Do List module above
     "acalendar": {
         "id": "acalendar",
