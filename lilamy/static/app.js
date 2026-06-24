@@ -13,7 +13,7 @@ let todoItems = [];
 let selectedTodoId = null;
 let selectedTodoIds = new Set();  // multi-select
 let lastClickedTodoId = null;     // for Shift+Click range
-let currentModule = 'amail';      // 'amail' | 'todo'
+let currentModule = 'amail';      // 'amail' | 'todo' | 'variations' | 'invoice_allocation'
 let currentTodoFilter = null;     // null=All | 'pending' | 'done' | 'cancelled'
 let _allTodoItems = [];           // raw items from backend (before client-side filters)
 let todoFilters = {               // client-side filter state
@@ -72,11 +72,12 @@ function switchModule(id) {
   const amailView = document.getElementById('module-content');
   const todoView = document.getElementById('todo-content');
   const varView = document.getElementById('variation-content');
+  const invoiceView = document.getElementById('invoice-content');
   const amailCtrls = document.getElementById('amail-controls');
   const todoCtrls = document.getElementById('todo-controls');
 
   // Hide module content, bars
-  [amailView, todoView, varView].forEach(v => { if (v) v.style.display = 'none'; });
+  [amailView, todoView, varView, invoiceView].forEach(v => { if (v) v.style.display = 'none'; });
   [amailCtrls, todoCtrls].forEach(c => { if (c) c.style.display = 'none'; });
 
   if (id === 'todo') {
@@ -95,6 +96,11 @@ function switchModule(id) {
     loadProjects().then(() => {
       if (selectedProjectId) varSwitchProject();
     });
+  } else if (id === 'invoice_allocation') {
+    if (invoiceView) invoiceView.style.display = 'flex';
+    document.getElementById('module-title').textContent = '📄 Invoice Allocation';
+    document.getElementById('btn-agent').style.display = 'none';
+    loadInvoiceHistory();
   } else {
     document.getElementById('btn-agent').style.display = 'none';
     // Default: AMail
@@ -3626,6 +3632,390 @@ varCreateProject = async function() {
   }
 };
 
+
+// ── Invoice Allocation ───────────────────────────────────────────────
+
+async function invoiceScan() {
+  const folderPath = document.getElementById('invoice-folder-path').value.trim();
+  if (!folderPath) { notify('Enter a folder path first', 'warning'); return; }
+
+  const spinner = document.getElementById('invoice-spinner');
+  const scanBtn = document.querySelector('#invoice-card-panel button[onclick="invoiceScan()"]');
+
+  spinner.style.display = 'inline-block';
+  if (scanBtn) { scanBtn.disabled = true; scanBtn.textContent = '⏳ Scanning...'; }
+  document.getElementById('invoice-detail-empty').style.display = 'none';
+  document.getElementById('invoice-history-panel').style.display = 'none';
+  document.getElementById('invoice-summary').style.display = 'none';
+
+  // Clear previous results
+  ['invoice-moved-section', 'invoice-pending-section', 'invoice-nomatch-section', 'invoice-failed-section'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  notifyProgress('invoice-scan', '🔍 Scanning folder...', 'Reading PDFs and matching to projects...');
+
+  try {
+    const res = await fetch(`${API}/api/invoice/scan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder_path: folderPath }),
+    });
+    const data = await res.json();
+
+    if (data.error) { notify(data.error, 'error'); return; }
+
+    // Summary
+    document.getElementById('invoice-summary').style.display = 'block';
+    document.getElementById('invoice-sum-text').textContent =
+      `${data.total} files: ${data.auto_move} auto-move, ${data.pending} pending, ${data.no_match} no match (dry-run)`;
+
+    // Render results
+    _renderInvoiceResults(data.results);
+    notify(`Scan complete: ${data.auto_move} auto-move, ${data.pending} pending`, 'info');
+  } catch (e) {
+    notify('Scan failed: ' + e.message, 'error');
+  } finally {
+    spinner.style.display = 'none';
+    if (scanBtn) { scanBtn.disabled = false; scanBtn.textContent = '🔍 Scan'; }
+    dismissNotify('invoice-scan');
+  }
+}
+
+async function invoiceAllocate() {
+  const folderPath = document.getElementById('invoice-folder-path').value.trim();
+  if (!folderPath) { notify('Enter a folder path first', 'warning'); return; }
+
+  if (!confirm(`Allocate invoices in:\n${folderPath}\n\nHigh-confidence matches will be moved immediately.`)) return;
+
+  const spinner = document.getElementById('invoice-spinner');
+  const allocateBtn = document.querySelector('#invoice-card-panel button.btn-primary');
+  const scanBtn = document.querySelector('#invoice-card-panel button[onclick="invoiceScan()"]');
+
+  // Show loading state
+  spinner.style.display = 'inline-block';
+  if (allocateBtn) { allocateBtn.disabled = true; allocateBtn.textContent = '⏳ Allocating...'; }
+  if (scanBtn) scanBtn.disabled = true;
+  document.getElementById('invoice-detail-empty').style.display = 'none';
+  document.getElementById('invoice-history-panel').style.display = 'none';
+
+  // Show progress notification
+  notifyProgress('invoice-alloc', '📦 Allocating invoices...', 'Reading PDFs and matching to projects...');
+
+  // Clear previous results with fade
+  ['invoice-moved-section', 'invoice-pending-section', 'invoice-nomatch-section', 'invoice-failed-section'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.opacity = '0.4';
+  });
+  document.getElementById('invoice-summary').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API}/api/invoice/allocate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder_path: folderPath }),
+    });
+    const data = await res.json();
+
+    updateNotify('invoice-alloc', 'success', '📦 Allocation complete',
+      `${data.moved} auto-moved, ${data.pending_count} pending, ${data.no_match_count} no match`);
+
+    // Summary
+    document.getElementById('invoice-summary').style.display = 'block';
+    document.getElementById('invoice-sum-text').textContent =
+      `${data.total} files: ${data.moved} auto-moved, ${data.pending_count} pending, ${data.no_match_count} no match`;
+
+    // Render sections with fade-in
+    _renderInvoiceMoved(data.moved_items || []);
+    _renderInvoicePending(data.pending_items || []);
+    _renderInvoiceNoMatch(data.no_match_items || []);
+    _renderInvoiceFailed(data.failed || 0);
+
+    // Fade results back in
+    setTimeout(() => {
+      ['invoice-moved-section', 'invoice-pending-section', 'invoice-nomatch-section', 'invoice-failed-section'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = '1';
+      });
+    }, 100);
+
+    if (data.pending_count > 0) {
+      setTimeout(() => {
+        notify(`${data.pending_count} file(s) need your decision below`, 'warning');
+        // Highlight the pending section
+        const pendingSection = document.getElementById('invoice-pending-section');
+        if (pendingSection) {
+          pendingSection.style.transition = 'box-shadow 0.3s';
+          pendingSection.style.boxShadow = '0 0 12px var(--yellow)';
+          setTimeout(() => { pendingSection.style.boxShadow = ''; }, 2000);
+        }
+      }, 500);
+    }
+
+    loadInvoiceHistory();
+  } catch (e) {
+    updateNotify('invoice-alloc', 'error', 'Allocation failed', e.message);
+  } finally {
+    spinner.style.display = 'none';
+    if (allocateBtn) { allocateBtn.disabled = false; allocateBtn.textContent = '📦 Allocate'; }
+    if (scanBtn) scanBtn.disabled = false;
+    setTimeout(() => dismissNotify('invoice-alloc'), 3000);
+  }
+}
+
+// Pending items cache for fast lookup by index
+let _invoicePendingCache = [];
+
+async function invoiceConfirm(idx) {
+  const item = _invoicePendingCache[idx];
+  if (!item) return;
+
+  const card = document.getElementById(`pending-card-${idx}`);
+  // Show spinner on the card
+  if (card) { card.style.opacity = '0.5'; card.style.pointerEvents = 'none'; }
+
+  try {
+    const res = await fetch(`${API}/api/invoice/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ original_path: item.original_path, project_code: item.suggested_project_code }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      notify(`Moved: ${data.result.filename} → ${data.result.target_project}`, 'success');
+      // Remove card with slide-out animation
+      if (card) {
+        card.style.transition = 'transform 0.3s, opacity 0.3s';
+        card.style.transform = 'translateX(40px)';
+        card.style.opacity = '0';
+        setTimeout(() => { card.remove(); _checkPendingEmpty(); }, 300);
+      }
+      loadInvoiceHistory();
+    } else {
+      notify(data.error || 'Confirm failed', 'error');
+      if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
+    }
+  } catch (e) {
+    notify('Confirm failed: ' + e.message, 'error');
+    if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
+  }
+}
+
+async function invoiceDecline(idx) {
+  const item = _invoicePendingCache[idx];
+  if (!item) return;
+
+  const card = document.getElementById(`pending-card-${idx}`);
+  if (card) { card.style.opacity = '0.5'; card.style.pointerEvents = 'none'; }
+
+  try {
+    const res = await fetch(`${API}/api/invoice/decline`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ original_path: item.original_path }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      notify(`Declined: ${data.filename} — left in root`, 'info');
+      if (card) {
+        card.style.transition = 'transform 0.3s, opacity 0.3s';
+        card.style.transform = 'translateX(-40px)';
+        card.style.opacity = '0';
+        setTimeout(() => { card.remove(); _checkPendingEmpty(); }, 300);
+      }
+      loadInvoiceHistory();
+    } else {
+      notify(data.error || 'Decline failed', 'error');
+      if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
+    }
+  } catch (e) {
+    notify('Decline failed: ' + e.message, 'error');
+    if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
+  }
+}
+
+function _checkPendingEmpty() {
+  const remaining = document.querySelectorAll('#invoice-pending-list > [id^="pending-card-"]').length;
+  document.getElementById('invoice-pending-count').textContent = remaining;
+  if (remaining === 0) {
+    const section = document.getElementById('invoice-pending-section');
+    section.style.transition = 'opacity 0.3s';
+    section.style.opacity = '0';
+    setTimeout(() => {
+      section.style.display = 'none';
+      section.style.opacity = '1';
+      // Show completion banner
+      const summary = document.getElementById('invoice-summary');
+      if (summary) {
+        summary.style.background = 'var(--green)';
+        summary.style.color = 'white';
+        summary.style.padding = '10px 14px';
+        summary.style.borderRadius = '8px';
+        summary.style.fontWeight = '600';
+        document.getElementById('invoice-sum-text').textContent += ' — ✅ All done!';
+        setTimeout(() => {
+          summary.style.background = '';
+          summary.style.color = '';
+          summary.style.padding = '';
+          summary.style.borderRadius = '';
+          summary.style.fontWeight = '';
+        }, 4000);
+      }
+    }, 300);
+  }
+}
+
+async function loadInvoiceHistory() {
+  try {
+    const res = await fetch(`${API}/api/invoice/history?limit=30`);
+    const data = await res.json();
+    const panel = document.getElementById('invoice-history-panel');
+    const list = document.getElementById('invoice-history-list');
+
+    if (!data.runs || data.runs.length === 0) {
+      list.innerHTML = '<div style="color:var(--muted);font-size:12px;">No allocation history yet.</div>';
+    } else {
+      list.innerHTML = data.runs.map(run => {
+        const ts = run.records[0]?.created_at?.slice(0, 19) || '';
+        const summary = `${run.moved} moved, ${run.pending} pending, ${run.no_match} no match`;
+        const recordsHtml = run.records.map(r => {
+          const icon = { moved: '✅', confirmed: '✔️', pending_confirmation: '⏳', no_match: '➖', declined: '✗', undone: '↩️', error: '❌' }[r.status] || '  ';
+          const target = r.target_project_name || r.target_project_code || '-';
+          return `<div style="display:flex;gap:8px;align-items:center;padding:4px 0;font-size:12px;border-bottom:1px solid var(--overlay);">
+            <span>${icon}</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.filename)}</span>
+            <span style="color:var(--subtext);min-width:100px;text-align:right;">→ ${esc(target)}</span>
+            <span style="color:var(--muted);font-size:10px;min-width:70px;text-align:right;">${r.match_method || ''} (${(r.confidence || 0).toFixed(2)})</span>
+            <span style="color:var(--muted);font-size:10px;min-width:140px;text-align:right;">${ts}</span>
+            ${r.status === 'moved' || r.status === 'confirmed' ? `<button class="btn" onclick="invoiceUndo(${r.id})" style="font-size:10px;padding:1px 6px;" title="Undo">↩</button>` : ''}
+          </div>`;
+        }).join('');
+
+        return `<div style="margin-bottom:12px;border:1px solid var(--overlay);border-radius:8px;overflow:hidden;">
+          <div style="background:var(--surface);padding:6px 10px;font-size:12px;font-weight:600;display:flex;justify-content:space-between;">
+            <span>Run #${run.run_id}</span>
+            <span style="color:var(--subtext);font-weight:400;">${summary}</span>
+          </div>
+          <div style="padding:4px 10px;">${recordsHtml}</div>
+        </div>`;
+      }).join('');
+    }
+
+    panel.style.display = 'block';
+  } catch (e) {
+    console.error('loadInvoiceHistory:', e);
+  }
+}
+
+async function invoiceUndo(recordId) {
+  if (!confirm('Undo this move? The file will be moved back to its original location.')) return;
+  try {
+    const res = await fetch(`${API}/api/invoice/undo/${recordId}`, { method: 'POST' });
+    const data = await res.json();
+    if (data.ok) {
+      notify('File moved back', 'success');
+      loadInvoiceHistory();
+      // Re-scan to refresh results
+      invoiceScan();
+    } else {
+      notify('Undo failed: record not found or file missing', 'error');
+    }
+  } catch (e) {
+    notify('Undo failed: ' + e.message, 'error');
+  }
+}
+
+// ── Invoice allocation render helpers ─────────────────────────────────
+
+function _renderInvoiceResults(results) {
+  _renderInvoiceMoved(results.filter(r => r.status === 'auto_move'));
+  _renderInvoicePending(results.filter(r => r.status === 'pending').map(r => ({
+    filename: r.filename,
+    original_path: '',  // dry-run has no paths
+    suggested_project_full_name: r.suggested_project_full_name || '',
+    suggested_project_code: r.suggested_project_code || '',
+    suggested_project_name: r.suggested_project_name || '',
+    confidence: r.confidence,
+    match_method: r.match_method,
+    llm_reasoning: '',
+  })));
+  _renderInvoiceNoMatch(results.filter(r => r.status === 'no_match').map(r => ({
+    filename: r.filename,
+  })));
+}
+
+function _renderInvoiceMoved(items) {
+  const section = document.getElementById('invoice-moved-section');
+  const list = document.getElementById('invoice-moved-list');
+  const count = document.getElementById('invoice-moved-count');
+  count.textContent = items.length;
+  if (items.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = items.map(item => `
+    <div style="padding:6px 8px;background:var(--base);border-radius:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${esc(item.filename)}</span>
+      <span style="color:var(--subtext);margin-left:8px;white-space:nowrap;">→ ${esc(item.target_project || item.suggested_project_full_name || '?')}</span>
+      <span style="color:var(--muted);font-size:10px;margin-left:8px;">${item.match_method || ''} (${(item.confidence || 0).toFixed(2)})</span>
+    </div>
+  `).join('');
+}
+
+function _renderInvoicePending(items) {
+  const section = document.getElementById('invoice-pending-section');
+  const list = document.getElementById('invoice-pending-list');
+  const count = document.getElementById('invoice-pending-count');
+
+  // Cache items for lookup by index
+  _invoicePendingCache = items;
+
+  count.textContent = items.length;
+  if (items.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  section.style.opacity = '1';
+  section.style.boxShadow = '';
+
+  const isDryRun = !items[0]?.original_path;  // dry-run items have no path
+
+  list.innerHTML = items.map((item, idx) => `
+    <div id="pending-card-${idx}" style="padding:8px;background:var(--base);border:1px solid var(--yellow);border-radius:8px;font-size:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(item.filename)}</span>
+        <span style="color:var(--subtext);font-size:11px;">${item.match_method || ''} (${(item.confidence || 0).toFixed(2)})</span>
+      </div>
+      <div style="color:var(--subtext);margin-bottom:4px;">→ ${esc(item.suggested_project_full_name || item.suggested_project_name || '?')}</div>
+      ${item.llm_reasoning ? `<div style="color:var(--muted);font-size:10px;margin-bottom:6px;font-style:italic;">💬 ${esc(item.llm_reasoning)}</div>` : ''}
+      ${isDryRun ? '<div style="font-size:10px;color:var(--muted);">🔍 Dry-run only — run Allocate to process</div>' : `
+      <div style="display:flex;gap:6px;">
+        <button class="btn" onclick="invoiceConfirm(${idx})"
+          style="font-size:11px;padding:3px 10px;background:var(--green);color:white;border-color:var(--green);">✓ Confirm</button>
+        <button class="btn" onclick="invoiceDecline(${idx})"
+          style="font-size:11px;padding:3px 10px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);">✗ Decline</button>
+      </div>`}
+    </div>
+  `).join('');
+}
+
+function _renderInvoiceNoMatch(items) {
+  const section = document.getElementById('invoice-nomatch-section');
+  const list = document.getElementById('invoice-nomatch-list');
+  const count = document.getElementById('invoice-nomatch-count');
+  count.textContent = items.length;
+  if (items.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = items.map(item => `
+    <div style="padding:6px 8px;background:var(--base);border-radius:6px;font-size:12px;color:var(--muted);">
+      ➖ ${esc(item.filename)}
+    </div>
+  `).join('');
+}
+
+function _renderInvoiceFailed(count) {
+  const section = document.getElementById('invoice-failed-section');
+  if (count === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  document.getElementById('invoice-failed-count').textContent = count;
+}
 
 // ── Boot ─────────────────────────────────────────────────────────────
 
