@@ -217,24 +217,6 @@ def init_subcontractor_db() -> None:
 
             -- ── Learner Knowledge Tables ───────────────────────────
 
-            CREATE TABLE IF NOT EXISTS rate_benchmarks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                entry_id TEXT UNIQUE NOT NULL,
-                trade_name TEXT NOT NULL DEFAULT '',
-                scope_keyword TEXT DEFAULT '',
-                unit TEXT DEFAULT 'item',
-                min_rate REAL DEFAULT 0,
-                max_rate REAL DEFAULT 0,
-                avg_rate REAL DEFAULT 0,
-                median_rate REAL DEFAULT 0,
-                sample_count INTEGER DEFAULT 0,
-                project_entry_id TEXT DEFAULT '',
-                created_at TEXT DEFAULT (datetime('now'))
-            );
-
-            CREATE INDEX IF NOT EXISTS idx_sub_benchmarks_trade
-                ON rate_benchmarks(trade_name);
-
             CREATE TABLE IF NOT EXISTS clause_library (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 entry_id TEXT UNIQUE NOT NULL,
@@ -253,19 +235,6 @@ def init_subcontractor_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_sub_clauses_number
                 ON clause_library(clause_number);
 
-            CREATE TABLE IF NOT EXISTS competitive_sets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                entry_id TEXT UNIQUE NOT NULL,
-                trade_name TEXT NOT NULL DEFAULT '',
-                vendor_entry_ids TEXT DEFAULT '[]',
-                project_entry_id TEXT DEFAULT '',
-                quote_count INTEGER DEFAULT 0,
-                awarded_vendor_entry_id TEXT DEFAULT '',
-                created_at TEXT DEFAULT (datetime('now'))
-            );
-
-            CREATE INDEX IF NOT EXISTS idx_sub_compsets_trade
-                ON competitive_sets(trade_name);
         """)
         conn.commit()
 
@@ -1125,79 +1094,6 @@ def get_vendor_summary(entry_id: str) -> dict | None:
 
 
 # =============================================================================
-# Rate Benchmarks (learner knowledge table)
-# =============================================================================
-
-
-def upsert_rate_benchmark(data: dict) -> bool:
-    conn = _get_connection()
-    try:
-        conn.execute(
-            """INSERT INTO rate_benchmarks
-               (entry_id, trade_name, scope_keyword, unit,
-                min_rate, max_rate, avg_rate, median_rate,
-                sample_count, project_entry_id)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(entry_id) DO UPDATE SET
-                trade_name = excluded.trade_name,
-                scope_keyword = excluded.scope_keyword,
-                unit = excluded.unit,
-                min_rate = excluded.min_rate,
-                max_rate = excluded.max_rate,
-                avg_rate = excluded.avg_rate,
-                median_rate = excluded.median_rate,
-                sample_count = excluded.sample_count,
-                project_entry_id = excluded.project_entry_id""",
-            (data.get("entry_id", ""), data.get("trade_name", ""),
-             data.get("scope_keyword", ""), data.get("unit", "item"),
-             data.get("min_rate", 0), data.get("max_rate", 0),
-             data.get("avg_rate", 0), data.get("median_rate", 0),
-             data.get("sample_count", 0), data.get("project_entry_id", "")),
-        )
-        conn.commit()
-        return True
-    except Exception as e:
-        print(f"Error upserting rate benchmark: {e}")
-        return False
-    finally:
-        conn.close()
-
-
-def get_rate_benchmarks(trade_name: str | None = None) -> list[dict]:
-    conn = _get_connection()
-    try:
-        query = "SELECT * FROM rate_benchmarks WHERE 1=1"
-        params: list = []
-        if trade_name:
-            query += " AND trade_name = ?"
-            params.append(trade_name)
-        query += " ORDER BY trade_name, scope_keyword"
-        rows = conn.execute(query, params).fetchall()
-        return [dict(r) for r in rows]
-    except Exception as e:
-        print(f"Error reading rate benchmarks: {e}")
-        return []
-    finally:
-        conn.close()
-
-
-def clear_rate_benchmarks(project_entry_id: str = "") -> bool:
-    conn = _get_connection()
-    try:
-        if project_entry_id:
-            conn.execute("DELETE FROM rate_benchmarks WHERE project_entry_id = ?",
-                        (project_entry_id,))
-        else:
-            conn.execute("DELETE FROM rate_benchmarks")
-        conn.commit()
-        return True
-    except Exception:
-        return False
-    finally:
-        conn.close()
-
-
-# =============================================================================
 # Clause Library (learner knowledge table)
 # =============================================================================
 
@@ -1273,69 +1169,3 @@ def clear_clause_library(project_entry_id: str = "") -> bool:
         conn.close()
 
 
-# =============================================================================
-# Competitive Sets (learner knowledge table)
-# =============================================================================
-
-
-def upsert_competitive_set(data: dict) -> bool:
-    conn = _get_connection()
-    try:
-        conn.execute(
-            """INSERT INTO competitive_sets
-               (entry_id, trade_name, vendor_entry_ids, project_entry_id,
-                quote_count, awarded_vendor_entry_id)
-               VALUES (?, ?, ?, ?, ?, ?)
-               ON CONFLICT(entry_id) DO UPDATE SET
-                trade_name = excluded.trade_name,
-                vendor_entry_ids = excluded.vendor_entry_ids,
-                project_entry_id = excluded.project_entry_id,
-                quote_count = excluded.quote_count,
-                awarded_vendor_entry_id = excluded.awarded_vendor_entry_id""",
-            (data.get("entry_id", ""), data.get("trade_name", ""),
-             data.get("vendor_entry_ids", "[]"),
-             data.get("project_entry_id", ""),
-             data.get("quote_count", 0),
-             data.get("awarded_vendor_entry_id", "")),
-        )
-        conn.commit()
-        return True
-    except Exception as e:
-        print(f"Error upserting competitive set: {e}")
-        return False
-    finally:
-        conn.close()
-
-
-def get_competitive_sets(trade_name: str | None = None) -> list[dict]:
-    conn = _get_connection()
-    try:
-        query = "SELECT * FROM competitive_sets WHERE 1=1"
-        params: list = []
-        if trade_name:
-            query += " AND trade_name = ?"
-            params.append(trade_name)
-        query += " ORDER BY trade_name"
-        rows = conn.execute(query, params).fetchall()
-        return [dict(r) for r in rows]
-    except Exception as e:
-        print(f"Error reading competitive sets: {e}")
-        return []
-    finally:
-        conn.close()
-
-
-def clear_competitive_sets(project_entry_id: str = "") -> bool:
-    conn = _get_connection()
-    try:
-        if project_entry_id:
-            conn.execute("DELETE FROM competitive_sets WHERE project_entry_id = ?",
-                        (project_entry_id,))
-        else:
-            conn.execute("DELETE FROM competitive_sets")
-        conn.commit()
-        return True
-    except Exception:
-        return False
-    finally:
-        conn.close()
