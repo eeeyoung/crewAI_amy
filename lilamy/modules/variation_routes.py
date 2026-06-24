@@ -35,6 +35,7 @@ class VariationCreate(BaseModel):
     is_estimate: bool = False
     date_issued: str | None = None
     site_instruction_ref: str = ""
+    rev_number: int = 1
     company_name: str = "Welink Construction"
     source_email_entry_id: str | None = None
     approved_value: float | None = None
@@ -53,6 +54,7 @@ class VariationUpdate(BaseModel):
     is_estimate: bool | None = None
     date_issued: str | None = None
     site_instruction_ref: str | None = None
+    rev_number: int | None = None
     status: str | None = None
     approved_value: float | None = None
     not_approved_value: float | None = None

@@ -156,7 +156,8 @@ _DEFAULT_MAPPING: dict[str, Any] = {
         "project_name": "B6",
         "date_issued": "G6",
         "company_name": "B7",
-        "site_instruction_ref": "F7",
+        "rev_number": "G7",
+        "site_instruction_ref": "F8",
         "site_address": "B8",
         "job_number": "B9",
         "vo_title": "B11",
@@ -310,6 +311,7 @@ class VariationExcelBuilder:
         c.font = FONT_TITLE
         c.alignment = ALIGN_CENTER
 
+        # Row 6: Project + Date
         ws['A6'] = "PROJECT:"; ws['A6'].font = FONT; ws['A6'].alignment = ALIGN_LEFT
         _set_cell(ws, 'B6', variation.get("project_name", "")); ws['B6'].font = FONT; ws['B6'].alignment = ALIGN_LEFT
         _set_cell(ws, 'F6', "Date:"); ws['F6'].font = FONT; ws['F6'].alignment = ALIGN_RIGHT
@@ -323,14 +325,19 @@ class VariationExcelBuilder:
                 _set_cell(ws, 'G6', date_str)
         ws['G6'].font = FONT; ws['G6'].alignment = ALIGN_LEFT
 
+        # Row 7: Company Name + Rev
         ws['A7'] = "NAME:"; ws['A7'].font = FONT; ws['A7'].alignment = ALIGN_LEFT
         _set_cell(ws, 'B7', variation.get("company_name", "Welink Construction")); ws['B7'].font = FONT; ws['B7'].alignment = ALIGN_LEFT
-        _set_cell(ws, 'F7', "Site Instruction / Ref:"); ws['F7'].font = FONT; ws['F7'].alignment = ALIGN_RIGHT
-        _set_cell(ws, 'G7', variation.get("site_instruction_ref", "")); ws['G7'].font = FONT; ws['G7'].alignment = ALIGN_LEFT
+        _set_cell(ws, 'F7', "Rev:"); ws['F7'].font = FONT_BOLD; ws['F7'].alignment = ALIGN_RIGHT
+        _set_cell(ws, 'G7', variation.get("rev_number", 1)); ws['G7'].font = FONT; ws['G7'].alignment = ALIGN_LEFT
 
+        # Row 8: Site Address + Site Instruction/Ref
         ws['A8'] = "SITE ADDRESS:"; ws['A8'].font = FONT; ws['A8'].alignment = ALIGN_LEFT
         _set_cell(ws, 'B8', variation.get("project_location", "")); ws['B8'].font = FONT; ws['B8'].alignment = ALIGN_LEFT
+        _set_cell(ws, 'F8', "Site Instruction / Ref:"); ws['F8'].font = FONT; ws['F8'].alignment = ALIGN_RIGHT
+        _set_cell(ws, 'G8', variation.get("site_instruction_ref", "")); ws['G8'].font = FONT; ws['G8'].alignment = ALIGN_LEFT
 
+        # Row 9: Job Number
         ws['A9'] = "JOB No:"; ws['A9'].font = FONT; ws['A9'].alignment = ALIGN_LEFT
         _set_cell(ws, 'B9', variation.get("job_number", "")); ws['B9'].font = FONT; ws['B9'].alignment = ALIGN_LEFT
 
@@ -801,6 +808,10 @@ def import_project_from_xlsx(xlsx_path: str, mapping: TemplateMapping | None = N
         elif date_val:
             date_issued = str(date_val)
 
+        # Read rev_number
+        rev_val = _read_cell(ws, mapping.vo_cell("rev_number"))
+        rev_number = int(rev_val) if rev_val is not None else 1
+
         # Detect estimate
         title_cell = mapping.vo_cell("title_cell")
         title_text = str(_read_cell(ws, title_cell) or "")
@@ -864,6 +875,7 @@ def import_project_from_xlsx(xlsx_path: str, mapping: TemplateMapping | None = N
             "vo_type": "Head Contract VO",
             "is_estimate": is_estimate,
             "date_issued": date_issued,
+            "rev_number": rev_number,
             "status": status,
             "items": items,
             "project_name": project.get("name", ""),

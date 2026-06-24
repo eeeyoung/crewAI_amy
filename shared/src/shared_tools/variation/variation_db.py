@@ -133,6 +133,7 @@ def init_variation_db() -> None:
         _migrate_add_column(conn, "variations", "not_approved_value", "REAL DEFAULT 0")
         _migrate_add_column(conn, "variations", "approval_type", "TEXT DEFAULT 'client'")
         _migrate_add_column(conn, "variations", "sort_order", "INTEGER DEFAULT 0")
+        _migrate_add_column(conn, "variations", "rev_number", "INTEGER DEFAULT 1")
 
         # Migrate existing data from mail_history.db → variations.db
         _migrate_from_shared_db(conn)
@@ -188,15 +189,16 @@ def _migrate_from_shared_db(conn) -> None:
                 """INSERT OR IGNORE INTO variations
                    (entry_id, project_entry_id, project_name, project_location,
                     job_number, base_contract_amount, vo_number, vo_title, vo_type,
-                    is_estimate, date_issued, site_instruction_ref, status,
+                    is_estimate, date_issued, site_instruction_ref, rev_number, status,
                     source_email_entry_id, bank_approved, client_approved,
                     excel_path, pdf_path, onedrive_path, submitted_at, created_at, updated_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (d.get("entry_id"), d.get("project_entry_id", ""), d.get("project_name", ""),
                  d.get("project_location", ""), d.get("job_number", ""),
                  d.get("base_contract_amount", 0), d.get("vo_number"), d.get("vo_title", ""),
                  d.get("vo_type", "Head Contract VO"), d.get("is_estimate", 0),
-                 d.get("date_issued"), d.get("site_instruction_ref", ""), d.get("status", "draft"),
+                 d.get("date_issued"), d.get("site_instruction_ref", ""),
+                 d.get("rev_number", 1), d.get("status", "draft"),
                  d.get("source_email_entry_id"), d.get("bank_approved", 0),
                  d.get("client_approved", 0), d.get("excel_path"), d.get("pdf_path"),
                  d.get("onedrive_path"), d.get("submitted_at"), d.get("created_at"),
@@ -352,10 +354,10 @@ def upsert_variation(data: dict) -> bool:
             """INSERT INTO variations
                (entry_id, project_entry_id, project_name, project_location, job_number,
                 base_contract_amount, vo_number, vo_title, vo_type, is_estimate,
-                date_issued, site_instruction_ref, status, source_email_entry_id,
+                date_issued, site_instruction_ref, rev_number, status, source_email_entry_id,
                 bank_approved, client_approved, approved_value, not_approved_value, approval_type, sort_order,
                 excel_path, pdf_path, onedrive_path, submitted_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
                ON CONFLICT(entry_id) DO UPDATE SET
                 project_entry_id = excluded.project_entry_id,
                 project_name = excluded.project_name,
@@ -365,6 +367,7 @@ def upsert_variation(data: dict) -> bool:
                 vo_number = excluded.vo_number, vo_title = excluded.vo_title,
                 vo_type = excluded.vo_type, is_estimate = excluded.is_estimate,
                 date_issued = excluded.date_issued, site_instruction_ref = excluded.site_instruction_ref,
+                rev_number = excluded.rev_number,
                 status = excluded.status, source_email_entry_id = excluded.source_email_entry_id,
                 bank_approved = excluded.bank_approved, client_approved = excluded.client_approved,
                 approved_value = excluded.approved_value, not_approved_value = excluded.not_approved_value,
@@ -379,6 +382,7 @@ def upsert_variation(data: dict) -> bool:
              data.get("vo_number"), data.get("vo_title", ""),
              data.get("vo_type", "Head Contract VO"), data.get("is_estimate", 0),
              data.get("date_issued"), data.get("site_instruction_ref", ""),
+             data.get("rev_number", 1),
              data.get("status", "draft"), data.get("source_email_entry_id"),
              data.get("bank_approved", 0), data.get("client_approved", 0),
              data.get("approved_value", 0), data.get("not_approved_value", 0),

@@ -127,6 +127,7 @@ class VariationService(QObject):
         data.setdefault("status", "draft")
         data.setdefault("vo_type", "Head Contract VO")
         data.setdefault("company_name", "Welink Construction")
+        data.setdefault("rev_number", 1)
 
         from shared_tools.variation.variation_db import upsert_variation
         upsert_variation(data)
