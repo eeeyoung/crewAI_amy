@@ -1410,6 +1410,18 @@
                   style="width:100%;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--muted);font-size:13px;opacity:0.7;">
               </div>
             </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
+              <div>
+                <label style="font-size:11px;color:var(--muted);">REV</label>
+                <div style="display:flex;gap:4px;align-items:center;">
+                  <input type="number" id="var-edit-rev" min="1" step="1" value="1"
+                    onchange="varAutoSave()"
+                    style="width:70px;background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;">
+                  <button class="btn" onclick="varIncrementRev()"
+                    style="padding:6px 10px;font-size:11px;background:var(--surface);color:var(--text);border:1px solid var(--overlay);white-space:nowrap;">UPDATE</button>
+                </div>
+              </div>
+            </div>
             <div style="display:flex;gap:12px;margin-top:8px;">
               <label style="font-size:12px;color:var(--subtext);display:flex;align-items:center;gap:4px;">
                 <input type="radio" name="var-vo-type" value="Head Contract VO" checked onchange="varAutoSave()"> Head Contract VO
@@ -1551,6 +1563,82 @@
           </div>
           <div id="invoice-history-list"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Progress Claims View -->
+    <div id="progress-claim-content" style="display:none;flex:1;overflow:hidden;">
+      <!-- Left: project selector + claim list -->
+      <div id="pc-card-panel" style="width:340px;min-width:300px;overflow-y:auto;border-right:1px solid var(--overlay);padding:12px;display:flex;flex-direction:column;gap:10px;">
+
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="pc-project-select" onchange="pcSwitchProject()"
+            style="flex:1;background:var(--surface);border:1px solid var(--overlay);border-radius:6px;padding:7px 8px;font-size:13px;color:var(--text);font-weight:600;">
+            <option value="">-- Select Project --</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn" onclick="pcNewProject()" style="flex:1;font-size:12px;">+ New Project</button>
+          <button class="btn btn-primary" onclick="pcImportCashflow()" style="flex:1;font-size:12px;">📥 Import CF</button>
+        </div>
+
+        <div style="border-top:1px solid var(--overlay);padding-top:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-weight:600;font-size:13px;color:var(--subtext);">CLAIMS</span>
+            <div style="display:flex;gap:4px;">
+              <button class="btn" onclick="pcImportClaim()" style="font-size:11px;padding:4px 8px;" title="Import a previous finished claim (PDF/XLSX)">📥 Import</button>
+              <button class="btn" onclick="pcOpenGenerate()" style="font-size:11px;padding:4px 8px;">+ Generate</button>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Tip: Ctrl+click to multi-select · right-click to Remove</div>
+          <div id="pc-claims-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+        </div>
+
+        <!-- Project Configuration panel -->
+        <div id="pc-config-panel" style="display:none;border-top:1px solid var(--overlay);padding-top:10px;margin-top:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-weight:600;font-size:13px;color:var(--subtext);">⚙ PROJECT CONFIG</span>
+            <button class="btn btn-primary" onclick="pcSaveConfig()" style="font-size:11px;padding:3px 8px;">Save</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;">
+            <label style="color:var(--muted);">Total contract value (drives 5% retention cap)</label>
+            <input type="number" step="0.01" id="pc-cfg-contract" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <label style="color:var(--muted);">Site address</label>
+            <input type="text" id="pc-cfg-address" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <label style="color:var(--muted);">Project name</label>
+            <input type="text" id="pc-cfg-name" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <label style="color:var(--muted);">Job number</label>
+            <input type="text" id="pc-cfg-job" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <label style="color:var(--muted);">Client</label>
+            <input type="text" id="pc-cfg-client" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <label style="color:var(--muted);">Client contact</label>
+            <input type="text" id="pc-cfg-client-contact" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <label style="color:var(--muted);">Superintendent</label>
+            <input type="text" id="pc-cfg-super" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <div style="margin-top:4px;color:var(--muted);font-size:10px;">Company (for claim header)</div>
+            <input type="text" id="pc-cfg-company" placeholder="Company name" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <input type="text" id="pc-cfg-abn" placeholder="ABN" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+            <input type="text" id="pc-cfg-co-address" placeholder="Company address" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: cashflow table / claim detail / empty -->
+      <div id="pc-detail-panel" style="flex:1;overflow:auto;padding:16px;">
+
+        <!-- Empty state -->
+        <div id="pc-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;color:var(--subtext);">
+          <div style="font-size:48px;margin-bottom:12px;">💰</div>
+          <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Progress Claims</div>
+          <div style="font-size:13px;max-width:360px;margin-bottom:16px;">Track cashflow and generate monthly progress claims for client submission.</div>
+          <div style="font-size:12px;">Create a new project, or import an existing cashflow xlsx file to get started.</div>
+        </div>
+
+        <!-- Cashflow view -->
+        <div id="pc-cashflow-view" style="display:none;"></div>
+
+        <!-- Claim detail view -->
+        <div id="pc-claim-view" style="display:none;"></div>
       </div>
     </div>
 
@@ -1756,9 +1844,62 @@
     </div>
   </div>
 
+  <!-- Progress Claim: New Project modal -->
+  <div class="modal-overlay" id="pc-new-project-modal">
+    <div class="modal-box">
+      <h2>💰 New Progress Claim Project</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">
+        <input type="text" id="pc-new-name" placeholder="Project name" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <input type="text" id="pc-new-job" placeholder="Job number" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <input type="text" id="pc-new-client" placeholder="Client" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <input type="number" id="pc-new-base" placeholder="Base contract amount" step="0.01" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">You can import a cashflow xlsx after creating the project, or skip creation entirely and use “Import CF” to auto-create from the file header.</div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('pc-new-project-modal').classList.remove('show')">Cancel</button>
+        <button class="btn" onclick="pcCreateProject()" style="background:var(--blue);color:var(--base);border-color:var(--blue);">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Claim: Generate Claim modal -->
+  <div class="modal-overlay" id="pc-generate-modal">
+    <div class="modal-box">
+      <h2>📋 Generate Progress Claim</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">
+        <label style="font-size:11px;color:var(--muted);">Claim month</label>
+        <select id="pc-gen-month" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;"></select>
+        <label style="font-size:11px;color:var(--muted);margin-top:4px;">Claim date</label>
+        <input type="date" id="pc-gen-date" style="background:var(--base);border:1px solid var(--overlay);border-radius:6px;padding:8px;color:var(--text);font-size:13px;">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">The claim uses cumulative progress through the selected month. Future months are ignored. Re-generating an existing month creates a new revision.</div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('pc-generate-modal').classList.remove('show')">Cancel</button>
+        <button class="btn btn-primary" onclick="pcDoGenerate()">Generate</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="pc-file-input" accept=".xlsx" style="display:none;" onchange="pcHandleUpload(this.files)">
+  <input type="file" id="pc-claim-file-input" accept=".xlsx,.pdf" style="display:none;" onchange="pcHandleClaimUpload(this.files)">
+
+  <!-- Progress Claim: remove confirm modal -->
+  <div class="modal-overlay" id="pc-remove-modal">
+    <div class="modal-box">
+      <h2>🗑 Remove claims?</h2>
+      <div style="font-size:13px;color:var(--subtext);margin:10px 0;">
+        You are about to permanently remove <b id="pc-remove-count">0</b> claim(s) and their generated Excel/PDF files. This cannot be undone.
+      </div>
+      <div class="row">
+        <button class="btn" onclick="document.getElementById('pc-remove-modal').classList.remove('show'); pcSelectedClaimIds.clear(); pcRenderClaims();">Cancel</button>
+        <button class="btn" onclick="pcDoRemoveClaims()" style="background:var(--red);color:var(--base);border-color:var(--red);">Remove</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=47"></script>
+  <script src="/static/app.js?v=54"></script>
 </body>
 
 </html>

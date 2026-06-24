@@ -87,6 +87,9 @@ uv run python chat.py                            # Terminal RAG chatbot
 | `SubcontractorDB` | `shared/src/shared_tools/subcontractor_db.py` | **(PLANNED)** Dedicated subcontractor database (vendors, commitments, claims) |
 | `SubcontractorTemplate` | `shared/src/shared_tools/subcontractor_template.py` | **(PLANNED)** PO, Subcontract, Tender Analysis document generators |
 | `SubcontractorLearner` | `shared/src/shared_tools/subcontractor_learner.py` | **(PLANNED)** Batch knowledge builder from project subcontract folders |
+| `ProgressClaimService` | `shared/src/shared_tools/progress_claim/progress_claim_service.py` | Client progress claims: cashflow import, monthly % grid, claim generation, Excel/PDF export |
+| `ProgressClaimDB` | `shared/src/shared_tools/progress_claim/progress_claim_db.py` | Dedicated progress-claim database (projects, work items, months, progress, claims, claim items) |
+| `ProgressClaimExcelBuilder` | `shared/src/shared_tools/progress_claim/progress_claim_template.py` | Claim workbook builder (Summary + Detail sheets) |
 
 ## Project Structure
 

@@ -73,11 +73,12 @@ function switchModule(id) {
   const todoView = document.getElementById('todo-content');
   const varView = document.getElementById('variation-content');
   const invoiceView = document.getElementById('invoice-content');
+  const pcView = document.getElementById('progress-claim-content');
   const amailCtrls = document.getElementById('amail-controls');
   const todoCtrls = document.getElementById('todo-controls');
 
   // Hide module content, bars
-  [amailView, todoView, varView, invoiceView].forEach(v => { if (v) v.style.display = 'none'; });
+  [amailView, todoView, varView, invoiceView, pcView].forEach(v => { if (v) v.style.display = 'none'; });
   [amailCtrls, todoCtrls].forEach(c => { if (c) c.style.display = 'none'; });
 
   if (id === 'todo') {
@@ -101,6 +102,11 @@ function switchModule(id) {
     document.getElementById('module-title').textContent = '📄 Invoice Allocation';
     document.getElementById('btn-agent').style.display = 'none';
     loadInvoiceHistory();
+  } else if (id === 'progress_claims') {
+    if (pcView) pcView.style.display = 'flex';
+    document.getElementById('module-title').textContent = '💰 Progress Claims';
+    document.getElementById('btn-agent').style.display = 'none';
+    pcLoadProjects().then(() => { if (pcSelectedProjectId) pcSwitchProject(); });
   } else {
     document.getElementById('btn-agent').style.display = 'none';
     // Default: AMail
@@ -2574,6 +2580,7 @@ async function loadVarDetail(entryId) {
     document.getElementById('var-edit-location').value = proj?.location || '';
     document.getElementById('var-edit-date').value = (v.date_issued || '').substring(0, 10);
     document.getElementById('var-edit-base').value = proj?.base_contract_amount || 0;
+    document.getElementById('var-edit-rev').value = v.rev_number || 1;
 
     // Radio
     const radios = document.getElementsByName('var-vo-type');
@@ -2807,6 +2814,7 @@ async function varNew() {
         vo_number: nextVo,
         vo_title: autoTitle,
         date_issued: today,
+        rev_number: 1,
         sort_order: maxSort + 1,
       }),
     });
@@ -2914,6 +2922,16 @@ const varAutoSave = debounce(async () => {
   await _varPersistFields();
 }, 600);
 
+async function varIncrementRev() {
+  const revInput = document.getElementById('var-edit-rev');
+  if (!revInput) return;
+  const current = parseInt(revInput.value) || 1;
+  revInput.value = current + 1;
+  if (!selectedVarId) return;
+  await _varPersistFields();
+  notify(`REV updated to ${current + 1}`, 'success');
+}
+
 async function _varPersistFields() {
   const vid = selectedVarId;  // capture before any reload clears it
   if (!vid) return;
@@ -2921,6 +2939,7 @@ async function _varPersistFields() {
   const fields = {
     vo_title: document.getElementById('var-edit-title')?.value || '',
     date_issued: document.getElementById('var-edit-date')?.value || null,
+    rev_number: parseInt(document.getElementById('var-edit-rev')?.value) || 1,
     status: document.getElementById('var-edit-status')?.value || 'submitted',
   };
   const voType = document.querySelector('input[name="var-vo-type"]:checked');
@@ -4015,6 +4034,761 @@ function _renderInvoiceFailed(count) {
   if (count === 0) { section.style.display = 'none'; return; }
   section.style.display = 'block';
   document.getElementById('invoice-failed-count').textContent = count;
+}
+
+// ── Progress Claims ────────────────────────────────────────────────────
+//
+// State + render for the Progress Claim module. Two-panel layout:
+//   left  — project selector + claim history list
+//   right — empty state | editable cashflow grid | claim detail
+//
+// The cashflow grid is the only place the user types: monthly % complete per
+// work item. Amounts and section subtotals recalculate live; a claim is
+// generated from cumulative progress through a chosen month.
+
+let pcProjects = [];
+let pcSelectedProjectId = null;
+let pcCashflow = null;        // {project, sections, months, month_totals}
+let pcClaims = [];
+let pcSelectedClaimId = null;
+let pcCurrentView = 'empty';  // 'empty' | 'cashflow' | 'claim'
+let pcSelectedClaimIds = new Set();  // multi-select for remove
+let pcManualMode = false;     // claim detail: false=read-only snapshot, true=all editable
+
+const PC_SECTION_ORDER = ['A', 'B', 'C', 'D', 'E'];
+const PC_SECTION_META = {
+  A: { label: 'Construction Works', icon: '🏗' },
+  B: { label: 'Provisional Sums', icon: '📦' },
+  C: { label: 'Preliminaries', icon: '📋' },
+  D: { label: 'Variations', icon: '📝' },
+  E: { label: 'Provisional Sums Excluded', icon: '🚫' },
+};
+
+function pcMoney(n) {
+  if (n == null || isNaN(n)) return '$0.00';
+  return '$' + Number(n).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function round2(n) {
+  if (n == null || isNaN(n)) return 0;
+  return Math.round(Number(n) * 100) / 100;
+}
+function pcPct(n) {
+  if (n == null || isNaN(n)) return '0%';
+  return (Number(n) * 100).toFixed(1) + '%';
+}
+function pcEsc(s) {
+  return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+// ── Projects ───────────────────────────────────────────────────────────
+
+async function pcLoadProjects() {
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects`);
+    const data = await res.json();
+    pcProjects = data.projects || [];
+  } catch (e) {
+    pcProjects = [];
+  }
+  pcRenderProjectSelect();
+}
+
+function pcRenderProjectSelect() {
+  const sel = document.getElementById('pc-project-select');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Select Project --</option>' +
+    pcProjects.map(p => `<option value="${p.entry_id}" ${p.entry_id === pcSelectedProjectId ? 'selected' : ''}>${pcEsc(p.name || '(unnamed)')}${p.job_number ? ' · ' + pcEsc(p.job_number) : ''}</option>`).join('');
+}
+
+async function pcSwitchProject() {
+  const sel = document.getElementById('pc-project-select');
+  pcSelectedProjectId = sel ? sel.value : '';
+  pcSelectedClaimId = null;
+  if (!pcSelectedProjectId) {
+    pcShowView('empty');
+    document.getElementById('pc-claims-list').innerHTML = '';
+    document.getElementById('pc-config-panel').style.display = 'none';
+    return;
+  }
+  await pcLoadCashflow();
+  await pcLoadClaims();
+  pcPopulateConfig();
+  pcShowView('cashflow');
+}
+
+function pcPopulateConfig() {
+  const p = (pcCashflow && pcCashflow.project) || {};
+  const panel = document.getElementById('pc-config-panel');
+  if (!pcSelectedProjectId) { panel.style.display = 'none'; return; }
+  panel.style.display = 'flex';
+  panel.style.flexDirection = 'column';
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
+  set('pc-cfg-contract', p.base_contract_amount || '');
+  set('pc-cfg-address', p.site_address || '');
+  set('pc-cfg-name', p.name || '');
+  set('pc-cfg-job', p.job_number || '');
+  set('pc-cfg-client', p.client || '');
+  set('pc-cfg-client-contact', p.client_contact || '');
+  set('pc-cfg-super', p.superintendent || '');
+  set('pc-cfg-company', p.company_name || '');
+  set('pc-cfg-abn', p.company_abn || '');
+  set('pc-cfg-co-address', p.company_address || '');
+}
+
+async function pcSaveConfig() {
+  const num = id => parseFloat(document.getElementById(id).value) || 0;
+  const txt = id => document.getElementById(id).value.trim();
+  const fields = {
+    base_contract_amount: num('pc-cfg-contract'),
+    site_address: txt('pc-cfg-address'),
+    name: txt('pc-cfg-name'),
+    job_number: txt('pc-cfg-job'),
+    client: txt('pc-cfg-client'),
+    client_contact: txt('pc-cfg-client-contact'),
+    superintendent: txt('pc-cfg-super'),
+    company_name: txt('pc-cfg-company') || 'Welink Construction',
+    company_abn: txt('pc-cfg-abn'),
+    company_address: txt('pc-cfg-co-address'),
+  };
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fields),
+    });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); return; }
+    notify('Project config saved', 'success');
+    await pcLoadProjects();
+    await pcLoadCashflow();
+    pcPopulateConfig();
+    pcRenderProjectSelect();
+  } catch (e) { notify('Failed to save config', 'error'); }
+}
+
+function pcNewProject() {
+  ['pc-new-name', 'pc-new-job', 'pc-new-client', 'pc-new-base'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('pc-new-project-modal').classList.add('show');
+}
+
+async function pcCreateProject() {
+  const data = {
+    name: document.getElementById('pc-new-name').value.trim(),
+    job_number: document.getElementById('pc-new-job').value.trim(),
+    client: document.getElementById('pc-new-client').value.trim(),
+    base_contract_amount: parseFloat(document.getElementById('pc-new-base').value) || 0,
+  };
+  if (!data.name) { notify('Project name is required', 'error'); return; }
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data),
+    });
+    const r = await res.json();
+    if (r.error) { notify(r.error, 'error'); return; }
+    document.getElementById('pc-new-project-modal').classList.remove('show');
+    notify('Project created', 'success');
+    await pcLoadProjects();
+    pcSelectedProjectId = r.entry_id;
+    pcRenderProjectSelect();
+    await pcSwitchProject();
+  } catch (e) { notify('Failed to create project', 'error'); }
+}
+
+function pcImportCashflow() {
+  document.getElementById('pc-file-input').click();
+}
+
+function pcImportClaim() {
+  if (!pcSelectedProjectId) { notify('Select a project first', 'error'); return; }
+  document.getElementById('pc-claim-file-input').click();
+}
+
+async function pcHandleClaimUpload(files) {
+  if (!files || !files.length) return;
+  const file = files[0];
+  const nId = notifyProgress('pc-claim-imp', 'Importing previous claim…', file.name);
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/claims/import-upload`, {
+      method: 'POST', body: formData,
+    });
+    const data = await res.json();
+    if (data.error) { updateNotify(nId, 'error', 'Import failed', data.error); return; }
+    updateNotify(nId, 'success', 'Claim imported', 'Stored & linked to future claims');
+    await pcLoadClaims();
+    pcSelectClaim(data.entry_id);
+  } catch (e) {
+    updateNotify(nId, 'error', 'Import failed', String(e));
+  } finally {
+    document.getElementById('pc-claim-file-input').value = '';
+  }
+}
+
+async function pcHandleUpload(files) {
+  if (!files || !files.length) return;
+  const file = files[0];
+  const nId = notifyProgress('pc-import', 'Importing cashflow…', file.name);
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/import-upload`, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) { updateNotify(nId, 'error', 'Import failed', data.error); return; }
+    updateNotify(nId, 'success', 'Cashflow imported', `${data.item_count} items · ${data.month_count} months`);
+    await pcLoadProjects();
+    pcSelectedProjectId = data.entry_id;
+    pcRenderProjectSelect();
+    await pcSwitchProject();
+  } catch (e) {
+    updateNotify(nId, 'error', 'Import failed', String(e));
+  } finally {
+    document.getElementById('pc-file-input').value = '';
+  }
+}
+
+// ── Cashflow grid ──────────────────────────────────────────────────────
+
+async function pcLoadCashflow() {
+  if (!pcSelectedProjectId) { pcCashflow = null; return; }
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow`);
+    pcCashflow = await res.json();
+  } catch (e) { pcCashflow = null; }
+  if (pcCurrentView === 'cashflow') pcRenderCashflow();
+}
+
+function pcRenderCashflow() {
+  const view = document.getElementById('pc-cashflow-view');
+  if (!pcCashflow || !pcCashflow.project) { view.innerHTML = '<div style="color:var(--subtext);">No cashflow data. Import a cashflow xlsx to begin.</div>'; return; }
+
+  const months = pcCashflow.months || [];
+  const sections = pcCashflow.sections || {};
+  const editableSections = new Set(['D', 'E']); // description + cost editable; add/remove rows
+  // Determine the latest month that has any progress entered (the "current" month)
+  let currentMonthIdx = -1;
+  (pcCashflow.month_totals || []).forEach((mt, i) => { if (Math.abs(mt.total) > 0.001) currentMonthIdx = i; });
+
+  // Header row
+  let html = `<div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+    <div style="font-weight:600;font-size:15px;">${pcEsc(pcCashflow.project.name)}</div>
+    <div style="display:flex;gap:6px;">
+      <button class="btn" onclick="pcAddMonth()" style="font-size:12px;">＋ Period</button>
+      <button class="btn btn-primary" onclick="pcOpenGenerate()" style="font-size:12px;">📋 Generate Claim</button>
+    </div>
+  </div>`;
+  html += `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Edit the <b>% complete</b> per month (e.g. 45 = 45%); amounts ($ = cost × %) recalculate automatically. Sections D & E allow adding/removing rows. Hover a month header to remove the column.</div>`;
+
+  html += '<div style="overflow:auto;border:1px solid var(--overlay);border-radius:8px;">';
+  html += '<table style="border-collapse:collapse;font-size:12px;width:100%;"><thead><tr>';
+  html += '<th style="position:sticky;left:0;background:var(--surface);z-index:3;text-align:left;padding:6px 8px;border-bottom:1px solid var(--overlay);min-width:180px;">Description</th>';
+  html += '<th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--overlay);">COST</th>';
+  months.forEach((m, i) => {
+    const cur = i === currentMonthIdx ? `background:var(--yellow);color:var(--base);` : (i > currentMonthIdx && currentMonthIdx >= 0 ? 'color:var(--muted);' : '');
+    html += `<th colspan="2" style="text-align:center;padding:6px 4px;border-bottom:1px solid var(--overlay);border-left:1px solid var(--overlay);${cur}">${pcEsc(m.month_label)} <span style="cursor:pointer;color:var(--red);font-weight:400;" onclick="pcRemoveMonth(${m.id})" title="Remove this period">×</span></th>`;
+  });
+  html += '</tr><tr>';
+  html += '<th style="position:sticky;left:0;background:var(--surface);z-index:3;border-bottom:1px solid var(--overlay);"></th>';
+  html += '<th style="border-bottom:1px solid var(--overlay);"></th>';
+  months.forEach((m, i) => {
+    const cur = i === currentMonthIdx ? `background:var(--yellow);color:var(--base);` : '';
+    html += `<th style="text-align:right;padding:4px;border-bottom:1px solid var(--overlay);border-left:1px solid var(--overlay);${cur}font-weight:400;">%</th>`;
+    html += `<th style="text-align:right;padding:4px;border-bottom:1px solid var(--overlay);${cur}font-weight:400;">$</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  for (const sec of PC_SECTION_ORDER) {
+    const items = sections[sec];
+    if (!items || !items.length) continue;
+    const meta = PC_SECTION_META[sec];
+    const editable = editableSections.has(sec);
+    let addRowBtn = editable ? ` <span style="cursor:pointer;color:var(--green);font-weight:400;font-size:11px;" onclick="pcAddRow('${sec}')" title="Add row">＋</span>` : '';
+    html += `<tr><td colspan="${2 + months.length * 2}" style="background:var(--overlay);color:var(--text);font-weight:600;padding:5px 8px;">${meta.icon} ${pcEsc(meta.label)}${addRowBtn}</td></tr>`;
+    let secCost = 0;
+    for (const it of items) {
+      secCost += it.cost || 0;
+      html += `<tr style="border-bottom:1px solid var(--overlay);">`;
+      if (editable) {
+        html += `<td style="position:sticky;left:0;background:var(--base);z-index:2;padding:3px 8px;display:flex;align-items:center;gap:4px;">
+          <input type="text" value="${pcEsc(it.description)}" onblur="pcItemBlur(this, ${it.id}, 'description')"
+            style="flex:1;min-width:120px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);font-size:11px;">
+          <span style="cursor:pointer;color:var(--red);" onclick="pcRemoveItem(${it.id})" title="Remove row">×</span>
+        </td>`;
+        html += `<td style="text-align:right;padding:3px 8px;">
+          <input type="number" step="0.01" value="${it.cost || 0}" onblur="pcItemBlur(this, ${it.id}, 'cost')"
+            style="width:90px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;">
+        </td>`;
+      } else {
+        html += `<td style="position:sticky;left:0;background:var(--base);z-index:2;padding:4px 8px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${pcEsc(it.description)}">${pcEsc(it.description)}</td>`;
+        html += `<td style="text-align:right;padding:4px 8px;color:var(--subtext);">${pcMoney(it.cost)}</td>`;
+      }
+      (it.progress || []).forEach((p, i) => {
+        const cur = i === currentMonthIdx ? `background:rgba(249,226,175,0.15);` : '';
+        html += `<td style="text-align:right;padding:2px;border-left:1px solid var(--overlay);${cur}">
+          <input type="number" step="0.01" min="-100" max="100" value="${((p.percentage || 0) * 100)}"
+            onfocus="this.select()" onblur="pcCellBlur(this, ${it.id}, ${p.month_id}, ${i})"
+            data-item="${it.id}" data-month="${p.month_id}"
+            title="Percent complete for this month (e.g. 45 = 45%)"
+            style="width:52px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
+        html += `<td style="text-align:right;padding:4px;color:var(--subtext);${cur}" id="pc-amt-${it.id}-${p.month_id}">${pcMoney(p.amount)}</td>`;
+      });
+      html += `</tr>`;
+    }
+    // Section subtotal row
+    html += `<tr style="background:var(--surface);font-weight:600;"><td style="position:sticky;left:0;background:var(--surface);padding:4px 8px;">Subtotal ${sec}</td><td style="text-align:right;padding:4px 8px;">${pcMoney(secCost)}</td>`;
+    (pcCashflow.month_totals || []).forEach((mt, i) => {
+      // section subtotal per month: compute from items
+      let secMonthAmt = 0;
+      for (const it of items) secMonthAmt += (it.progress[i] ? (it.progress[i].amount || 0) : 0);
+      const cur = i === currentMonthIdx ? `background:rgba(249,226,175,0.15);` : '';
+      html += `<td colspan="2" style="text-align:right;padding:4px 8px;border-left:1px solid var(--overlay);${cur}">${pcMoney(secMonthAmt)}</td>`;
+    });
+    html += `</tr>`;
+  }
+
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+}
+
+function pcCellBlur(input, itemId, monthId, monthIdx) {
+  // The input shows a percentage (e.g. 45 = 45%); the backend stores a
+  // fraction (0.45). Convert here.
+  const pct = parseFloat(input.value) || 0;
+  const frac = pct / 100;
+  // Optimistically update the adjacent amount cell + section subtotals
+  const item = pcFindItem(itemId);
+  if (item) {
+    const p = (item.progress || [])[monthIdx];
+    if (p) { p.percentage = frac; p.amount = (item.cost || 0) * frac; }
+  }
+  const amtEl = document.getElementById(`pc-amt-${itemId}-${monthId}`);
+  if (amtEl && item) amtEl.textContent = pcMoney((item.cost || 0) * frac);
+
+  // Persist (backend expects a fraction)
+  fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/progress/${itemId}/${monthId}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ percentage: frac }),
+  }).then(r => r.json()).then(d => {
+    if (d.error) notify(d.error, 'error');
+  }).catch(() => {});
+}
+
+// ── Cashflow drafting actions: months + rows ───────────────────────────
+
+async function pcAddMonth() {
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/months`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
+    });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); return; }
+    await pcLoadCashflow();
+  } catch (e) { notify('Failed to add period', 'error'); }
+}
+
+async function pcRemoveMonth(monthId) {
+  if (!confirm('Remove this period column and all its progress?')) return;
+  try {
+    await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/months/${monthId}`, { method: 'DELETE' });
+    await pcLoadCashflow();
+  } catch (e) { notify('Failed to remove period', 'error'); }
+}
+
+async function pcAddRow(section) {
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/items`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ section, description: 'New item', cost: 0 }),
+    });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); return; }
+    await pcLoadCashflow();
+  } catch (e) { notify('Failed to add row', 'error'); }
+}
+
+async function pcRemoveItem(itemId) {
+  if (!confirm('Remove this row and all its progress?')) return;
+  try {
+    await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/items/${itemId}`, { method: 'DELETE' });
+    await pcLoadCashflow();
+  } catch (e) { notify('Failed to remove row', 'error'); }
+}
+
+function pcItemBlur(input, itemId, field) {
+  const val = field === 'cost' ? (parseFloat(input.value) || 0) : input.value.trim();
+  const body = { [field]: val };
+  fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/items/${itemId}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  }).then(r => r.json()).then(d => {
+    if (d.error) { notify(d.error, 'error'); return; }
+    // cost change recompute amounts server-side; refresh to reflect
+    if (field === 'cost') pcLoadCashflow();
+  }).catch(() => {});
+}
+
+function pcFindItem(itemId) {
+  if (!pcCashflow) return null;
+  for (const sec of Object.values(pcCashflow.sections || {})) {
+    for (const it of sec) if (it.id === itemId) return it;
+  }
+  return null;
+}
+
+// ── Claims list ────────────────────────────────────────────────────────
+
+async function pcLoadClaims() {
+  if (!pcSelectedProjectId) { pcClaims = []; pcRenderClaims(); return; }
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/claims`);
+    const data = await res.json();
+    pcClaims = data.claims || [];
+  } catch (e) { pcClaims = []; }
+  pcRenderClaims();
+}
+
+function pcRenderClaims() {
+  const el = document.getElementById('pc-claims-list');
+  if (!el) return;
+  if (!pcClaims.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:6px 0;">No claims yet. Generate or import one.</div>';
+    return;
+  }
+  el.innerHTML = pcClaims.map(c => {
+    const selected = pcSelectedClaimIds.has(c.entry_id);
+    const active = c.entry_id === pcSelectedClaimId ? `border-color:var(--blue);background:rgba(137,180,250,0.08);` : '';
+    const selBg = selected ? `border-color:var(--red);background:rgba(243,139,168,0.10);` : '';
+    const statusColor = c.status === 'submitted' ? 'var(--green)' : c.status === 'approved' ? 'var(--blue)' : c.status === 'imported' ? 'var(--purple)' : 'var(--yellow)';
+    return `<div data-cid="${c.entry_id}"
+        onclick="pcClaimClick(event, '${c.entry_id}')"
+        oncontextmenu="pcClaimContext(event, '${c.entry_id}'); return false;"
+        style="cursor:pointer;padding:7px 9px;border:1px solid var(--overlay);border-radius:6px;${active}${selBg}position:relative;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:600;font-size:12px;">${selected ? '☑ ' : ''}#${String(c.claim_number).padStart(2, '0')} · ${pcEsc(c.claim_month)}</span>
+        <span style="font-size:10px;color:${statusColor};">${pcEsc(c.status)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--subtext);">${pcMoney(c.gross_claim)}${c.rev_number > 1 ? ' · rev ' + c.rev_number : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// Multi-select + right-click remove
+function pcClaimClick(event, cid) {
+  if (event.ctrlKey || event.metaKey) {
+    // toggle multi-select
+    if (pcSelectedClaimIds.has(cid)) pcSelectedClaimIds.delete(cid);
+    else pcSelectedClaimIds.add(cid);
+    pcRenderClaims();
+    return;
+  }
+  // normal click clears selection, opens claim
+  pcSelectedClaimIds.clear();
+  pcSelectClaim(cid);
+}
+
+function pcClaimContext(event, cid) {
+  event.preventDefault();
+  // ensure the right-clicked claim is in the selection
+  if (!pcSelectedClaimIds.has(cid)) {
+    if (pcSelectedClaimIds.size === 0) pcSelectedClaimIds.add(cid);
+    else { pcSelectedClaimIds.clear(); pcSelectedClaimIds.add(cid); }
+  }
+  pcRenderClaims();
+  pcShowClaimContextMenu(event.clientX, event.clientY);
+}
+
+function pcShowClaimContextMenu(x, y) {
+  pcHideClaimContextMenu();
+  const count = pcSelectedClaimIds.size;
+  if (!count) return;
+  const menu = document.createElement('div');
+  menu.id = 'pc-claim-context';
+  menu.style.cssText = `position:fixed;left:${x}px;top:${y}px;z-index:9999;background:var(--surface);border:1px solid var(--overlay);border-radius:8px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.4);font-size:12px;min-width:140px;`;
+  menu.innerHTML = `<div onclick="pcRemoveSelectedClaims()" style="cursor:pointer;padding:7px 10px;border-radius:5px;color:var(--red);">🗑 Remove (${count})</div>
+    <div onclick="pcHideClaimContextMenu()" style="cursor:pointer;padding:7px 10px;border-radius:5px;color:var(--subtext);">Cancel</div>`;
+  document.body.appendChild(menu);
+  setTimeout(() => document.addEventListener('click', pcHideClaimContextMenu, { once: true }), 0);
+}
+
+function pcHideClaimContextMenu() {
+  const m = document.getElementById('pc-claim-context');
+  if (m) m.remove();
+}
+
+function pcConfirmRemoveClaims(count) {
+  // simple inline confirm modal
+  document.getElementById('pc-remove-count').textContent = count;
+  document.getElementById('pc-remove-modal').classList.add('show');
+}
+
+async function pcRemoveSelectedClaims() {
+  pcHideClaimContextMenu();
+  const ids = Array.from(pcSelectedClaimIds);
+  if (!ids.length) return;
+  pcConfirmRemoveClaims(ids.length);
+}
+
+async function pcDoRemoveClaims() {
+  document.getElementById('pc-remove-modal').classList.remove('show');
+  const ids = Array.from(pcSelectedClaimIds);
+  const nId = notifyProgress('pc-rm', 'Removing claims…', `${ids.length} selected`);
+  let ok = 0;
+  for (const id of ids) {
+    try {
+      const r = await fetch(`${API}/api/progress-claims/claims/${id}`, { method: 'DELETE' });
+      const d = await r.json();
+      if (d.ok) ok++;
+    } catch (_) {}
+  }
+  pcSelectedClaimIds.clear();
+  pcSelectedClaimId = null;
+  await pcLoadClaims();
+  pcShowView('cashflow');
+  updateNotify(nId, ok ? 'success' : 'error', ok ? 'Removed' : 'Failed',
+               `${ok}/${ids.length} claims removed`);
+}
+
+// ── Generate claim ─────────────────────────────────────────────────────
+
+function pcOpenGenerate() {
+  if (!pcCashflow || !pcCashflow.months || !pcCashflow.months.length) {
+    notify('Import a cashflow first', 'error'); return;
+  }
+  const sel = document.getElementById('pc-gen-month');
+  sel.innerHTML = pcCashflow.months.map(m => `<option value="${m.month_key}">${pcEsc(m.month_label)}</option>`).join('');
+  // default to latest month with progress
+  let defaultIdx = -1;
+  (pcCashflow.month_totals || []).forEach((mt, i) => { if (Math.abs(mt.total) > 0.001) defaultIdx = i; });
+  if (defaultIdx >= 0) sel.value = pcCashflow.months[defaultIdx].month_key;
+  document.getElementById('pc-gen-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('pc-generate-modal').classList.add('show');
+}
+
+async function pcDoGenerate() {
+  const month = document.getElementById('pc-gen-month').value;
+  const date = document.getElementById('pc-gen-date').value;
+  if (!month) { notify('Select a claim month', 'error'); return; }
+  const nId = notifyProgress('pc-gen', 'Generating claim…', month);
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/claims`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ claim_month: month, claim_date: date || null }),
+    });
+    const data = await res.json();
+    if (data.error) { updateNotify(nId, 'error', 'Generation failed', data.error); return; }
+    updateNotify(nId, 'success', 'Claim generated', month);
+    document.getElementById('pc-generate-modal').classList.remove('show');
+    await pcLoadClaims();
+    pcSelectClaim(data.entry_id);
+  } catch (e) {
+    updateNotify(nId, 'error', 'Generation failed', String(e));
+  }
+}
+
+// ── Claim detail ───────────────────────────────────────────────────────
+
+async function pcSelectClaim(claimId) {
+  pcSelectedClaimId = claimId;
+  pcRenderClaims();
+  const nId = notifyProgress('pc-load', 'Loading claim…');
+  try {
+    const res = await fetch(`${API}/api/progress-claims/claims/${claimId}`);
+    const summary = await res.json();
+    updateNotify(nId, 'success', 'Loaded');
+    pcRenderClaim(summary);
+    pcShowView('claim');
+  } catch (e) {
+    updateNotify(nId, 'error', 'Failed to load claim', String(e));
+  }
+}
+
+function pcToggleManualMode() {
+  pcManualMode = !pcManualMode;
+  // re-render the current claim detail if loaded
+  if (pcSelectedClaimId) pcRefreshClaim(pcSelectedClaimId);
+  else if (pcCurrentView === 'claim') pcShowView('cashflow');
+}
+
+function pcNumCell(claimId, itemId, field, value, title, isPct) {
+  const v = isPct ? round2(value) : round2(value);
+  return `<td style="padding:2px 8px;text-align:right;">
+    <input type="number" step="${isPct ? '0.01' : '0.01'}" value="${v}" onfocus="this.select()"
+      onblur="pcClaimItemBlur('${claimId}', ${itemId}, '${field}', this)"
+      title="${pcEsc(title)}"
+      style="width:90px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;">
+  </td>`;
+}
+
+function pcRenderClaim(summary) {
+  const view = document.getElementById('pc-claim-view');
+  if (!summary || !summary.claim) { view.innerHTML = '<div style="color:var(--subtext);">Claim not found.</div>'; return; }
+  const c = summary.claim;
+  const p = summary.project || {};
+  const sections = summary.sections || {};
+
+  // Summary card
+  let html = `<div style="max-width:560px;margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--overlay);border-radius:10px;padding:18px;">
+      <div style="font-size:13px;color:var(--muted);">${pcEsc(p.company_name || 'Welink Construction Pty Ltd')}</div>
+      <div style="font-size:20px;font-weight:700;margin:4px 0;">PROGRESS CLAIM No.${String(c.claim_number).padStart(2, '0')}${c.rev_number > 1 ? ' (rev ' + c.rev_number + ')' : ''}</div>
+      <div style="font-size:12px;color:var(--subtext);margin-bottom:10px;">${pcEsc(p.name || '')} · Job ${pcEsc(p.job_number || '—')} · For Period ${pcEsc(c.claim_month)} · ${pcEsc(c.claim_date || '')}</div>
+      <div style="border-top:1px solid var(--overlay);padding-top:10px;">`;
+  const secRows = [
+    ['A', 'Construction Works', c.section_a_total],
+    ['B', 'Provisional Sums', c.section_b_total],
+    ['C', 'Preliminaries', c.section_c_total],
+    ['D', 'Options', c.section_e_total],
+    ['D', 'Variations', c.section_d_total],
+  ];
+  for (const [code, label, val] of secRows) {
+    html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:13px;"><span>${code} · ${pcEsc(label)}</span><span>${pcMoney(val)}</span></div>`;
+  }
+  // Sheet1-style summary (matches the exported xlsx/PDF)
+  const totalRetHeld = c.total_retention_held || 0;
+  const priorRetention = Math.max(0, totalRetHeld - (c.retention_amount || 0));
+  const lessPrevAfterRet = (c.less_previous_claims || 0) - priorRetention;
+  const baseContract = p.base_contract_amount || 0;
+  const balanceRemain = baseContract - (c.cumulative_claimed || 0);
+  const maxRetention = baseContract * (c.retention_max_percentage || 5) / 100;
+  html += `<div style="display:flex;justify-content:space-between;padding:6px 0 3px;font-size:13px;font-weight:600;border-top:1px solid var(--overlay);margin-top:4px;"><span>Gross Claim for Works Completed</span><span>${pcMoney(c.cumulative_claimed)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--subtext);"><span>Less Previous Claims (after retention)</span><span>${pcMoney(lessPrevAfterRet)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--subtext);"><span>Retention Amount (${c.retention_percentage}% to max ${c.retention_max_percentage}%)</span><span>${pcMoney(totalRetHeld)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:6px 0 3px;font-size:14px;font-weight:600;border-top:1px solid var(--overlay);"><span>Net Amount Claimed</span><span>${pcMoney(c.net_claim)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--subtext);"><span>Add GST (10%)</span><span>${pcMoney(c.gst_amount)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:16px;font-weight:700;color:var(--green);"><span>Total Including GST</span><span>${pcMoney(c.total_including_gst)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:3px 0 4px;font-size:11px;color:var(--muted);"><span>Balance remain (contract − claimed)</span><span>${pcMoney(balanceRemain)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:0 0 4px;font-size:11px;color:var(--muted);"><span>Max retention (${c.retention_max_percentage}% of contract)</span><span>${pcMoney(maxRetention)}</span></div>`;
+  html += `</div>`;
+  html += `<div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="pcExportExcel('${c.entry_id}')" style="font-size:12px;">📥 Export Excel</button>
+    <button class="btn" onclick="pcExportPdf('${c.entry_id}')" style="font-size:12px;">📄 Export PDF</button>
+    <button class="btn" onclick="pcToggleManualMode()" style="font-size:12px;margin-left:auto;background:${pcManualMode ? 'var(--yellow)' : 'var(--surface)'};color:${pcManualMode ? 'var(--base)' : 'var(--text)'};border:1px solid var(--overlay);" title="Toggle manual editing of all claim fields">${pcManualMode ? '✏ Manual Mode (on)' : '✏ Manual Mode'}</button>
+    <button class="btn" onclick="pcBackToCashflow()" style="font-size:12px;">← Back</button>
+  </div>`;
+  html += `</div></div>`;
+
+  // Detail table
+  if (pcManualMode) {
+    html += '<div style="font-size:11px;color:var(--yellow);margin:6px 0;"><b>Manual Mode:</b> all fields are editable. Editing any field recomputes the related fields to keep the math consistent (current = total − previously, balance = cost − total).</div>';
+  } else {
+    html += '<div style="font-size:11px;color:var(--muted);margin:6px 0;">Default Mode: values reflect the cashflow snapshot. Enable <b>Manual Mode</b> to override <b>Previously</b> (or any field) when it differs from the cashflow.</div>';
+  }
+  html += '<div style="border:1px solid var(--overlay);border-radius:8px;overflow:auto;"><table style="border-collapse:collapse;font-size:12px;width:100%;">';
+  html += '<thead><tr style="background:var(--surface);">';
+  ['#', 'Description', 'COST', '% Complete', 'Total Claimed', 'Previously', 'Current', 'Balance'].forEach((h, i) => {
+    html += `<th style="text-align:${i <= 1 ? 'left' : 'right'};padding:6px 8px;border-bottom:1px solid var(--overlay);">${h}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  for (const sec of PC_SECTION_ORDER) {
+    const items = sections[sec];
+    if (!items || !items.length) continue;
+    const meta = PC_SECTION_META[sec];
+    html += `<tr><td colspan="8" style="background:var(--overlay);color:var(--text);font-weight:600;padding:4px 8px;">${meta.icon} ${pcEsc(meta.label)}</td></tr>`;
+    let sCost = 0, sTotal = 0, sPrev = 0, sCurr = 0, sBal = 0;
+    for (const it of items) {
+      sCost += it.cost; sTotal += it.total_claimed; sPrev += it.previously_claimed; sCurr += it.current_claim; sBal += it.balance_remaining;
+      html += `<tr style="border-bottom:1px solid var(--overlay);">`;
+      html += `<td style="padding:3px 8px;color:var(--muted);text-align:left;">${it.item_number || ''}</td>`;
+      html += `<td style="padding:3px 8px;text-align:left;max-width:320px;">${pcEsc(it.description)}</td>`;
+      if (pcManualMode) {
+        html += pcNumCell(c.entry_id, it.id, 'cost', it.cost, 'Cost');
+        html += pcNumCell(c.entry_id, it.id, 'cumulative_percentage', it.cumulative_percentage, 'Cumulative % (0-1)', true);
+        html += pcNumCell(c.entry_id, it.id, 'total_claimed', it.total_claimed, 'Total claimed to date');
+        html += pcNumCell(c.entry_id, it.id, 'previously_claimed', it.previously_claimed, 'Previously claimed');
+        html += pcNumCell(c.entry_id, it.id, 'current_claim', it.current_claim, 'Current claim (= total − previously)');
+        html += pcNumCell(c.entry_id, it.id, 'balance_remaining', it.balance_remaining, 'Balance (= cost − total)');
+      } else {
+        html += `<td style="padding:3px 8px;text-align:right;color:var(--subtext);">${pcMoney(it.cost)}</td>`;
+        html += `<td style="padding:3px 8px;text-align:right;">${pcPct(it.cumulative_percentage)}</td>`;
+        html += `<td style="padding:3px 8px;text-align:right;">${pcMoney(it.total_claimed)}</td>`;
+        html += `<td style="padding:3px 8px;text-align:right;color:var(--subtext);">${pcMoney(it.previously_claimed)}</td>`;
+        html += `<td style="padding:3px 8px;text-align:right;font-weight:600;color:var(--green);">${pcMoney(it.current_claim)}</td>`;
+        html += `<td style="padding:3px 8px;text-align:right;color:var(--subtext);">${pcMoney(it.balance_remaining)}</td>`;
+      }
+      html += `</tr>`;
+    }
+    html += `<tr style="background:var(--surface);font-weight:600;"><td colspan="2" style="padding:4px 8px;text-align:left;">Subtotal ${sec}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sCost)}</td><td></td><td style="padding:4px 8px;text-align:right;">${pcMoney(sTotal)}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sPrev)}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sCurr)}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sBal)}</td></tr>`;
+  }
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+}
+
+function pcBackToCashflow() {
+  pcShowView('cashflow');
+  pcRenderCashflow();
+}
+
+async function pcClaimItemBlur(claimId, itemId, field, input) {
+  const val = parseFloat(input.value) || 0;
+  try {
+    const res = await fetch(`${API}/api/progress-claims/claims/${claimId}/items/${itemId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: val }),
+    });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); return; }
+    // Server recomputed derived fields + summary; refresh the claim detail
+    // and the claims list (totals may have changed).
+    await pcRefreshClaim(claimId);
+    await pcLoadClaims();
+  } catch (e) { notify('Failed to update claim item', 'error'); }
+}
+
+async function pcRefreshClaim(claimId) {
+  try {
+    const res = await fetch(`${API}/api/progress-claims/claims/${claimId}`);
+    const summary = await res.json();
+    if (summary && summary.claim) pcRenderClaim(summary);
+  } catch (e) {}
+}
+
+// ── Export ─────────────────────────────────────────────────────────────
+
+async function pcExportExcel(claimId) {
+  const nId = notifyProgress('pc-xls', 'Generating Excel…');
+  try {
+    await fetch(`${API}/api/progress-claims/claims/${claimId}/export-excel`, { method: 'POST' });
+    // The export runs in a worker thread; poll the claim for the excel_path
+    await pcPollExport(claimId, 'excel_path', nId);
+  } catch (e) { updateNotify(nId, 'error', 'Excel export failed', String(e)); }
+}
+
+async function pcExportPdf(claimId) {
+  const nId = notifyProgress('pc-pdf', 'Generating PDF…');
+  try {
+    await fetch(`${API}/api/progress-claims/claims/${claimId}/export-pdf`, { method: 'POST' });
+    await pcPollExport(claimId, 'pdf_path', nId);
+  } catch (e) { updateNotify(nId, 'error', 'PDF export failed', String(e)); }
+}
+
+async function pcPollExport(claimId, field, nId) {
+  const maxTries = 40;
+  for (let i = 0; i < maxTries; i++) {
+    await new Promise(r => setTimeout(r, 500));
+    try {
+      const res = await fetch(`${API}/api/progress-claims/claims/${claimId}`);
+      const summary = await res.json();
+      const path = summary && summary.claim ? summary.claim[field] : null;
+      if (path) {
+        const url = `${API}/api/progress-claims/claims/${claimId}/download/${field === 'excel_path' ? 'excel' : 'pdf'}`;
+        updateNotify(nId, 'success', 'Export ready', 'Downloading…');
+        const a = document.createElement('a');
+        a.href = url; a.click();
+        return;
+      }
+    } catch (_) {}
+  }
+  updateNotify(nId, 'error', 'Export timed out', 'Try the download button again');
+}
+
+// ── View switch ────────────────────────────────────────────────────────
+
+function pcShowView(view) {
+  pcCurrentView = view;
+  ['pc-empty', 'pc-cashflow-view', 'pc-claim-view'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+  if (view === 'empty') document.getElementById('pc-empty').style.display = 'flex';
+  else if (view === 'cashflow') { document.getElementById('pc-cashflow-view').style.display = 'block'; pcRenderCashflow(); }
+  else if (view === 'claim') document.getElementById('pc-claim-view').style.display = 'block';
 }
 
 // ── Boot ─────────────────────────────────────────────────────────────

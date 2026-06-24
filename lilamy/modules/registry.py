@@ -46,6 +46,14 @@ MODULES = {
         "enabled": True,
         "router_path": "lilamy.modules.invoice_allocation_routes:router",
     },
+    "progress_claims": {
+        "id": "progress_claims",
+        "name": "Progress Claims",
+        "icon": "💰",
+        "description": "Cashflow tracking and monthly progress claim generation",
+        "enabled": True,
+        "router_path": "lilamy.modules.progress_claim_routes:router",
+    },
     # DEPRECATED — superseded by the To-Do List module above
     "acalendar": {
         "id": "acalendar",
