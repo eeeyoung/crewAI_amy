@@ -4264,20 +4264,19 @@ function pcRenderCashflow() {
 
   const months = pcCashflow.months || [];
   const sections = pcCashflow.sections || {};
-  const editableSections = new Set(['D', 'E']); // description + cost editable; add/remove rows
-  // Determine the latest month that has any progress entered (the "current" month)
+  const sectionDefs = pcCashflow.section_defs || [];
   let currentMonthIdx = -1;
   (pcCashflow.month_totals || []).forEach((mt, i) => { if (Math.abs(mt.total) > 0.001) currentMonthIdx = i; });
 
-  // Header row
   let html = `<div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
     <div style="font-weight:600;font-size:15px;">${pcEsc(pcCashflow.project.name)}</div>
     <div style="display:flex;gap:6px;">
+      <button class="btn" onclick="pcAddSection()" style="font-size:12px;">＋ Section</button>
       <button class="btn" onclick="pcAddMonth()" style="font-size:12px;">＋ Period</button>
       <button class="btn btn-primary" onclick="pcOpenGenerate()" style="font-size:12px;">📋 Generate Claim</button>
     </div>
   </div>`;
-  html += `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Edit the <b>% complete</b> per month (e.g. 45 = 45%); amounts ($ = cost × %) recalculate automatically. Sections D & E allow adding/removing rows. Hover a month header to remove the column.</div>`;
+  html += `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Edit <b>Description</b>, <b>Cost</b>, <b>%</b>, or <b>$</b> in any cell — % and $ stay in sync. Press <b>Enter</b> to commit and move down the column. Rename a section in its header row; × removes a section/period/row.</div>`;
 
   html += '<div style="overflow:auto;border:1px solid var(--overlay);border-radius:8px;">';
   html += '<table style="border-collapse:collapse;font-size:12px;width:100%;"><thead><tr>';
@@ -4297,47 +4296,64 @@ function pcRenderCashflow() {
   });
   html += '</tr></thead><tbody>';
 
-  for (const sec of PC_SECTION_ORDER) {
-    const items = sections[sec];
-    if (!items || !items.length) continue;
-    const meta = PC_SECTION_META[sec];
-    const editable = editableSections.has(sec);
-    let addRowBtn = editable ? ` <span style="cursor:pointer;color:var(--green);font-weight:400;font-size:11px;" onclick="pcAddRow('${sec}')" title="Add row">＋</span>` : '';
-    html += `<tr><td colspan="${2 + months.length * 2}" style="background:var(--overlay);color:var(--text);font-weight:600;padding:5px 8px;">${meta.icon} ${pcEsc(meta.label)}${addRowBtn}</td></tr>`;
+  for (const sd of sectionDefs) {
+    const sec = sd.section_code;
+    const label = sd.section_label || sec;
+    const claimable = sd.claimable !== 0;
+    const items = sections[sec] || [];
+    // Section header row: editable title + add row + remove section
+    html += `<tr><td colspan="${2 + months.length * 2}" style="background:var(--overlay);color:var(--text);padding:4px 8px;display:flex;align-items:center;gap:6px;">
+      <span style="font-weight:700;font-size:12px;">${pcEsc(sec)}</span>
+      <input type="text" value="${pcEsc(label)}" data-col="sec-${sec}"
+        onkeydown="pcEnterNav(event, this)" onblur="pcRenameSection('${sec}', this)"
+        title="Section title (editable)" data-section="${sec}"
+        style="flex:1;min-width:120px;background:var(--base);border:1px solid var(--overlay);border-radius:4px;padding:3px 6px;color:var(--text);font-weight:600;font-size:12px;">
+      <label title="Include this section in claim Gross" style="font-size:10px;color:var(--subtext);display:flex;align-items:center;gap:2px;cursor:pointer;">
+        <input type="checkbox" ${claimable ? 'checked' : ''} onchange="pcToggleClaimable('${sec}', this.checked)"> claimable</label>
+      <span style="cursor:pointer;color:var(--green);font-weight:700;" onclick="pcAddRow('${sec}')" title="Add row">＋</span>
+      <span style="cursor:pointer;color:var(--red);font-weight:700;" onclick="pcRemoveSection('${sec}')" title="Remove section (and its rows)">×</span>
+    </td></tr>`;
     let secCost = 0;
     for (const it of items) {
       secCost += it.cost || 0;
       html += `<tr style="border-bottom:1px solid var(--overlay);">`;
-      if (editable) {
-        html += `<td style="position:sticky;left:0;background:var(--base);z-index:2;padding:3px 8px;display:flex;align-items:center;gap:4px;">
-          <input type="text" value="${pcEsc(it.description)}" onblur="pcItemBlur(this, ${it.id}, 'description')"
-            style="flex:1;min-width:120px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);font-size:11px;">
-          <span style="cursor:pointer;color:var(--red);" onclick="pcRemoveItem(${it.id})" title="Remove row">×</span>
-        </td>`;
-        html += `<td style="text-align:right;padding:3px 8px;">
-          <input type="number" step="0.01" value="${it.cost || 0}" onblur="pcItemBlur(this, ${it.id}, 'cost')"
-            style="width:90px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;">
-        </td>`;
-      } else {
-        html += `<td style="position:sticky;left:0;background:var(--base);z-index:2;padding:4px 8px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${pcEsc(it.description)}">${pcEsc(it.description)}</td>`;
-        html += `<td style="text-align:right;padding:4px 8px;color:var(--subtext);">${pcMoney(it.cost)}</td>`;
-      }
+      // Description (editable) + remove row
+      html += `<td style="position:sticky;left:0;background:var(--base);z-index:2;padding:3px 8px;display:flex;align-items:center;gap:4px;">
+        <input type="text" value="${pcEsc(it.description)}" data-col="desc" data-row="${it.id}"
+          onkeydown="pcEnterNav(event, this)" onblur="pcItemBlur(this, ${it.id}, 'description')"
+          style="flex:1;min-width:120px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);font-size:11px;">
+        <span style="cursor:pointer;color:var(--red);" onclick="pcRemoveItem(${it.id})" title="Remove row">×</span>
+      </td>`;
+      // Cost (editable)
+      html += `<td style="text-align:right;padding:3px 8px;">
+        <input type="number" step="0.01" value="${it.cost || 0}" data-col="cost" data-row="${it.id}"
+          onkeydown="pcEnterNav(event, this)" onfocus="this.select()" onblur="pcItemBlur(this, ${it.id}, 'cost')"
+          style="width:90px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;">
+      </td>`;
       (it.progress || []).forEach((p, i) => {
         const cur = i === currentMonthIdx ? `background:rgba(249,226,175,0.15);` : '';
+        const pctCol = `pct-${p.month_id}`;
+        const valCol = `val-${p.month_id}`;
         html += `<td style="text-align:right;padding:2px;border-left:1px solid var(--overlay);${cur}">
-          <input type="number" step="0.01" min="-100" max="100" value="${((p.percentage || 0) * 100)}"
-            onfocus="this.select()" onblur="pcCellBlur(this, ${it.id}, ${p.month_id}, ${i})"
-            data-item="${it.id}" data-month="${p.month_id}"
-            title="Percent complete for this month (e.g. 45 = 45%)"
-            style="width:52px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
-        html += `<td style="text-align:right;padding:4px;color:var(--subtext);${cur}" id="pc-amt-${it.id}-${p.month_id}">${pcMoney(p.amount)}</td>`;
+          <input type="number" step="0.01" min="-100" max="100" value="${round2((p.percentage || 0) * 100)}"
+            data-col="${pctCol}" data-row="${it.id}"
+            onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
+            onblur="pcPctBlur(this, ${it.id}, ${p.month_id}, ${i})"
+            title="Percent complete this month (45 = 45%)"
+            style="width:50px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
+        html += `<td style="text-align:right;padding:2px;${cur}">
+          <input type="number" step="0.01" value="${round2(p.amount || 0)}"
+            data-col="${valCol}" data-row="${it.id}"
+            onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
+            onblur="pcValBlur(this, ${it.id}, ${p.month_id}, ${i})"
+            title="Amount this month ($ = cost × %); edits % inversely"
+            style="width:70px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
       });
       html += `</tr>`;
     }
     // Section subtotal row
-    html += `<tr style="background:var(--surface);font-weight:600;"><td style="position:sticky;left:0;background:var(--surface);padding:4px 8px;">Subtotal ${sec}</td><td style="text-align:right;padding:4px 8px;">${pcMoney(secCost)}</td>`;
+    html += `<tr style="background:var(--surface);font-weight:600;"><td style="position:sticky;left:0;background:var(--surface);padding:4px 8px;">Subtotal ${pcEsc(sec)}</td><td style="text-align:right;padding:4px 8px;">${pcMoney(secCost)}</td>`;
     (pcCashflow.month_totals || []).forEach((mt, i) => {
-      // section subtotal per month: compute from items
       let secMonthAmt = 0;
       for (const it of items) secMonthAmt += (it.progress[i] ? (it.progress[i].amount || 0) : 0);
       const cur = i === currentMonthIdx ? `background:rgba(249,226,175,0.15);` : '';
@@ -4350,27 +4366,97 @@ function pcRenderCashflow() {
   view.innerHTML = html;
 }
 
-function pcCellBlur(input, itemId, monthId, monthIdx) {
-  // The input shows a percentage (e.g. 45 = 45%); the backend stores a
-  // fraction (0.45). Convert here.
+// ENTER navigation: commit (blur) then focus the next input in the same column.
+function pcEnterNav(e, input) {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const col = input.dataset.col;
+  if (!col) { input.blur(); return; }
+  const inputs = Array.from(document.querySelectorAll(`[data-col="${CSS.escape(col)}"]`));
+  const idx = inputs.indexOf(input);
+  input.blur();
+  const next = inputs[idx + 1];
+  if (next) { next.focus(); next.select && next.select(); }
+}
+
+async function pcPctBlur(input, itemId, monthId, monthIdx) {
   const pct = parseFloat(input.value) || 0;
   const frac = pct / 100;
-  // Optimistically update the adjacent amount cell + section subtotals
   const item = pcFindItem(itemId);
   if (item) {
     const p = (item.progress || [])[monthIdx];
     if (p) { p.percentage = frac; p.amount = (item.cost || 0) * frac; }
   }
-  const amtEl = document.getElementById(`pc-amt-${itemId}-${monthId}`);
-  if (amtEl && item) amtEl.textContent = pcMoney((item.cost || 0) * frac);
-
-  // Persist (backend expects a fraction)
+  // update the sibling $ input optimistically
+  const valInput = document.querySelector(`[data-col="val-${monthId}"][data-row="${itemId}"]`);
+  if (valInput && item) valInput.value = round2((item.cost || 0) * frac);
   fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/progress/${itemId}/${monthId}`, {
     method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ percentage: frac }),
-  }).then(r => r.json()).then(d => {
-    if (d.error) notify(d.error, 'error');
-  }).catch(() => {});
+  }).then(r => r.json()).then(d => { if (d.error) notify(d.error, 'error'); }).catch(() => {});
 }
+
+async function pcValBlur(input, itemId, monthId, monthIdx) {
+  const amt = parseFloat(input.value) || 0;
+  const item = pcFindItem(itemId);
+  let frac = 0;
+  if (item) {
+    const p = (item.progress || [])[monthIdx];
+    if (p) { p.amount = amt; p.percentage = item.cost ? amt / item.cost : 0; }
+    frac = item.cost ? amt / item.cost : 0;
+  }
+  // update the sibling % input optimistically
+  const pctInput = document.querySelector(`[data-col="pct-${monthId}"][data-row="${itemId}"]`);
+  if (pctInput) pctInput.value = round2(frac * 100);
+  fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/progress/${itemId}/${monthId}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: amt }),
+  }).then(r => r.json()).then(d => { if (d.error) notify(d.error, 'error'); }).catch(() => {});
+}
+
+async function pcAddSection() {
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/sections`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label: 'New Section', claimable: true }),
+    });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); return; }
+    await pcLoadCashflow();
+  } catch (e) { notify('Failed to add section', 'error'); }
+}
+
+async function pcRenameSection(code, input) {
+  const label = input.value.trim();
+  if (!label) return;
+  fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/sections/${encodeURIComponent(code)}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label }),
+  }).then(r => r.json()).then(d => { if (d.error) notify(d.error, 'error'); }).catch(() => {});
+}
+
+async function pcToggleClaimable(code, claimable) {
+  fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/sections/${encodeURIComponent(code)}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ claimable }),
+  }).then(r => r.json()).then(d => { if (d.error) notify(d.error, 'error'); }).catch(() => {});
+}
+
+async function pcRemoveSection(code) {
+  if (!confirm(`Remove section ${code} and all its rows?`)) return;
+  try {
+    await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/sections/${encodeURIComponent(code)}`, { method: 'DELETE' });
+    await pcLoadCashflow();
+  } catch (e) { notify('Failed to remove section', 'error'); }
+}
+
+async function pcPushExcel() {
+  if (!pcSelectedProjectId) return;
+  const nId = notifyProgress('pc-push', 'Pushing cashflow to Excel…');
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/push-excel`, { method: 'POST' });
+    const d = await res.json();
+    if (d.error) { updateNotify(nId, 'error', 'Push failed', d.error); return; }
+    updateNotify(nId, 'success', 'Pushed to Excel', 'Old file backed up');
+  } catch (e) { updateNotify(nId, 'error', 'Push failed', String(e)); }
+}
+
 
 // ── Cashflow drafting actions: months + rows ───────────────────────────
 
@@ -4607,50 +4693,74 @@ function pcToggleManualMode() {
   else if (pcCurrentView === 'claim') pcShowView('cashflow');
 }
 
-function pcNumCell(claimId, itemId, field, value, title, isPct) {
-  const v = isPct ? round2(value) : round2(value);
-  return `<td style="padding:2px 8px;text-align:right;">
-    <input type="number" step="${isPct ? '0.01' : '0.01'}" value="${v}" onfocus="this.select()"
-      onblur="pcClaimItemBlur('${claimId}', ${itemId}, '${field}', this)"
-      title="${pcEsc(title)}"
-      style="width:90px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;">
-  </td>`;
-}
-
 function pcRenderClaim(summary) {
   const view = document.getElementById('pc-claim-view');
   if (!summary || !summary.claim) { view.innerHTML = '<div style="color:var(--subtext);">Claim not found.</div>'; return; }
   const c = summary.claim;
   const p = summary.project || {};
-  const sections = summary.sections || {};
+  const mm = pcManualMode;
+
+  // A helper for an editable money cell (Manual Mode) vs read-only text.
+  // field may be 'less_previous_claims', 'retention_amount', or 'sec-<code>'
+  // (a section total, sent as section_totals).
+  const moneyCell = (label, value, field, title, opts = {}) => {
+    const valStr = round2(value);
+    if (mm && field) {
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:13px;">
+        <span>${label}</span>
+        <input type="number" step="0.01" value="${valStr}" data-col="${field}"
+          onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
+          onblur="pcSummaryBlur('${c.entry_id}', '${field}', this)"
+          title="${pcEsc(title || label)}"
+          style="width:130px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 6px;color:var(--text);text-align:right;font-size:12px;">
+      </div>`;
+    }
+    const cls = opts.bold ? 'font-weight:600;' : '';
+    const col = opts.color ? `color:${opts.color};` : '';
+    return `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:13px;${cls}${col}"><span>${label}</span><span>${pcMoney(value)}</span></div>`;
+  };
 
   // Summary card
-  let html = `<div style="max-width:560px;margin-bottom:20px;">
+  let html = `<div style="max-width:580px;">
     <div style="background:var(--surface);border:1px solid var(--overlay);border-radius:10px;padding:18px;">
       <div style="font-size:13px;color:var(--muted);">${pcEsc(p.company_name || 'Welink Construction Pty Ltd')}</div>
-      <div style="font-size:20px;font-weight:700;margin:4px 0;">PROGRESS CLAIM No.${String(c.claim_number).padStart(2, '0')}${c.rev_number > 1 ? ' (rev ' + c.rev_number + ')' : ''}</div>
+      <div style="font-size:20px;font-weight:700;margin:4px 0;display:flex;align-items:center;gap:8px;">
+        PROGRESS CLAIM No.
+        ${mm
+          ? `<input type="number" step="1" min="1" value="${c.claim_number}" data-col="claim_number"
+              onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
+              onblur="pcSummaryBlur('${c.entry_id}', 'claim_number', this)"
+              title="Claim number (must be unique within the project)"
+              style="width:70px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 6px;color:var(--text);text-align:center;font-size:16px;font-weight:700;">`
+          : `<span>${String(c.claim_number).padStart(2, '0')}</span>`}
+        ${c.rev_number > 1 ? `<span style="font-size:13px;color:var(--subtext);">(rev ${c.rev_number})</span>` : ''}
+      </div>
       <div style="font-size:12px;color:var(--subtext);margin-bottom:10px;">${pcEsc(p.name || '')} · Job ${pcEsc(p.job_number || '—')} · For Period ${pcEsc(c.claim_month)} · ${pcEsc(c.claim_date || '')}</div>
       <div style="border-top:1px solid var(--overlay);padding-top:10px;">`;
-  const secRows = [
-    ['A', 'Construction Works', c.section_a_total],
-    ['B', 'Provisional Sums', c.section_b_total],
-    ['C', 'Preliminaries', c.section_c_total],
-    ['D', 'Options', c.section_e_total],
-    ['D', 'Variations', c.section_d_total],
-  ];
-  for (const [code, label, val] of secRows) {
-    html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:13px;"><span>${code} · ${pcEsc(label)}</span><span>${pcMoney(val)}</span></div>`;
+  // Section cumulative values (dynamic, from section_totals_json).
+  let secList = [];
+  try { secList = Object.entries(JSON.parse(c.section_totals_json || '{}'))
+    .map(([code, v]) => ({ code, label: v.label || code, total: v.total || 0, claimable: v.claimable })); }
+  catch (_) {
+    secList = [
+      { code: 'A', label: 'Construction Works', total: c.section_a_total, claimable: true },
+      { code: 'B', label: 'Provisional Sums', total: c.section_b_total, claimable: true },
+      { code: 'C', label: 'Preliminaries', total: c.section_c_total, claimable: true },
+      { code: 'D', label: 'Variations', total: c.section_d_total, claimable: true },
+    ];
   }
-  // Sheet1-style summary (matches the exported xlsx/PDF)
-  const totalRetHeld = c.total_retention_held || 0;
-  const priorRetention = Math.max(0, totalRetHeld - (c.retention_amount || 0));
-  const lessPrevAfterRet = (c.less_previous_claims || 0) - priorRetention;
+  for (const s of secList) {
+    const flag = s.claimable ? '' : ' (excl. from Gross)';
+    html += moneyCell(`${s.code} · ${pcEsc(s.label)}${flag}`, s.total, `sec-${s.code}`,
+                      `Cumulative ${s.label} claimed to date`);
+  }
+  // Derived summary
   const baseContract = p.base_contract_amount || 0;
-  const balanceRemain = baseContract - (c.cumulative_claimed || 0);
+  const balanceRemain = baseContract - (c.gross_claim || 0);
   const maxRetention = baseContract * (c.retention_max_percentage || 5) / 100;
-  html += `<div style="display:flex;justify-content:space-between;padding:6px 0 3px;font-size:13px;font-weight:600;border-top:1px solid var(--overlay);margin-top:4px;"><span>Gross Claim for Works Completed</span><span>${pcMoney(c.cumulative_claimed)}</span></div>`;
-  html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--subtext);"><span>Less Previous Claims (after retention)</span><span>${pcMoney(lessPrevAfterRet)}</span></div>`;
-  html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--subtext);"><span>Retention Amount (${c.retention_percentage}% to max ${c.retention_max_percentage}%)</span><span>${pcMoney(totalRetHeld)}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:6px 0 3px;font-size:13px;font-weight:600;border-top:1px solid var(--overlay);margin-top:4px;"><span>Gross Claim for Works Completed</span><span>${pcMoney(c.gross_claim)}</span></div>`;
+  html += moneyCell('Less Previous Claims (after retention)', c.less_previous_claims, 'less_previous_claims', 'Cumulative claimed in prior claims, after retention');
+  html += moneyCell(`Retention Amount (${c.retention_percentage}% to max ${c.retention_max_percentage}%)`, c.retention_amount, 'retention_amount', 'Total retention held to date');
   html += `<div style="display:flex;justify-content:space-between;padding:6px 0 3px;font-size:14px;font-weight:600;border-top:1px solid var(--overlay);"><span>Net Amount Claimed</span><span>${pcMoney(c.net_claim)}</span></div>`;
   html += `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--subtext);"><span>Add GST (10%)</span><span>${pcMoney(c.gst_amount)}</span></div>`;
   html += `<div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:16px;font-weight:700;color:var(--green);"><span>Total Including GST</span><span>${pcMoney(c.total_including_gst)}</span></div>`;
@@ -4660,76 +4770,45 @@ function pcRenderClaim(summary) {
   html += `<div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap;">
     <button class="btn btn-primary" onclick="pcExportExcel('${c.entry_id}')" style="font-size:12px;">📥 Export Excel</button>
     <button class="btn" onclick="pcExportPdf('${c.entry_id}')" style="font-size:12px;">📄 Export PDF</button>
-    <button class="btn" onclick="pcToggleManualMode()" style="font-size:12px;margin-left:auto;background:${pcManualMode ? 'var(--yellow)' : 'var(--surface)'};color:${pcManualMode ? 'var(--base)' : 'var(--text)'};border:1px solid var(--overlay);" title="Toggle manual editing of all claim fields">${pcManualMode ? '✏ Manual Mode (on)' : '✏ Manual Mode'}</button>
+    <button class="btn" onclick="pcToggleManualMode()" style="font-size:12px;margin-left:auto;background:${mm ? 'var(--yellow)' : 'var(--surface)'};color:${mm ? 'var(--base)' : 'var(--text)'};border:1px solid var(--overlay);" title="Toggle manual editing of the summary card">${mm ? '✏ Manual Mode (on)' : '✏ Manual Mode'}</button>
     <button class="btn" onclick="pcBackToCashflow()" style="font-size:12px;">← Back</button>
   </div>`;
+  if (mm) {
+    html += `<div style="font-size:11px;color:var(--yellow);margin-top:10px;"><b>Manual Mode:</b> edit the claim number, section values, Less Previous, or Retention. Gross = A+B+C+D, and Net = Gross − Less Previous − Retention recompute automatically and are remembered for future claims.</div>`;
+  } else {
+    html += `<div style="font-size:11px;color:var(--muted);margin-top:10px;">Default Mode: values reflect the cashflow snapshot (cumulative). Enable <b>Manual Mode</b> to override any field on this card.</div>`;
+  }
   html += `</div></div>`;
 
-  // Detail table
-  if (pcManualMode) {
-    html += '<div style="font-size:11px;color:var(--yellow);margin:6px 0;"><b>Manual Mode:</b> all fields are editable. Editing any field recomputes the related fields to keep the math consistent (current = total − previously, balance = cost − total).</div>';
-  } else {
-    html += '<div style="font-size:11px;color:var(--muted);margin:6px 0;">Default Mode: values reflect the cashflow snapshot. Enable <b>Manual Mode</b> to override <b>Previously</b> (or any field) when it differs from the cashflow.</div>';
-  }
-  html += '<div style="border:1px solid var(--overlay);border-radius:8px;overflow:auto;"><table style="border-collapse:collapse;font-size:12px;width:100%;">';
-  html += '<thead><tr style="background:var(--surface);">';
-  ['#', 'Description', 'COST', '% Complete', 'Total Claimed', 'Previously', 'Current', 'Balance'].forEach((h, i) => {
-    html += `<th style="text-align:${i <= 1 ? 'left' : 'right'};padding:6px 8px;border-bottom:1px solid var(--overlay);">${h}</th>`;
-  });
-  html += '</tr></thead><tbody>';
-  for (const sec of PC_SECTION_ORDER) {
-    const items = sections[sec];
-    if (!items || !items.length) continue;
-    const meta = PC_SECTION_META[sec];
-    html += `<tr><td colspan="8" style="background:var(--overlay);color:var(--text);font-weight:600;padding:4px 8px;">${meta.icon} ${pcEsc(meta.label)}</td></tr>`;
-    let sCost = 0, sTotal = 0, sPrev = 0, sCurr = 0, sBal = 0;
-    for (const it of items) {
-      sCost += it.cost; sTotal += it.total_claimed; sPrev += it.previously_claimed; sCurr += it.current_claim; sBal += it.balance_remaining;
-      html += `<tr style="border-bottom:1px solid var(--overlay);">`;
-      html += `<td style="padding:3px 8px;color:var(--muted);text-align:left;">${it.item_number || ''}</td>`;
-      html += `<td style="padding:3px 8px;text-align:left;max-width:320px;">${pcEsc(it.description)}</td>`;
-      if (pcManualMode) {
-        html += pcNumCell(c.entry_id, it.id, 'cost', it.cost, 'Cost');
-        html += pcNumCell(c.entry_id, it.id, 'cumulative_percentage', it.cumulative_percentage, 'Cumulative % (0-1)', true);
-        html += pcNumCell(c.entry_id, it.id, 'total_claimed', it.total_claimed, 'Total claimed to date');
-        html += pcNumCell(c.entry_id, it.id, 'previously_claimed', it.previously_claimed, 'Previously claimed');
-        html += pcNumCell(c.entry_id, it.id, 'current_claim', it.current_claim, 'Current claim (= total − previously)');
-        html += pcNumCell(c.entry_id, it.id, 'balance_remaining', it.balance_remaining, 'Balance (= cost − total)');
-      } else {
-        html += `<td style="padding:3px 8px;text-align:right;color:var(--subtext);">${pcMoney(it.cost)}</td>`;
-        html += `<td style="padding:3px 8px;text-align:right;">${pcPct(it.cumulative_percentage)}</td>`;
-        html += `<td style="padding:3px 8px;text-align:right;">${pcMoney(it.total_claimed)}</td>`;
-        html += `<td style="padding:3px 8px;text-align:right;color:var(--subtext);">${pcMoney(it.previously_claimed)}</td>`;
-        html += `<td style="padding:3px 8px;text-align:right;font-weight:600;color:var(--green);">${pcMoney(it.current_claim)}</td>`;
-        html += `<td style="padding:3px 8px;text-align:right;color:var(--subtext);">${pcMoney(it.balance_remaining)}</td>`;
-      }
-      html += `</tr>`;
-    }
-    html += `<tr style="background:var(--surface);font-weight:600;"><td colspan="2" style="padding:4px 8px;text-align:left;">Subtotal ${sec}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sCost)}</td><td></td><td style="padding:4px 8px;text-align:right;">${pcMoney(sTotal)}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sPrev)}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sCurr)}</td><td style="padding:4px 8px;text-align:right;">${pcMoney(sBal)}</td></tr>`;
-  }
-  html += '</tbody></table></div>';
   view.innerHTML = html;
+}
+
+async function pcSummaryBlur(claimId, field, input) {
+  const raw = input.value;
+  let body;
+  if (field.startsWith('sec-')) {
+    const code = field.slice(4);
+    body = { section_totals: { [code]: parseFloat(raw) || 0 } };
+  } else {
+    const val = field === 'claim_number' ? (parseInt(raw) || 0) : (parseFloat(raw) || 0);
+    body = { [field]: val };
+  }
+  try {
+    const res = await fetch(`${API}/api/progress-claims/claims/${claimId}/summary`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); }
+    // Refresh claim detail (recomputed Gross/Net/Total) + claims list (number/amount may change)
+    await pcRefreshClaim(claimId);
+    await pcLoadClaims();
+  } catch (e) { notify('Failed to update claim', 'error'); }
 }
 
 function pcBackToCashflow() {
   pcShowView('cashflow');
   pcRenderCashflow();
-}
-
-async function pcClaimItemBlur(claimId, itemId, field, input) {
-  const val = parseFloat(input.value) || 0;
-  try {
-    const res = await fetch(`${API}/api/progress-claims/claims/${claimId}/items/${itemId}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ [field]: val }),
-    });
-    const d = await res.json();
-    if (d.error) { notify(d.error, 'error'); return; }
-    // Server recomputed derived fields + summary; refresh the claim detail
-    // and the claims list (totals may have changed).
-    await pcRefreshClaim(claimId);
-    await pcLoadClaims();
-  } catch (e) { notify('Failed to update claim item', 'error'); }
 }
 
 async function pcRefreshClaim(claimId) {

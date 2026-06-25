@@ -1585,10 +1585,7 @@
         <div style="border-top:1px solid var(--overlay);padding-top:8px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <span style="font-weight:600;font-size:13px;color:var(--subtext);">CLAIMS</span>
-            <div style="display:flex;gap:4px;">
-              <button class="btn" onclick="pcImportClaim()" style="font-size:11px;padding:4px 8px;" title="Import a previous finished claim (PDF/XLSX)">📥 Import</button>
-              <button class="btn" onclick="pcOpenGenerate()" style="font-size:11px;padding:4px 8px;">+ Generate</button>
-            </div>
+            <button class="btn" onclick="pcImportClaim()" style="font-size:11px;padding:4px 8px;" title="Import a previous finished claim (PDF/XLSX)">📥 Import</button>
           </div>
           <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Tip: Ctrl+click to multi-select · right-click to Remove</div>
           <div id="pc-claims-list" style="display:flex;flex-direction:column;gap:5px;"></div>
@@ -1598,7 +1595,10 @@
         <div id="pc-config-panel" style="display:none;border-top:1px solid var(--overlay);padding-top:10px;margin-top:auto;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <span style="font-weight:600;font-size:13px;color:var(--subtext);">⚙ PROJECT CONFIG</span>
-            <button class="btn btn-primary" onclick="pcSaveConfig()" style="font-size:11px;padding:3px 8px;">Save</button>
+            <div style="display:flex;gap:4px;">
+              <button class="btn" onclick="pcPushExcel()" style="font-size:11px;padding:3px 8px;" title="Regenerate the imported cashflow Excel from the DB (old file backed up)">📤 Push to Excel</button>
+              <button class="btn btn-primary" onclick="pcSaveConfig()" style="font-size:11px;padding:3px 8px;">Save</button>
+            </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;">
             <label style="color:var(--muted);">Total contract value (drives 5% retention cap)</label>
@@ -1899,7 +1899,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=54"></script>
+  <script src="/static/app.js?v=57"></script>
 </body>
 
 </html>
