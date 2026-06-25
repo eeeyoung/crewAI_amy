@@ -301,6 +301,13 @@ class ProgressClaimService(QObject):
         item_number_in_section = 0
         progress_records: list[dict] = []
         cost_by_section: dict[str, float] = {}
+        # Track sections seen (code -> (label, claimable, order)) to populate
+        # the cashflow_sections table. Register the implicit Construction
+        # section first (it has no header row in the file).
+        sections_seen: dict[str, list] = {
+            SECTION_CONSTRUCTION: [SECTION_LABELS[SECTION_CONSTRUCTION], True, 0]
+        }
+        section_order = 1
 
         for row in ws.iter_rows(min_row=1, max_row=ws.max_row):
             desc_cell = row[0].value if len(row) > 0 else None
@@ -315,6 +322,9 @@ class ProgressClaimService(QObject):
                 section = new_section
                 section_label = SECTION_LABELS[new_section]
                 item_number_in_section = 0
+                if section not in sections_seen:
+                    sections_seen[section] = [section_label, section != SECTION_PS_EXCLUDED, section_order]
+                    section_order += 1
                 continue
 
             # Skip subtotal / total / margin / reconciliation rows
@@ -369,10 +379,25 @@ class ProgressClaimService(QObject):
         if progress_records:
             db.bulk_set_progress(progress_records)
 
+        # Populate the cashflow_sections table (clear first for re-import).
+        db.clear_sections_for_project(project_entry_id)
+        # Ensure the default Construction section (no explicit header) exists.
+        if SECTION_CONSTRUCTION not in sections_seen:
+            sections_seen[SECTION_CONSTRUCTION] = [SECTION_LABELS[SECTION_CONSTRUCTION], True, 0]
+        for code, (label, claimable, order) in sections_seen.items():
+            db.upsert_section({
+                "project_entry_id": project_entry_id,
+                "section_code": code,
+                "section_label": label,
+                "claimable": 1 if claimable else 0,
+                "sort_order": order,
+            })
+
         # Store a contract value hint from the construction total if absent
         project = db.get_project(project_entry_id)
         if project and not project.get("base_contract_amount"):
-            total_cost = sum(cost_by_section.get(s, 0) for s in CLAIMABLE_SECTIONS)
+            total_cost = sum(v for (code, (label, claimable, order)) in sections_seen.items()
+                             if claimable for v in [cost_by_section.get(code, 0)])
             db.update_project(project_entry_id, base_contract_amount=total_cost)
 
         wb.close()
@@ -428,19 +453,24 @@ class ProgressClaimService(QObject):
         return {
             "project": project,
             "sections": sections,
+            "section_defs": db.get_sections(project_entry_id),
             "section_labels": SECTION_LABELS,
             "months": [dict(m) for m in months],
             "month_totals": month_totals,
         }
 
     def update_progress(self, project_entry_id: str, work_item_id: int,
-                        month_id: int, percentage: float) -> None:
-        """Queue a single % cell update. Emits cashflow_updated."""
+                        month_id: int, percentage: float | None = None,
+                        amount: float | None = None) -> None:
+        """Queue a single cell update. Either percentage or amount may be
+        given; the other is derived (mutual sync). Emits cashflow_updated."""
         self._queue("update_progress", project_entry_id=project_entry_id,
-                    work_item_id=work_item_id, month_id=month_id, percentage=percentage)
+                    work_item_id=work_item_id, month_id=month_id,
+                    percentage=percentage, amount=amount)
 
     def _handle_update_progress(self, project_entry_id: str, work_item_id: int,
-                                month_id: int, percentage: float) -> None:
+                                month_id: int, percentage: float | None = None,
+                                amount: float | None = None) -> None:
         from shared_tools.progress_claim import progress_claim_db as db
         item = None
         for it in db.get_work_items(project_entry_id):
@@ -448,10 +478,14 @@ class ProgressClaimService(QObject):
                 item = it
                 break
         cost = item["cost"] if item else 0
-        # Clamp to a sane range
-        percentage = max(min(_safe_float(percentage), 1.0), -1.0)
-        amount = cost * percentage
-        # set_progress stores percentage; we also persist the amount
+        # Mutual sync: derive the missing value from the given one.
+        if percentage is None and amount is not None:
+            amount = _safe_float(amount)
+            percentage = (amount / cost) if cost else 0.0
+        else:
+            # Clamp to a sane range
+            percentage = max(min(_safe_float(percentage), 1.0), -1.0)
+            amount = cost * percentage
         db.bulk_set_progress([{
             "work_item_id": work_item_id,
             "month_id": month_id,
@@ -555,6 +589,51 @@ class ProgressClaimService(QObject):
             self.cashflow_updated.emit(item["project_entry_id"])
         return ok
 
+    # ── Cashflow sections (freeform add/remove/rename) ────────────────
+
+    def add_section(self, project_entry_id: str, label: str = "",
+                    claimable: bool = True) -> dict | None:
+        from shared_tools.progress_claim import progress_claim_db as db
+        code = db.next_section_code(project_entry_id)
+        order = len(db.get_sections(project_entry_id))
+        sid = db.upsert_section({
+            "project_entry_id": project_entry_id,
+            "section_code": code,
+            "section_label": label or f"Section {code}",
+            "claimable": 1 if claimable else 0,
+            "sort_order": order,
+        })
+        self.cashflow_updated.emit(project_entry_id)
+        return db.get_section(project_entry_id, code) if sid else None
+
+    def rename_section(self, project_entry_id: str, section_code: str,
+                       label: str) -> bool:
+        from shared_tools.progress_claim import progress_claim_db as db
+        ok = db.update_section(project_entry_id, section_code, section_label=label)
+        if ok:
+            # keep work_items' section_label in sync for display
+            for it in db.get_work_items(project_entry_id):
+                if it["section"] == section_code:
+                    db.update_work_item(it["id"], section_label=label)
+            self.cashflow_updated.emit(project_entry_id)
+        return ok
+
+    def set_section_claimable(self, project_entry_id: str, section_code: str,
+                              claimable: bool) -> bool:
+        from shared_tools.progress_claim import progress_claim_db as db
+        ok = db.update_section(project_entry_id, section_code,
+                               claimable=1 if claimable else 0)
+        if ok:
+            self.cashflow_updated.emit(project_entry_id)
+        return ok
+
+    def remove_section(self, project_entry_id: str, section_code: str) -> bool:
+        from shared_tools.progress_claim import progress_claim_db as db
+        ok = db.delete_section(project_entry_id, section_code)
+        if ok:
+            self.cashflow_updated.emit(project_entry_id)
+        return ok
+
     # ── Claim generation ──────────────────────────────────────────────
 
     def generate_claim(self, project_entry_id: str, claim_month: str,
@@ -609,11 +688,16 @@ class ProgressClaimService(QObject):
         # total_claimed (claim_month < this claim's month). Prior claims are
         # ordered by claim_month ascending so later ones overwrite earlier.
         prior_claim_total_by_item: dict[int, float] = {}
+        # Most recent prior claim (for the cumulative "Less Previous" summary,
+        # which is remembered project-wide so manual edits to a prior claim's
+        # gross/retention flow into the next claim's Less Previous).
+        most_recent_prior: dict | None = None
         for c in sorted(existing, key=lambda x: x["claim_month"]):
             if c["claim_month"] >= claim_month:
                 continue
             if c["entry_id"] == entry_id:
                 continue  # skip self on regenerate
+            most_recent_prior = c
             for ci in db.get_claim_items(c["entry_id"]):
                 wid = ci.get("work_item_id")
                 if wid:
@@ -621,10 +705,19 @@ class ProgressClaimService(QObject):
 
         # Compute per-item claim figures
         claim_items: list[dict] = []
-        section_totals = {s: 0.0 for s in CLAIMABLE_SECTIONS}
-        section_cumulative = {s: 0.0 for s in CLAIMABLE_SECTIONS}
-        section_previous = {s: 0.0 for s in CLAIMABLE_SECTIONS}
-        item_no_by_section = {s: 0 for s in CLAIMABLE_SECTIONS}
+        # Dynamic sections from the cashflow_sections table (freeform).
+        section_defs = db.get_sections(project_entry_id)
+        section_codes = [s["section_code"] for s in section_defs]
+        section_claimable = {s["section_code"]: bool(s["claimable"]) for s in section_defs}
+        section_label = {s["section_code"]: s["section_label"] for s in section_defs}
+        if not section_codes:
+            # fallback to legacy fixed sections
+            section_codes = list(CLAIMABLE_SECTIONS) + [SECTION_PS_EXCLUDED]
+            section_claimable = {s: True for s in CLAIMABLE_SECTIONS}
+            section_claimable[SECTION_PS_EXCLUDED] = False
+            section_label = dict(SECTION_LABELS)
+        section_cumulative = {s: 0.0 for s in section_codes}
+        item_no_by_section = {s: 0 for s in section_codes}
         sort_order = 0
 
         for it in items:
@@ -660,31 +753,45 @@ class ProgressClaimService(QObject):
                 "balance_remaining": balance,
                 "sort_order": sort_order,
             })
-            if sec in section_totals:
-                section_totals[sec] += current_claim
+            if sec in section_cumulative:
                 section_cumulative[sec] += total_claimed
-                section_previous[sec] += previously_claimed
 
-        # Summary
-        gross_claim = sum(section_totals[s] for s in CLAIMABLE_SECTIONS)
-        cumulative_claimed = sum(section_cumulative[s] for s in CLAIMABLE_SECTIONS)
-        less_previous = sum(section_previous[s] for s in CLAIMABLE_SECTIONS)
+        # Summary — CUMULATIVE model.
+        # Section values = cumulative claimed to date per section. Gross Claim
+        # for Works Completed = sum of the claimable section cumulative values.
+        # Less Previous (after retention) is remembered from the most recent
+        # prior claim (prior.gross − prior.retention), so manual edits to a
+        # prior claim propagate. Retention = total held to date (10% of
+        # cumulative, capped at 5% of contract). Net = Gross − Less Previous −
+        # Retention. section_totals_json stores per-section {label, total,
+        # claimable} for the summary card + export (dynamic sections).
+        import json as _json
+        section_totals_json = {
+            s: {"label": section_label.get(s, s),
+                "total": round(section_cumulative.get(s, 0.0), 4),
+                "claimable": bool(section_claimable.get(s, True))}
+            for s in section_codes
+        }
+        gross_claim = sum(section_cumulative[s] for s in section_codes
+                          if section_claimable.get(s, True))
+        cumulative_claimed = gross_claim  # same thing under the cumulative model
 
-        # Retention: 10% of cumulative claimed, capped at 5% of contract value.
-        # Each month withholds 10% of that month's claim until the cumulative
-        # retention held reaches the 5% cap, after which no further retention
-        # is withheld. retention_amount below is the INCREMENT withheld this
-        # claim (matches the source: once capped, a late-month claim withholds
-        # $0 and net == gross).
         base_contract = _safe_float(project.get("base_contract_amount"))
         retention_pct = 10.0
         retention_max_pct = 5.0
         retention_cap = base_contract * retention_max_pct / 100.0 if base_contract > 0 else float("inf")
-        total_retention_held = min(cumulative_claimed * retention_pct / 100.0, retention_cap)
-        prior_retention = min(less_previous * retention_pct / 100.0, retention_cap)
-        retention_amount = max(0.0, total_retention_held - prior_retention)
+        retention_amount = min(cumulative_claimed * retention_pct / 100.0, retention_cap)
 
-        net_claim = gross_claim - retention_amount
+        # Less Previous (after retention) — learned from the most recent prior
+        # claim's stored gross + retention (which may have been manually edited).
+        if most_recent_prior:
+            prior_gross = _safe_float(most_recent_prior.get("gross_claim"))
+            prior_retention = _safe_float(most_recent_prior.get("retention_amount"))
+            less_previous = max(0.0, prior_gross - prior_retention)
+        else:
+            less_previous = 0.0
+
+        net_claim = gross_claim - less_previous - retention_amount
         gst_amount = net_claim * 0.10
         total_incl_gst = net_claim + gst_amount
 
@@ -704,18 +811,19 @@ class ProgressClaimService(QObject):
             "gross_claim": gross_claim,
             "less_previous_claims": less_previous,
             "retention_amount": retention_amount,
-            "total_retention_held": total_retention_held,
+            "total_retention_held": retention_amount,
             "net_claim": net_claim,
             "gst_amount": gst_amount,
             "total_including_gst": total_incl_gst,
-            "section_a_total": section_totals[SECTION_CONSTRUCTION],
-            "section_b_total": section_totals[SECTION_PROVISIONAL_SUMS],
-            "section_c_total": section_totals[SECTION_PRELIMINARIES],
-            "section_d_total": section_totals[SECTION_VARIATIONS],
-            "section_e_total": section_totals.get(SECTION_PS_EXCLUDED, 0.0),
+            "section_a_total": section_cumulative.get(SECTION_CONSTRUCTION, 0.0),
+            "section_b_total": section_cumulative.get(SECTION_PROVISIONAL_SUMS, 0.0),
+            "section_c_total": section_cumulative.get(SECTION_PRELIMINARIES, 0.0),
+            "section_d_total": section_cumulative.get(SECTION_VARIATIONS, 0.0),
+            "section_e_total": section_cumulative.get(SECTION_PS_EXCLUDED, 0.0),
             "cumulative_claimed": cumulative_claimed,
         }
         db.upsert_claim(claim_data)
+        db.update_claim(entry_id, section_totals_json=_json.dumps(section_totals_json))
         db.clear_claim_items(entry_id)
         db.bulk_insert_claim_items(claim_items)
 
@@ -850,6 +958,92 @@ class ProgressClaimService(QObject):
                         section_d_total=section_totals[SECTION_VARIATIONS],
                         section_e_total=section_totals.get(SECTION_PS_EXCLUDED, 0.0),
                         cumulative_claimed=cumulative_claimed)
+
+    def update_claim_summary(self, claim_entry_id: str, **fields) -> dict:
+        """Manual Mode: edit the claim summary card directly.
+
+        Editable: claim_number (unique per project), section cumulative
+        values (via section_totals dict {code: total}), less_previous_claims
+        (after retention), retention_amount (total held).
+
+        Gross = sum of claimable section cumulative values. Net = Gross −
+        Less Previous − Retention. GST = Net × 10%. Total = Net + GST. These
+        persist, and the next claim generated for a later month initialises
+        its Less Previous from this claim's Gross − Retention, so manual edits
+        propagate project-wide.
+        """
+        import json as _json
+        from shared_tools.progress_claim import progress_claim_db as db
+        claim = db.get_claim(claim_entry_id)
+        if not claim:
+            return {"error": "Claim not found"}
+
+        # Claim number uniqueness
+        if "claim_number" in fields and fields["claim_number"] is not None:
+            try:
+                new_no = int(fields["claim_number"])
+            except (TypeError, ValueError):
+                return {"error": "Claim number must be an integer"}
+            if new_no != claim["claim_number"]:
+                for c in db.get_claims(claim["project_entry_id"]):
+                    if c["entry_id"] != claim_entry_id and c["claim_number"] == new_no:
+                        return {"error": f"Claim No.{new_no:02d} already exists for this project"}
+                fields["claim_number"] = new_no
+
+        # Load current section_totals_json (dynamic sections)
+        try:
+            sec_totals = _json.loads(claim.get("section_totals_json") or "{}")
+        except Exception:
+            sec_totals = {}
+        if not sec_totals:
+            # backfill from legacy fixed columns
+            sec_totals = {
+                SECTION_CONSTRUCTION: {"label": "Construction Works",
+                    "total": _safe_float(claim["section_a_total"]), "claimable": True},
+                SECTION_PROVISIONAL_SUMS: {"label": "Provisional Sums",
+                    "total": _safe_float(claim["section_b_total"]), "claimable": True},
+                SECTION_PRELIMINARIES: {"label": "Preliminaries",
+                    "total": _safe_float(claim["section_c_total"]), "claimable": True},
+                SECTION_VARIATIONS: {"label": "Variations",
+                    "total": _safe_float(claim["section_d_total"]), "claimable": True},
+                SECTION_PS_EXCLUDED: {"label": "Provisional Sums Excluded",
+                    "total": _safe_float(claim.get("section_e_total", 0)), "claimable": False},
+            }
+
+        # Merge edited section totals (section_totals: {code: total})
+        if "section_totals" in fields and fields["section_totals"]:
+            for code, val in fields["section_totals"].items():
+                if code in sec_totals:
+                    sec_totals[code]["total"] = _safe_float(val)
+        # pop section_totals out so it isn't passed to update_claim
+        fields.pop("section_totals", None)
+
+        less_prev = _safe_float(fields.get("less_previous_claims",
+                                           claim["less_previous_claims"]))
+        retention = _safe_float(fields.get("retention_amount",
+                                           claim["retention_amount"]))
+        fields["less_previous_claims"] = less_prev
+        fields["retention_amount"] = retention
+
+        gross_claim = sum(_safe_float(v.get("total"))
+                          for v in sec_totals.values() if v.get("claimable"))
+        net_claim = gross_claim - less_prev - retention
+        gst_amount = net_claim * 0.10
+        total_incl_gst = net_claim + gst_amount
+
+        db.update_claim(claim_entry_id, **fields)
+        db.update_claim(claim_entry_id,
+                        gross_claim=gross_claim,
+                        cumulative_claimed=gross_claim,
+                        less_previous_claims=less_prev,
+                        retention_amount=retention,
+                        total_retention_held=retention,
+                        net_claim=net_claim,
+                        gst_amount=gst_amount,
+                        total_including_gst=total_incl_gst,
+                        section_totals_json=_json.dumps(sec_totals))
+        self.claim_updated.emit(claim_entry_id)
+        return {"ok": True}
 
     def list_claims(self, project_entry_id: str) -> list[dict]:
         from shared_tools.progress_claim import progress_claim_db as db
@@ -1047,6 +1241,43 @@ class ProgressClaimService(QObject):
 
     def export_pdf(self, claim_entry_id: str) -> None:
         self._queue("export_pdf", claim_entry_id=claim_entry_id)
+
+    def push_to_excel(self, project_entry_id: str) -> dict:
+        """Push the current cashflow (from DB) back to the imported Excel file.
+
+        The old file is backed up alongside as <stem>.backup_<ts>.xlsx, then
+        the file is regenerated from the DB (sections, items, months, %/amount).
+        Returns {"path": ..., "backup": ...} or {"error": ...}.
+        """
+        import shutil
+        from shared_tools.progress_claim.progress_claim_template import build_cashflow_workbook
+        from shared_tools.progress_claim import progress_claim_db as db
+        project = db.get_project(project_entry_id)
+        if not project:
+            return {"error": "Project not found"}
+        cashflow_path = project.get("cashflow_path")
+        if not cashflow_path:
+            return {"error": "No cashflow file path on this project (import one first)"}
+        cashflow_path = Path(cashflow_path)
+        if not cashflow_path.parent.exists():
+            cashflow_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Backup the old file
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = cashflow_path.parent / f"{cashflow_path.stem}.backup_{ts}.xlsx"
+        if cashflow_path.exists():
+            try:
+                shutil.copy2(str(cashflow_path), str(backup_path))
+            except Exception as e:
+                return {"error": f"Backup failed: {e}"}
+
+        state = self.get_cashflow(project_entry_id)
+        try:
+            build_cashflow_workbook(state, cashflow_path)
+        except Exception as e:
+            return {"error": f"Write failed: {e}"}
+        self.progress_update.emit(100, "Cashflow pushed to Excel (old file backed up)")
+        return {"path": str(cashflow_path), "backup": str(backup_path)}
 
     def _handle_export_pdf(self, claim_entry_id: str) -> None:
         from shared_tools.progress_claim import progress_claim_db as db
