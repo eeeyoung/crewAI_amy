@@ -320,7 +320,7 @@ class ProgressClaimService(QObject):
             new_section = _classify_section_header(desc)
             if new_section is not None:
                 section = new_section
-                section_label = SECTION_LABELS[new_section]
+                section_label = desc  # use the actual Excel cell text, not the hardcoded default
                 item_number_in_section = 0
                 if section not in sections_seen:
                     sections_seen[section] = [section_label, section != SECTION_PS_EXCLUDED, section_order]
