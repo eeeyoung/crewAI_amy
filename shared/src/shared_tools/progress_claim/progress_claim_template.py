@@ -159,6 +159,7 @@ def build_cashflow_workbook(state: dict, output_path: Path) -> Path:
         _box(ws, r, 1, r, 2 + len(months) * 2, medium=False)
         r += 1
         for it in items:
+            is_margin = it.get("item_type") == "margin"
             _set(ws, r, 1, it.get("description", ""))
             cost = it.get("cost", 0)
             c = ws.cell(row=r, column=2, value=cost)
@@ -167,8 +168,13 @@ def build_cashflow_workbook(state: dict, output_path: Path) -> Path:
                 p = next((g for g in it.get("progress", []) if g.get("month_id") == m["id"]), None)
                 pct = p["percentage"] if p else 0
                 amt = p["amount"] if p else 0
-                pc = ws.cell(row=r, column=3 + i * 2, value=pct)
-                pc.number_format = "0.00%"; pc.font = _font(); pc.alignment = Alignment(horizontal="right")
+                if is_margin:
+                    # Margin: leave % cell blank
+                    pc = ws.cell(row=r, column=3 + i * 2, value="")
+                    pc.font = _font(); pc.alignment = Alignment(horizontal="center")
+                else:
+                    pc = ws.cell(row=r, column=3 + i * 2, value=pct)
+                    pc.number_format = "0.00%"; pc.font = _font(); pc.alignment = Alignment(horizontal="right")
                 ac = ws.cell(row=r, column=4 + i * 2, value=amt)
                 ac.number_format = money_fmt; ac.font = _font(); ac.alignment = Alignment(horizontal="right")
             r += 1
@@ -404,7 +410,11 @@ def _build_detail_sheet(ws, summary: dict) -> None:
             _label(ws.cell(row=r, column=1), it.get("item_number", ""), align=_CENTER)
             _label(ws.cell(row=r, column=2), it.get("description", ""), align=_LEFT_TOP)
             _money(ws.cell(row=r, column=3), it.get("cost", 0))
-            _pct(ws.cell(row=r, column=4), it.get("cumulative_percentage", 0))
+            cum_pct = it.get("cumulative_percentage", 0)
+            if cum_pct == 0:
+                _label(ws.cell(row=r, column=4), "—", align=_CENTER)
+            else:
+                _pct(ws.cell(row=r, column=4), cum_pct)
             _money(ws.cell(row=r, column=5), it.get("total_claimed", 0))
             _money(ws.cell(row=r, column=6), it.get("previously_claimed", 0))
             c = ws.cell(row=r, column=7); _money(c, it.get("current_claim", 0)); c.font = _font(bold=True)

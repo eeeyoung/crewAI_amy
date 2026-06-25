@@ -49,6 +49,11 @@ SECTION_LABELS = {
 CLAIMABLE_SECTIONS = (SECTION_CONSTRUCTION, SECTION_PROVISIONAL_SUMS,
                       SECTION_PRELIMINARIES, SECTION_VARIATIONS)
 
+# ── Item and section types ────────────────────────────────────────────
+
+ITEM_TYPE_WORK_ITEM = "work_item"
+ITEM_TYPE_MARGIN = "margin"
+
 
 # =============================================================================
 # Helpers
@@ -301,12 +306,15 @@ class ProgressClaimService(QObject):
         item_number_in_section = 0
         progress_records: list[dict] = []
         cost_by_section: dict[str, float] = {}
-        # Track sections seen (code -> (label, claimable, order)) to populate
-        # the cashflow_sections table. Register the implicit Construction
-        # section first (it has no header row in the file).
+        # Track sections seen (code -> (label, claimable, order, section_type))
+        # to populate the cashflow_sections table.  Register the implicit
+        # Construction section first (it has no header row in the file).
         sections_seen: dict[str, list] = {
-            SECTION_CONSTRUCTION: [SECTION_LABELS[SECTION_CONSTRUCTION], True, 0]
+            SECTION_CONSTRUCTION: [SECTION_LABELS[SECTION_CONSTRUCTION], True, 0, "normal"]
         }
+        # Track which sections have a margin row (to avoid duplicating in
+        # the post-import guard).
+        sections_with_margin: set = set()
         section_order = 1
 
         for row in ws.iter_rows(min_row=1, max_row=ws.max_row):
@@ -323,7 +331,8 @@ class ProgressClaimService(QObject):
                 section_label = desc  # use the actual Excel cell text, not the hardcoded default
                 item_number_in_section = 0
                 if section not in sections_seen:
-                    sections_seen[section] = [section_label, section != SECTION_PS_EXCLUDED, section_order]
+                    sec_type = "preliminary" if section == SECTION_PRELIMINARIES else "normal"
+                    sections_seen[section] = [section_label, section != SECTION_PS_EXCLUDED, section_order, sec_type]
                     section_order += 1
                 continue
 
@@ -337,6 +346,12 @@ class ProgressClaimService(QObject):
                 # No cost → not a claimable line item (e.g. blank placeholder rows)
                 continue
 
+            # Detect margin rows inside Preliminary sections
+            item_type = ITEM_TYPE_WORK_ITEM
+            if section == SECTION_PRELIMINARIES and desc.lower().startswith("margin"):
+                item_type = ITEM_TYPE_MARGIN
+                sections_with_margin.add(section)
+
             item_number_in_section += 1
             sort_counter += 1
             work_item_id = db.upsert_work_item({
@@ -347,34 +362,43 @@ class ProgressClaimService(QObject):
                 "description": desc,
                 "cost": cost,
                 "sort_order": sort_counter,
+                "item_type": item_type,
             })
             if work_item_id is None:
                 continue
 
             cost_by_section[section] = cost_by_section.get(section, 0) + cost
 
-            # Read each month's progress. Prefer the amount cell when present
-            # (handles derived rows like Margins where % is empty but the
-            # amount is formula-calculated); otherwise use the % cell and
-            # compute amount = cost × %. Either way we store an effective
-            # percentage = amount / cost so cumulative math stays consistent.
-            for (mkey, pct_col, amt_col) in month_cols:
-                amt = _safe_float(_cell_by_letter(row, amt_col))
-                pct = _safe_float(_cell_by_letter(row, pct_col))
-                if amt != 0:
-                    percentage = amt / cost if cost > 0 else 0
-                    amount = amt
-                elif pct != 0:
-                    percentage = pct
-                    amount = cost * pct
-                else:
-                    continue
-                progress_records.append({
-                    "work_item_id": work_item_id,
-                    "month_id": month_id_by_key[mkey],
-                    "percentage": percentage,
-                    "amount": amount,
-                })
+            # Read each month's progress. For margin items only the amount
+            # column matters; % is always empty.  For normal items prefer the
+            # amount cell when present, otherwise derive from %.
+            if item_type == ITEM_TYPE_MARGIN:
+                for (mkey, _pct_col, amt_col) in month_cols:
+                    amt = _safe_float(_cell_by_letter(row, amt_col))
+                    progress_records.append({
+                        "work_item_id": work_item_id,
+                        "month_id": month_id_by_key[mkey],
+                        "percentage": 0,
+                        "amount": amt,
+                    })
+            else:
+                for (mkey, pct_col, amt_col) in month_cols:
+                    amt = _safe_float(_cell_by_letter(row, amt_col))
+                    pct = _safe_float(_cell_by_letter(row, pct_col))
+                    if amt != 0:
+                        percentage = amt / cost if cost > 0 else 0
+                        amount = amt
+                    elif pct != 0:
+                        percentage = pct
+                        amount = cost * pct
+                    else:
+                        continue
+                    progress_records.append({
+                        "work_item_id": work_item_id,
+                        "month_id": month_id_by_key[mkey],
+                        "percentage": percentage,
+                        "amount": amount,
+                    })
 
         if progress_records:
             db.bulk_set_progress(progress_records)
@@ -383,20 +407,31 @@ class ProgressClaimService(QObject):
         db.clear_sections_for_project(project_entry_id)
         # Ensure the default Construction section (no explicit header) exists.
         if SECTION_CONSTRUCTION not in sections_seen:
-            sections_seen[SECTION_CONSTRUCTION] = [SECTION_LABELS[SECTION_CONSTRUCTION], True, 0]
-        for code, (label, claimable, order) in sections_seen.items():
+            sections_seen[SECTION_CONSTRUCTION] = [SECTION_LABELS[SECTION_CONSTRUCTION], True, 0, "normal"]
+        for code, (label, claimable, order, sec_type) in sections_seen.items():
             db.upsert_section({
                 "project_entry_id": project_entry_id,
                 "section_code": code,
                 "section_label": label,
                 "claimable": 1 if claimable else 0,
                 "sort_order": order,
+                "section_type": sec_type,
             })
+
+        # Post-import guard: every Preliminary section must have a margin
+        # row at the bottom.  If the imported xlsx already had one it was
+        # detected above; otherwise auto-create one so the user can start
+        # entering margin amounts immediately.
+        for code, (_label, _claimable, _order, sec_type) in sections_seen.items():
+            if sec_type == "preliminary" and code not in sections_with_margin:
+                self.add_work_item(project_entry_id, code,
+                                   description="Margins (incl. Variations)",
+                                   cost=0, item_type=ITEM_TYPE_MARGIN)
 
         # Store a contract value hint from the construction total if absent
         project = db.get_project(project_entry_id)
         if project and not project.get("base_contract_amount"):
-            total_cost = sum(v for (code, (label, claimable, order)) in sections_seen.items()
+            total_cost = sum(v for (code, (label, claimable, order, sec_type)) in sections_seen.items()
                              if claimable for v in [cost_by_section.get(code, 0)])
             db.update_project(project_entry_id, base_contract_amount=total_cost)
 
@@ -472,20 +507,26 @@ class ProgressClaimService(QObject):
                                 month_id: int, percentage: float | None = None,
                                 amount: float | None = None) -> None:
         from shared_tools.progress_claim import progress_claim_db as db
-        item = None
-        for it in db.get_work_items(project_entry_id):
-            if it["id"] == work_item_id:
-                item = it
-                break
-        cost = item["cost"] if item else 0
-        # Mutual sync: derive the missing value from the given one.
-        if percentage is None and amount is not None:
-            amount = _safe_float(amount)
-            percentage = (amount / cost) if cost else 0.0
+        item = next((it for it in db.get_work_items(project_entry_id) if it["id"] == work_item_id), None)
+        if not item:
+            return
+        cost = item.get("cost", 0)
+        item_type = item.get("item_type", ITEM_TYPE_WORK_ITEM)
+
+        if item_type == ITEM_TYPE_MARGIN:
+            # Margin: store amount as-is, percentage is always 0 (no % math)
+            amount = _safe_float(amount) if amount is not None else 0
+            percentage = 0.0
         else:
-            # Clamp to a sane range
-            percentage = max(min(_safe_float(percentage), 1.0), -1.0)
-            amount = cost * percentage
+            # Mutual sync: derive the missing value from the given one.
+            if percentage is None and amount is not None:
+                amount = _safe_float(amount)
+                percentage = (amount / cost) if cost else 0.0
+            else:
+                # Clamp to a sane range
+                percentage = max(min(_safe_float(percentage), 1.0), -1.0)
+                amount = cost * percentage
+
         db.bulk_set_progress([{
             "work_item_id": work_item_id,
             "month_id": month_id,
@@ -526,25 +567,45 @@ class ProgressClaimService(QObject):
         return ok
 
     def add_work_item(self, project_entry_id: str, section: str,
-                      description: str = "", cost: float = 0) -> dict | None:
-        """Add a work item to a section (used for D/E drafting)."""
+                      description: str = "", cost: float = 0,
+                      item_type: str = "work_item") -> dict | None:
+        """Add a work item to a section.
+
+        For Preliminary sections the margin row always stays at the bottom,
+        so non-margin items are inserted *above* it.
+        """
         from shared_tools.progress_claim import progress_claim_db as db
-        existing = db.get_work_items_by_section(project_entry_id).get(section, [])
-        item_number = len(existing) + 1
-        # sort_order continues after the section's last item; use a high value
-        # so new rows appear at the end of the section.
         all_items = db.get_work_items(project_entry_id)
-        max_sort = max((i["sort_order"] for i in all_items), default=0)
-        # Place new item just after the last item of its target section
         sec_items = [i for i in all_items if i["section"] == section]
-        if sec_items:
-            insert_after = max(i["sort_order"] for i in sec_items)
+        section_def = db.get_section(project_entry_id, section)
+        sec_type = section_def.get("section_type", "normal") if section_def else "normal"
+
+        if item_type == ITEM_TYPE_MARGIN:
+            # Margin always goes at the very bottom of its section
+            insert_after = max((i["sort_order"] for i in sec_items), default=0)
+        elif sec_type == "preliminary":
+            # Insert above the margin row (if present)
+            margin_items = [i for i in sec_items if i.get("item_type") == ITEM_TYPE_MARGIN]
+            if margin_items:
+                margin_sort = margin_items[0]["sort_order"]
+                # Insert just before the margin row, then bump the margin down
+                items_before_margin = [i for i in sec_items if i["sort_order"] < margin_sort]
+                insert_after = max((i["sort_order"] for i in items_before_margin), default=0)
+                # Bump the margin row's sort_order so it stays at the bottom
+                db.update_work_item(margin_items[0]["id"], sort_order=margin_sort + 1)
+            else:
+                insert_after = max((i["sort_order"] for i in sec_items), default=0)
         else:
-            insert_after = max_sort
-        # Bump sort_order of all items after the insertion point
+            max_sort = max((i["sort_order"] for i in all_items), default=0)
+            insert_after = max((i["sort_order"] for i in sec_items), default=max_sort)
+
+        item_number = len(sec_items) + 1
+        # Bump sort_order of all items after the insertion point (except the
+        # margin row which was already bumped above).
         for i in all_items:
-            if i["sort_order"] > insert_after:
+            if i["sort_order"] > insert_after and i.get("item_type") != ITEM_TYPE_MARGIN:
                 db.update_work_item(i["id"], sort_order=i["sort_order"] + 1)
+
         new_id = db.upsert_work_item({
             "project_entry_id": project_entry_id,
             "section": section,
@@ -553,13 +614,15 @@ class ProgressClaimService(QObject):
             "description": description,
             "cost": _safe_float(cost),
             "sort_order": insert_after + 1,
+            "item_type": item_type,
         })
         self.cashflow_updated.emit(project_entry_id)
         return db.get_work_item(new_id) if new_id else None
 
     def update_work_item(self, item_id: int, **fields) -> bool:
         """Update a work item. When cost changes, recompute all its progress
-        amounts (amount = cost × percentage)."""
+        amounts (amount = cost × percentage) — except for margin items where
+        cost and amounts are independent."""
         from shared_tools.progress_claim import progress_claim_db as db
         item = db.get_work_item(item_id)
         if not item:
@@ -567,7 +630,7 @@ class ProgressClaimService(QObject):
         if "cost" in fields:
             fields["cost"] = _safe_float(fields["cost"])
         ok = db.update_work_item(item_id, **fields)
-        if ok and "cost" in fields:
+        if ok and "cost" in fields and item.get("item_type") != ITEM_TYPE_MARGIN:
             new_cost = fields["cost"]
             for p in db.get_progress_for_item(item_id):
                 db.bulk_set_progress([{
@@ -584,6 +647,8 @@ class ProgressClaimService(QObject):
         item = db.get_work_item(item_id)
         if not item:
             return False
+        if item.get("item_type") == ITEM_TYPE_MARGIN:
+            raise ValueError("Cannot remove a margin item. It is automatically managed by the section.")
         ok = db.delete_work_item(item_id)
         if ok:
             self.cashflow_updated.emit(item["project_entry_id"])
@@ -592,7 +657,7 @@ class ProgressClaimService(QObject):
     # ── Cashflow sections (freeform add/remove/rename) ────────────────
 
     def add_section(self, project_entry_id: str, label: str = "",
-                    claimable: bool = True) -> dict | None:
+                    claimable: bool = True, section_type: str = "normal") -> dict | None:
         from shared_tools.progress_claim import progress_claim_db as db
         code = db.next_section_code(project_entry_id)
         order = len(db.get_sections(project_entry_id))
@@ -602,7 +667,13 @@ class ProgressClaimService(QObject):
             "section_label": label or f"Section {code}",
             "claimable": 1 if claimable else 0,
             "sort_order": order,
+            "section_type": section_type,
         })
+        if section_type == "preliminary":
+            # Auto-create a margin row at the bottom of the new section
+            self.add_work_item(project_entry_id, code,
+                               description="Margins (incl. Variations)",
+                               cost=0, item_type=ITEM_TYPE_MARGIN)
         self.cashflow_updated.emit(project_entry_id)
         return db.get_section(project_entry_id, code) if sid else None
 
@@ -658,8 +729,10 @@ class ProgressClaimService(QObject):
 
         # progress lookup: (work_item_id, month_id) -> percentage
         prog_lookup: dict[tuple[int, int], float] = {}
+        amt_lookup: dict[tuple[int, int], float] = {}
         for p in all_progress:
             prog_lookup[(p["work_item_id"], p["month_id"])] = p["percentage"]
+            amt_lookup[(p["work_item_id"], p["month_id"])] = p["amount"]
 
         # Months up to and including the claim month, and strictly before it.
         # previously_claimed is the cumulative progress through the month
@@ -722,16 +795,33 @@ class ProgressClaimService(QObject):
 
         for it in items:
             sec = it["section"]
-            cumulative = sum(prog_lookup.get((it["id"], m["id"]), 0)
-                             for m in claimable_months)
-            cumulative_prior = sum(prog_lookup.get((it["id"], m["id"]), 0)
-                                   for m in prior_months)
-            total_claimed = it["cost"] * cumulative
-            if it["id"] in prior_claim_total_by_item:
-                # Learned from a stored prior claim (imported or generated)
-                previously_claimed = prior_claim_total_by_item[it["id"]]
+            it_type = it.get("item_type", ITEM_TYPE_WORK_ITEM)
+
+            if it_type == ITEM_TYPE_MARGIN:
+                # Margin: total_claimed is the sum of monthly amounts (not
+                # cost × %).  previously_claimed is the sum of amounts from
+                # months strictly before the claim month.
+                total_claimed = sum(amt_lookup.get((it["id"], m["id"]), 0)
+                                    for m in claimable_months)
+                cumulative = 0.0
+                cumulative_prior_amt = sum(amt_lookup.get((it["id"], m["id"]), 0)
+                                           for m in prior_months)
+                if it["id"] in prior_claim_total_by_item:
+                    previously_claimed = prior_claim_total_by_item[it["id"]]
+                else:
+                    previously_claimed = cumulative_prior_amt
             else:
-                previously_claimed = it["cost"] * cumulative_prior
+                cumulative = sum(prog_lookup.get((it["id"], m["id"]), 0)
+                                 for m in claimable_months)
+                cumulative_prior = sum(prog_lookup.get((it["id"], m["id"]), 0)
+                                       for m in prior_months)
+                total_claimed = it["cost"] * cumulative
+                if it["id"] in prior_claim_total_by_item:
+                    # Learned from a stored prior claim (imported or generated)
+                    previously_claimed = prior_claim_total_by_item[it["id"]]
+                else:
+                    previously_claimed = it["cost"] * cumulative_prior
+
             current_claim = total_claimed - previously_claimed
             balance = it["cost"] - total_claimed
 

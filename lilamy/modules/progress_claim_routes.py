@@ -76,6 +76,7 @@ class ImportPathRequest(BaseModel):
 class AddSectionRequest(BaseModel):
     label: str = ""
     claimable: bool = True
+    section_type: str = "normal"
 
 
 class UpdateSectionRequest(BaseModel):
@@ -288,7 +289,13 @@ async def update_work_item(entry_id: str, item_id: int, data: UpdateWorkItemRequ
 async def remove_work_item(entry_id: str, item_id: int):
     """Remove a work item and all its progress."""
     svc = _get_service()
-    return {"ok": svc.remove_work_item(item_id)}
+    try:
+        ok = svc.remove_work_item(item_id)
+        if not ok:
+            return {"error": "Item not found"}
+        return {"ok": True}
+    except ValueError as e:
+        return {"error": str(e)}
 
 
 # ── Cashflow sections (freeform add/remove/rename) ──────────────────────
@@ -299,7 +306,7 @@ async def add_section(entry_id: str, data: AddSectionRequest):
     """Add a new cashflow section."""
     svc = _get_service()
     try:
-        section = svc.add_section(entry_id, data.label, data.claimable)
+        section = svc.add_section(entry_id, data.label, data.claimable, data.section_type)
         if not section:
             return {"error": "Failed to add section"}
         return {"ok": True, "section": section}

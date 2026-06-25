@@ -209,6 +209,8 @@ def init_progress_claim_db() -> None:
         _migrate_add_column(conn, "projects", "site_address", "TEXT DEFAULT ''")
         _migrate_add_column(conn, "progress_claims", "total_retention_held", "REAL DEFAULT 0")
         _migrate_add_column(conn, "progress_claims", "section_totals_json", "TEXT DEFAULT ''")
+        _migrate_add_column(conn, "cashflow_sections", "section_type", "TEXT DEFAULT 'normal'")
+        _migrate_add_column(conn, "cashflow_work_items", "item_type", "TEXT DEFAULT 'work_item'")
     finally:
         conn.close()
 
@@ -356,12 +358,12 @@ def upsert_work_item(data: dict) -> int | None:
         cur = conn.execute(
             """INSERT INTO cashflow_work_items
                (project_entry_id, section, section_label, item_number, description,
-                cost, sort_order)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                cost, sort_order, item_type)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (data.get("project_entry_id", ""), data.get("section", ""),
              data.get("section_label", ""), data.get("item_number", 0),
              data.get("description", ""), data.get("cost", 0),
-             data.get("sort_order", 0)),
+             data.get("sort_order", 0), data.get("item_type", "work_item")),
         )
         conn.commit()
         return cur.lastrowid
@@ -416,15 +418,16 @@ def upsert_section(data: dict) -> int | None:
     try:
         cur = conn.execute(
             """INSERT INTO cashflow_sections
-               (project_entry_id, section_code, section_label, claimable, sort_order)
-               VALUES (?, ?, ?, ?, ?)
+               (project_entry_id, section_code, section_label, claimable, sort_order, section_type)
+               VALUES (?, ?, ?, ?, ?, ?)
                ON CONFLICT(project_entry_id, section_code) DO UPDATE SET
                 section_label = excluded.section_label,
                 claimable = excluded.claimable,
-                sort_order = excluded.sort_order""",
+                sort_order = excluded.sort_order,
+                section_type = excluded.section_type""",
             (data.get("project_entry_id", ""), data.get("section_code", ""),
              data.get("section_label", ""), data.get("claimable", 1),
-             data.get("sort_order", 0)),
+             data.get("sort_order", 0), data.get("section_type", "normal")),
         )
         row = conn.execute(
             "SELECT id FROM cashflow_sections WHERE project_entry_id = ? AND section_code = ?",
@@ -466,7 +469,7 @@ def get_section(project_entry_id: str, section_code: str) -> dict | None:
 
 
 def update_section(project_entry_id: str, section_code: str, **fields) -> bool:
-    allowed = {"section_label", "claimable", "sort_order", "section_code"}
+    allowed = {"section_label", "claimable", "sort_order", "section_code", "section_type"}
     fields = {k: v for k, v in fields.items() if k in allowed}
     if not fields:
         return False
@@ -546,7 +549,7 @@ def update_work_item(item_id: int, **fields) -> bool:
     """Patch a work item's fields (e.g. description, cost)."""
     if not fields:
         return False
-    allowed = {"description", "cost", "section", "section_label", "item_number", "sort_order"}
+    allowed = {"description", "cost", "section", "section_label", "item_number", "sort_order", "item_type"}
     fields = {k: v for k, v in fields.items() if k in allowed}
     if not fields:
         return False

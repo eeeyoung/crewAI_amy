@@ -4334,8 +4334,10 @@ function pcRenderCashflow() {
     const claimable = sd.claimable !== 0;
     const items = sections[sec] || [];
     // Section header row: editable title + add row + remove section
+    const secType = sd.section_type || 'normal';
+    const typeBadge = secType === 'preliminary' ? ` <span style="font-size:9px;color:var(--purple,#8e44ad);font-style:italic;">(Preliminary)</span>` : '';
     html += `<tr><td colspan="${2 + months.length * 2}" style="background:var(--overlay);color:var(--text);padding:4px 8px;display:flex;align-items:center;gap:6px;">
-      <span style="font-weight:700;font-size:12px;">${pcEsc(sec)}</span>
+      <span style="font-weight:700;font-size:12px;">${pcEsc(sec)}${typeBadge}</span>
       <input type="text" value="${pcEsc(label)}" data-col="sec-${sec}"
         onkeydown="pcEnterNav(event, this)" onblur="pcRenameSection('${sec}', this)"
         title="Section title (editable)" data-section="${sec}"
@@ -4348,14 +4350,17 @@ function pcRenderCashflow() {
     let secCost = 0;
     for (const it of items) {
       secCost += it.cost || 0;
-      html += `<tr style="border-bottom:1px solid var(--overlay);">`;
-      // Description (editable) + remove row
+      const isMargin = it.item_type === 'margin';
+      html += `<tr style="border-bottom:1px solid var(--overlay);${isMargin ? 'color:var(--subtext);' : ''}">`;
+      // Description (editable) + remove row (hidden for margin items)
       html += `<td style="position:sticky;left:0;background:var(--base);z-index:2;padding:3px 8px;display:flex;align-items:center;gap:4px;">
         <input type="text" value="${pcEsc(it.description)}" data-col="desc" data-row="${it.id}"
           onkeydown="pcEnterNav(event, this)" onblur="pcItemBlur(this, ${it.id}, 'description')"
-          style="flex:1;min-width:120px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);font-size:11px;">
-        <span style="cursor:pointer;color:var(--red);" onclick="pcRemoveItem(${it.id})" title="Remove row">×</span>
-      </td>`;
+          style="flex:1;min-width:120px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);font-size:11px;${isMargin ? 'font-style:italic;color:var(--subtext);' : ''}">`;
+      if (!isMargin) {
+        html += `<span style="cursor:pointer;color:var(--red);" onclick="pcRemoveItem(${it.id})" title="Remove row">×</span>`;
+      }
+      html += `</td>`;
       // Cost (editable)
       html += `<td style="text-align:right;padding:3px 8px;">
         <input type="number" step="0.01" value="${it.cost || 0}" data-col="cost" data-row="${it.id}"
@@ -4366,19 +4371,24 @@ function pcRenderCashflow() {
         const cur = i === currentMonthIdx ? `background:rgba(249,226,175,0.15);` : '';
         const pctCol = `pct-${p.month_id}`;
         const valCol = `val-${p.month_id}`;
-        html += `<td style="text-align:right;padding:2px;border-left:1px solid var(--overlay);${cur}">
-          <input type="number" step="0.01" min="-100" max="100" value="${round2((p.percentage || 0) * 100)}"
-            data-col="${pctCol}" data-row="${it.id}"
-            onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
-            onblur="pcPctBlur(this, ${it.id}, ${p.month_id}, ${i})"
-            title="Percent complete this month (45 = 45%)"
-            style="width:50px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
+        if (isMargin) {
+          // Margin rows: % cells are blank, non-editable
+          html += `<td style="text-align:center;padding:2px;border-left:1px solid var(--overlay);${cur}color:var(--muted);">—</td>`;
+        } else {
+          html += `<td style="text-align:right;padding:2px;border-left:1px solid var(--overlay);${cur}">
+            <input type="number" step="0.01" min="-100" max="100" value="${round2((p.percentage || 0) * 100)}"
+              data-col="${pctCol}" data-row="${it.id}"
+              onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
+              onblur="pcPctBlur(this, ${it.id}, ${p.month_id}, ${i})"
+              title="Percent complete this month (45 = 45%)"
+              style="width:50px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
+        }
         html += `<td style="text-align:right;padding:2px;${cur}">
           <input type="number" step="0.01" value="${round2(p.amount || 0)}"
             data-col="${valCol}" data-row="${it.id}"
             onkeydown="pcEnterNav(event, this)" onfocus="this.select()"
             onblur="pcValBlur(this, ${it.id}, ${p.month_id}, ${i})"
-            title="Amount this month ($ = cost × %); edits % inversely"
+            title="${isMargin ? 'Manually enter amount (independent of cost)' : 'Amount this month ($ = cost × %); edits % inversely'}"
             style="width:70px;background:var(--surface);border:1px solid var(--overlay);border-radius:4px;padding:3px 4px;color:var(--text);text-align:right;font-size:11px;"></td>`;
       });
       html += `</tr>`;
@@ -4412,13 +4422,14 @@ function pcEnterNav(e, input) {
 }
 
 async function pcPctBlur(input, itemId, monthId, monthIdx) {
+  const item = pcFindItem(itemId);
+  if (!item) return;
+  // Margin items have no % cells to edit; guard anyway
+  if (item.item_type === 'margin') return;
   const pct = parseFloat(input.value) || 0;
   const frac = pct / 100;
-  const item = pcFindItem(itemId);
-  if (item) {
-    const p = (item.progress || [])[monthIdx];
-    if (p) { p.percentage = frac; p.amount = (item.cost || 0) * frac; }
-  }
+  const p = (item.progress || [])[monthIdx];
+  if (p) { p.percentage = frac; p.amount = (item.cost || 0) * frac; }
   // update the sibling $ input optimistically
   const valInput = document.querySelector(`[data-col="val-${monthId}"][data-row="${itemId}"]`);
   if (valInput && item) valInput.value = round2((item.cost || 0) * frac);
@@ -4430,13 +4441,21 @@ async function pcPctBlur(input, itemId, monthId, monthIdx) {
 async function pcValBlur(input, itemId, monthId, monthIdx) {
   const amt = parseFloat(input.value) || 0;
   const item = pcFindItem(itemId);
-  let frac = 0;
-  if (item) {
-    const p = (item.progress || [])[monthIdx];
-    if (p) { p.amount = amt; p.percentage = item.cost ? amt / item.cost : 0; }
-    frac = item.cost ? amt / item.cost : 0;
+  if (!item) return;
+  const p = (item.progress || [])[monthIdx];
+  if (p) p.amount = amt;
+
+  if (item.item_type === 'margin') {
+    // Margin: send only amount, no percentage sync
+    fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/progress/${itemId}/${monthId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: amt }),
+    }).then(r => r.json()).then(d => { if (d.error) notify(d.error, 'error'); }).catch(() => {});
+    return;
   }
-  // update the sibling % input optimistically
+
+  // Normal item: mutual sync
+  const frac = item.cost ? amt / item.cost : 0;
+  if (p) p.percentage = frac;
   const pctInput = document.querySelector(`[data-col="pct-${monthId}"][data-row="${itemId}"]`);
   if (pctInput) pctInput.value = round2(frac * 100);
   fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/progress/${itemId}/${monthId}`, {
@@ -4445,10 +4464,13 @@ async function pcValBlur(input, itemId, monthId, monthIdx) {
 }
 
 async function pcAddSection() {
+  const type = prompt('Section type:\n  1 = Normal\n  2 = Preliminary (with margins)\n\nEnter 1 or 2:', '1');
+  if (type === null) return;
+  const sectionType = type === '2' ? 'preliminary' : 'normal';
   try {
     const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/sections`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ label: 'New Section', claimable: true }),
+      body: JSON.stringify({ label: 'New Section', claimable: true, section_type: sectionType }),
     });
     const d = await res.json();
     if (d.error) { notify(d.error, 'error'); return; }
