@@ -93,6 +93,103 @@ def build_claim_workbook(summary: dict, output_path: Path) -> Path:
 
 
 # =============================================================================
+# Cashflow workbook (push-to-Excel: regenerate the imported cashflow from DB)
+# =============================================================================
+
+
+def build_cashflow_workbook(state: dict, output_path: Path) -> Path:
+    """Build a cashflow xlsx from the DB cashflow state (project, sections,
+    items, months, progress), modeled on the source cashflow layout.
+
+    state: dict from ProgressClaimService.get_cashflow().
+    """
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    project = state.get("project") or {}
+    section_defs = state.get("section_defs") or []
+    sections = state.get("sections") or {}
+    months = state.get("months") or []
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+    ws.sheet_view.showGridLines = False
+
+    ws.column_dimensions["A"].width = 44
+    ws.column_dimensions["B"].width = 14
+    for i in range(len(months)):
+        ws.column_dimensions[get_column_letter(3 + i * 2)].width = 9      # %
+        ws.column_dimensions[get_column_letter(4 + i * 2)].width = 13     # $
+
+    money_fmt = '_("$"* #,##0.00_);_("$"* \\(#,##0.00\\);_("$"* "-"??_);_(@_)'
+
+    # Header
+    r = 1
+    _set(ws, r, 1, "Project"); _set(ws, r, 2, project.get("name", ""), bold=True); r += 1
+    _set(ws, r, 1, "Number"); _set(ws, r, 2, project.get("job_number", "")); r += 1
+    _set(ws, r, 1, "Client"); _set(ws, r, 2, project.get("client", "")); r += 1
+    _set(ws, r, 1, "Client contact"); _set(ws, r, 2, project.get("client_contact", "")); r += 1
+    _set(ws, r, 1, "Superintendent"); _set(ws, r, 2, project.get("superintendent", "")); r += 1
+    _set(ws, r, 1, "CASH FLOW STATEMENT", bold=True); r += 1
+    r += 1
+
+    # Month header row
+    _set(ws, r, 1, "Description", bold=True)
+    _set(ws, r, 2, "Total", bold=True)
+    for i, m in enumerate(months):
+        _set(ws, r, 3 + i * 2, m.get("month_label", ""), bold=True, align="center")
+        _set(ws, r, 4 + i * 2, "", bold=True, align="center")
+    month_header_row = r
+    r += 1
+    # % / Amount sub-header
+    _set(ws, r, 1, "", )
+    _set(ws, r, 2, "")
+    for i in range(len(months)):
+        _set(ws, r, 3 + i * 2, "% Complete", bold=False, align="center")
+        _set(ws, r, 4 + i * 2, "Amount", bold=False, align="center")
+    r += 1
+
+    # Sections + items
+    for sd in section_defs:
+        code = sd["section_code"]
+        label = sd.get("section_label") or code
+        items = sections.get(code, [])
+        _set(ws, r, 1, f"{label}", bold=True)
+        _box(ws, r, 1, r, 2 + len(months) * 2, medium=False)
+        r += 1
+        for it in items:
+            _set(ws, r, 1, it.get("description", ""))
+            cost = it.get("cost", 0)
+            c = ws.cell(row=r, column=2, value=cost)
+            c.number_format = money_fmt; c.font = _font()
+            for i, m in enumerate(months):
+                p = next((g for g in it.get("progress", []) if g.get("month_id") == m["id"]), None)
+                pct = p["percentage"] if p else 0
+                amt = p["amount"] if p else 0
+                pc = ws.cell(row=r, column=3 + i * 2, value=pct)
+                pc.number_format = "0.00%"; pc.font = _font(); pc.alignment = Alignment(horizontal="right")
+                ac = ws.cell(row=r, column=4 + i * 2, value=amt)
+                ac.number_format = money_fmt; ac.font = _font(); ac.alignment = Alignment(horizontal="right")
+            r += 1
+
+    ws.freeze_panes = "C{}".format(month_header_row + 2)
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+
+    wb.save(output_path)
+    return output_path
+
+
+def _set(ws, r, c, value, bold=False, align=None):
+    cell = ws.cell(row=r, column=c, value=value)
+    cell.font = _font(bold=bold)
+    if align:
+        cell.alignment = Alignment(horizontal=align)
+    return cell
+
+
+# =============================================================================
 # Sheet1 — PROJECT PAYMENT ADVICE (strict template reproduction)
 # =============================================================================
 
@@ -122,16 +219,16 @@ def _build_sheet1(ws, summary: dict) -> None:
 
     base_contract = _f(project.get("base_contract_amount"))
     cumulative_claimed = _f(claim.get("cumulative_claimed"))
-    less_previous = _f(claim.get("less_previous_claims"))
-    total_retention_held = _f(claim.get("total_retention_held"))
+    # Under the cumulative model, less_previous_claims is already
+    # "Less Previous (after retention)" and retention_amount is the total
+    # held to date — both editable on the summary card.
+    less_previous_after_retention = _f(claim.get("less_previous_claims"))
     retention_amount = _f(claim.get("retention_amount"))
     net_claim = _f(claim.get("net_claim"))
     gst_amount = _f(claim.get("gst_amount"))
     total_incl_gst = _f(claim.get("total_including_gst"))
     retention_max_pct = _f(claim.get("retention_max_percentage"), 5.0) or 5.0
 
-    prior_retention = max(0.0, total_retention_held - retention_amount)
-    less_previous_after_retention = less_previous - prior_retention
     max_retention = base_contract * retention_max_pct / 100.0
     balance_remaining = base_contract - cumulative_claimed
 
@@ -214,7 +311,7 @@ def _build_sheet1(ws, summary: dict) -> None:
     _label(ws.cell(row=42, column=6), "Max retention", align=_RIGHT)
 
     _label(ws.cell(row=43, column=3), "Retention Amount (10% to a maximum of 5%)")
-    _money(ws.cell(row=43, column=5), total_retention_held)
+    _money(ws.cell(row=43, column=5), retention_amount)
     _money(ws.cell(row=43, column=6), max_retention)
 
     _label(ws.cell(row=44, column=3), "Net Amount Claimed", bold=True)
