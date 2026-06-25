@@ -4303,7 +4303,16 @@ function pcRenderCashflow() {
   let html = `<div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
     <div style="font-weight:600;font-size:15px;">${pcEsc(pcCashflow.project.name)}</div>
     <div style="display:flex;gap:6px;">
-      <button class="btn" onclick="pcAddSection()" style="font-size:12px;">＋ Section</button>
+      <span style="position:relative;display:inline-flex;">
+        <span class="btn-split">
+          <button class="split-main" onclick="pcAddSection('normal')">＋ Section</button>
+          <button class="split-arrow" onclick="pcToggleSectionDropdown(event)" title="Section type">▾</button>
+        </span>
+        <div class="dropdown-menu" id="pc-section-dropdown" style="top:100%;right:0;min-width:200px;">
+          <div class="dropdown-item" onclick="pcAddSection('normal')"><span>Normal</span><span class="muted">Standard section</span></div>
+          <div class="dropdown-item" onclick="pcAddSection('preliminary')"><span>Preliminary (with margins)</span><span class="muted">Auto margin row</span></div>
+        </div>
+      </span>
       <button class="btn" onclick="pcAddMonth()" style="font-size:12px;">＋ Period</button>
       <button class="btn btn-primary" onclick="pcOpenGenerate()" style="font-size:12px;">📋 Generate Claim</button>
     </div>
@@ -4463,10 +4472,10 @@ async function pcValBlur(input, itemId, monthId, monthIdx) {
   }).then(r => r.json()).then(d => { if (d.error) notify(d.error, 'error'); }).catch(() => {});
 }
 
-async function pcAddSection() {
-  const type = prompt('Section type:\n  1 = Normal\n  2 = Preliminary (with margins)\n\nEnter 1 or 2:', '1');
-  if (type === null) return;
-  const sectionType = type === '2' ? 'preliminary' : 'normal';
+async function pcAddSection(sectionType) {
+  // sectionType: 'normal' (default from main button) or 'preliminary'
+  if (!sectionType) sectionType = 'normal';
+  pcCloseSectionDropdown();
   try {
     const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}/cashflow/sections`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -4477,6 +4486,29 @@ async function pcAddSection() {
     await pcLoadCashflow();
   } catch (e) { notify('Failed to add section', 'error'); }
 }
+
+function pcToggleSectionDropdown(e) {
+  if (e) { e.stopPropagation(); e.preventDefault(); }
+  const dd = document.getElementById('pc-section-dropdown');
+  if (!dd) return;
+  dd.classList.toggle('show');
+}
+
+function pcCloseSectionDropdown() {
+  const dd = document.getElementById('pc-section-dropdown');
+  if (dd) dd.classList.remove('show');
+}
+
+// Global click-outside to dismiss the section dropdown
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('pc-section-dropdown');
+  if (!dd || !dd.classList.contains('show')) return;
+  // Close if click is outside the split-button wrapper
+  const wrapper = dd.parentElement;
+  if (wrapper && !wrapper.contains(e.target)) {
+    dd.classList.remove('show');
+  }
+});
 
 async function pcRenameSection(code, input) {
   const label = input.value.trim();

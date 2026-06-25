@@ -352,6 +352,80 @@
       cursor: not-allowed;
     }
 
+    /* ── Split-button dropdown ─────────────────────────────────── */
+
+    .btn-split {
+      display: inline-flex;
+      align-items: stretch;
+      border-radius: 5px;
+      overflow: hidden;
+      font-size: 12px;
+    }
+    .btn-split .split-main {
+      padding: 5px 10px;
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-right: none;
+      border-radius: 5px 0 0 5px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: inherit;
+      white-space: nowrap;
+    }
+    .btn-split .split-main:hover {
+      background: var(--overlay);
+    }
+    .btn-split .split-arrow {
+      padding: 5px 7px;
+      background: var(--surface);
+      border: 1px solid var(--overlay);
+      border-radius: 0 5px 5px 0;
+      color: var(--subtext);
+      cursor: pointer;
+      font-size: 10px;
+      line-height: 1;
+    }
+    .btn-split .split-arrow:hover {
+      background: var(--overlay);
+      color: var(--text);
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      z-index: 9998;
+      min-width: 190px;
+      background: var(--base);
+      border: 1px solid var(--overlay);
+      border-radius: 6px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .dropdown-menu.show {
+      display: block;
+    }
+    .dropdown-menu .dropdown-item {
+      padding: 7px 12px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dropdown-menu .dropdown-item:hover {
+      background: var(--overlay);
+    }
+    .dropdown-menu .dropdown-item .muted {
+      font-size: 10px;
+      color: var(--subtext);
+    }
+    .dropdown-menu .dropdown-divider {
+      height: 1px;
+      background: var(--overlay);
+    }
+
     .btn-secondary {
       padding: 8px 18px;
       border-radius: 6px;
@@ -1902,7 +1976,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=59"></script>
+  <script src="/static/app.js?v=60"></script>
 </body>
 
 </html>
