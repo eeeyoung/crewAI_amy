@@ -105,6 +105,20 @@ def init_progress_claim_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_pc_work_items_section
                 ON cashflow_work_items(project_entry_id, section);
 
+            CREATE TABLE IF NOT EXISTS cashflow_sections (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_entry_id TEXT NOT NULL REFERENCES projects(entry_id),
+                section_code TEXT NOT NULL,
+                section_label TEXT NOT NULL DEFAULT '',
+                claimable INTEGER NOT NULL DEFAULT 1,
+                sort_order INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT (datetime('now')),
+                UNIQUE(project_entry_id, section_code)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_pc_sections_project
+                ON cashflow_sections(project_entry_id);
+
             CREATE TABLE IF NOT EXISTS cashflow_months (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 project_entry_id TEXT NOT NULL REFERENCES projects(entry_id),
@@ -194,6 +208,7 @@ def init_progress_claim_db() -> None:
         # Migrations for new columns
         _migrate_add_column(conn, "projects", "site_address", "TEXT DEFAULT ''")
         _migrate_add_column(conn, "progress_claims", "total_retention_held", "REAL DEFAULT 0")
+        _migrate_add_column(conn, "progress_claims", "section_totals_json", "TEXT DEFAULT ''")
     finally:
         conn.close()
 
@@ -377,6 +392,142 @@ def get_work_items_by_section(project_entry_id: str) -> dict[str, list[dict]]:
     for it in items:
         grouped.setdefault(it["section"], []).append(it)
     return grouped
+
+
+# =============================================================================
+# Cashflow: sections (freeform, add/remove/rename)
+# =============================================================================
+
+
+def clear_sections_for_project(project_entry_id: str) -> None:
+    conn = _get_connection()
+    try:
+        conn.execute("DELETE FROM cashflow_sections WHERE project_entry_id = ?", (project_entry_id,))
+        conn.commit()
+    except Exception as e:
+        print(f"[progress_claim_db] Error clearing sections: {e}")
+    finally:
+        conn.close()
+
+
+def upsert_section(data: dict) -> int | None:
+    conn = _get_connection()
+    try:
+        cur = conn.execute(
+            """INSERT INTO cashflow_sections
+               (project_entry_id, section_code, section_label, claimable, sort_order)
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(project_entry_id, section_code) DO UPDATE SET
+                section_label = excluded.section_label,
+                claimable = excluded.claimable,
+                sort_order = excluded.sort_order""",
+            (data.get("project_entry_id", ""), data.get("section_code", ""),
+             data.get("section_label", ""), data.get("claimable", 1),
+             data.get("sort_order", 0)),
+        )
+        row = conn.execute(
+            "SELECT id FROM cashflow_sections WHERE project_entry_id = ? AND section_code = ?",
+            (data.get("project_entry_id", ""), data.get("section_code", ""))).fetchone()
+        conn.commit()
+        return row["id"] if row else cur.lastrowid
+    except Exception as e:
+        print(f"[progress_claim_db] Error upserting section: {e}")
+        return None
+    finally:
+        conn.close()
+
+
+def get_sections(project_entry_id: str) -> list[dict]:
+    conn = _get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM cashflow_sections WHERE project_entry_id = ? ORDER BY sort_order, id",
+            (project_entry_id,)).fetchall()
+        return [dict(r) for r in rows]
+    except Exception as e:
+        print(f"[progress_claim_db] Error reading sections: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def get_section(project_entry_id: str, section_code: str) -> dict | None:
+    conn = _get_connection()
+    try:
+        row = conn.execute(
+            "SELECT * FROM cashflow_sections WHERE project_entry_id = ? AND section_code = ?",
+            (project_entry_id, section_code)).fetchone()
+        return dict(row) if row else None
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
+def update_section(project_entry_id: str, section_code: str, **fields) -> bool:
+    allowed = {"section_label", "claimable", "sort_order", "section_code"}
+    fields = {k: v for k, v in fields.items() if k in allowed}
+    if not fields:
+        return False
+    conn = _get_connection()
+    try:
+        set_clause = ", ".join(f"{k} = ?" for k in fields.keys())
+        values = list(fields.values()) + [project_entry_id, section_code]
+        conn.execute(
+            f"UPDATE cashflow_sections SET {set_clause} WHERE project_entry_id = ? AND section_code = ?",
+            values)
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"[progress_claim_db] Error updating section: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def delete_section(project_entry_id: str, section_code: str) -> bool:
+    """Delete a section and all its work items + progress."""
+    conn = _get_connection()
+    try:
+        item_ids = [r[0] for r in conn.execute(
+            "SELECT id FROM cashflow_work_items WHERE project_entry_id = ? AND section = ?",
+            (project_entry_id, section_code)).fetchall()]
+        for iid in item_ids:
+            conn.execute("DELETE FROM cashflow_progress WHERE work_item_id = ?", (iid,))
+        conn.execute("DELETE FROM cashflow_work_items WHERE project_entry_id = ? AND section = ?",
+                     (project_entry_id, section_code))
+        conn.execute("DELETE FROM cashflow_sections WHERE project_entry_id = ? AND section_code = ?",
+                     (project_entry_id, section_code))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"[progress_claim_db] Error deleting section: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def next_section_code(project_entry_id: str) -> str:
+    """Next available single-letter section code (A, B, ..., Z, then AA, AB...)."""
+    conn = _get_connection()
+    try:
+        used = {r[0] for r in conn.execute(
+            "SELECT section_code FROM cashflow_sections WHERE project_entry_id = ?",
+            (project_entry_id,)).fetchall()}
+    finally:
+        conn.close()
+    # single letters first
+    for i in range(26):
+        code = chr(ord("A") + i)
+        if code not in used:
+            return code
+    # double letters
+    for i in range(26):
+        for j in range(26):
+            code = chr(ord("A") + i) + chr(ord("A") + j)
+            if code not in used:
+                return code
+    return "ZZ"
 
 
 def get_work_item(item_id: int) -> dict | None:
