@@ -60,7 +60,8 @@ class ProjectUpdate(BaseModel):
 
 
 class ProgressUpdate(BaseModel):
-    percentage: float
+    percentage: float | None = None
+    amount: float | None = None
 
 
 class ClaimGenerate(BaseModel):
@@ -70,6 +71,23 @@ class ClaimGenerate(BaseModel):
 
 class ImportPathRequest(BaseModel):
     xlsx_path: str
+
+
+class AddSectionRequest(BaseModel):
+    label: str = ""
+    claimable: bool = True
+
+
+class UpdateSectionRequest(BaseModel):
+    label: str | None = None
+    claimable: bool | None = None
+
+
+class UpdateClaimSummaryRequest(BaseModel):
+    claim_number: int | None = None
+    section_totals: dict[str, float] | None = None
+    less_previous_claims: float | None = None
+    retention_amount: float | None = None
 
 
 class AddMonthRequest(BaseModel):
@@ -210,9 +228,13 @@ async def get_cashflow(entry_id: str):
 @router.patch("/projects/{entry_id}/cashflow/progress/{work_item_id}/{month_id}")
 async def update_progress(entry_id: str, work_item_id: int, month_id: int,
                           data: ProgressUpdate):
-    """Update a single % cell. Queues the update; returns immediately."""
+    """Update a single cell. Accepts percentage OR amount (mutual sync).
+    Queues the update; returns immediately."""
     svc = _get_service()
-    svc.update_progress(entry_id, work_item_id, month_id, data.percentage)
+    if data.percentage is None and data.amount is None:
+        return {"error": "Provide percentage or amount"}
+    svc.update_progress(entry_id, work_item_id, month_id,
+                        percentage=data.percentage, amount=data.amount)
     return {"ok": True}
 
 
@@ -269,6 +291,47 @@ async def remove_work_item(entry_id: str, item_id: int):
     return {"ok": svc.remove_work_item(item_id)}
 
 
+# ── Cashflow sections (freeform add/remove/rename) ──────────────────────
+
+
+@router.post("/projects/{entry_id}/cashflow/sections")
+async def add_section(entry_id: str, data: AddSectionRequest):
+    """Add a new cashflow section."""
+    svc = _get_service()
+    try:
+        section = svc.add_section(entry_id, data.label, data.claimable)
+        if not section:
+            return {"error": "Failed to add section"}
+        return {"ok": True, "section": section}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.patch("/projects/{entry_id}/cashflow/sections/{section_code}")
+async def update_section(entry_id: str, section_code: str, data: UpdateSectionRequest):
+    """Rename a section and/or toggle claimable."""
+    svc = _get_service()
+    if data.label is not None:
+        svc.rename_section(entry_id, section_code, data.label)
+    if data.claimable is not None:
+        svc.set_section_claimable(entry_id, section_code, data.claimable)
+    return {"ok": True}
+
+
+@router.delete("/projects/{entry_id}/cashflow/sections/{section_code}")
+async def remove_section(entry_id: str, section_code: str):
+    """Remove a section and all its items + progress."""
+    svc = _get_service()
+    return {"ok": svc.remove_section(entry_id, section_code)}
+
+
+@router.post("/projects/{entry_id}/cashflow/push-excel")
+async def push_cashflow_to_excel(entry_id: str):
+    """Regenerate the imported cashflow Excel from the DB (old file backed up)."""
+    svc = _get_service()
+    return svc.push_to_excel(entry_id)
+
+
 # ── Claims ─────────────────────────────────────────────────────────────
 
 
@@ -317,6 +380,21 @@ async def update_claim_item(claim_entry_id: str, item_id: int,
         return {"error": "No fields to update"}
     ok = svc.update_claim_item(item_id, **fields)
     return {"ok": ok}
+
+
+@router.patch("/claims/{claim_entry_id}/summary")
+async def update_claim_summary(claim_entry_id: str, data: UpdateClaimSummaryRequest):
+    """Manual Mode: edit the claim summary card directly (claim number,
+    section cumulative values, Less Previous, Retention). Gross/Net/GST/Total
+    recompute server-side; claim number is validated unique per project."""
+    svc = _get_service()
+    fields = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not fields:
+        return {"error": "No fields to update"}
+    result = svc.update_claim_summary(claim_entry_id, **fields)
+    if result.get("error"):
+        return result
+    return {"ok": True}
 
 
 @router.post("/projects/{entry_id}/claims/import-upload")
