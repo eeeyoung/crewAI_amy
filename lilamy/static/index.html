@@ -1620,6 +1620,9 @@
             <input type="text" id="pc-cfg-abn" placeholder="ABN" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
             <input type="text" id="pc-cfg-co-address" placeholder="Company address" style="background:var(--surface);border:1px solid var(--overlay);border-radius:5px;padding:5px 6px;color:var(--text);font-size:12px;">
           </div>
+          <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--overlay);">
+            <button class="btn" onclick="pcDeleteProject()" style="width:100%;font-size:11px;padding:7px;color:var(--red,#e74c3c);border-color:var(--red,#e74c3c);text-align:center;" title="Permanently delete this project and all its data">🗑 Delete Project</button>
+          </div>
         </div>
       </div>
 
@@ -1899,7 +1902,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/static/app.js?v=57"></script>
+  <script src="/static/app.js?v=58"></script>
 </body>
 
 </html>

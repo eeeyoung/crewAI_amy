@@ -316,6 +316,7 @@ def delete_project(entry_id: str) -> bool:
             conn.execute("DELETE FROM cashflow_progress WHERE work_item_id = ?", (iid,))
         conn.execute("DELETE FROM cashflow_work_items WHERE project_entry_id = ?", (entry_id,))
         conn.execute("DELETE FROM cashflow_months WHERE project_entry_id = ?", (entry_id,))
+        conn.execute("DELETE FROM cashflow_sections WHERE project_entry_id = ?", (entry_id,))
         conn.execute("DELETE FROM projects WHERE entry_id = ?", (entry_id,))
         conn.commit()
         return True

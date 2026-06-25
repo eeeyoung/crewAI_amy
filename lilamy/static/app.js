@@ -4164,6 +4164,38 @@ async function pcSaveConfig() {
   } catch (e) { notify('Failed to save config', 'error'); }
 }
 
+async function pcDeleteProject() {
+  if (!pcSelectedProjectId) return;
+  const p = (pcCashflow && pcCashflow.project) || {};
+  const name = p.name || pcSelectedProjectId.slice(0, 8);
+  const msg = [
+    `⚠ Permanently delete project "${name}"?`,
+    '',
+    'This will remove the project, all cashflow data, all claims,',
+    'and all imported files. This action cannot be undone.',
+  ].join('\n');
+  if (!confirm(msg)) return;
+  // Second confirmation for safety
+  if (!confirm(`Type "delete" to confirm permanent removal of "${name}".\n\nThis is your last chance to cancel.`)) return;
+  // Final gate: require typing the word
+  const typed = prompt(`To confirm, type the project name: "${name}"`);
+  if (typed !== name) { notify('Project name did not match — deletion cancelled', 'warning'); return; }
+  try {
+    const res = await fetch(`${API}/api/progress-claims/projects/${pcSelectedProjectId}`, { method: 'DELETE' });
+    const d = await res.json();
+    if (d.error) { notify(d.error, 'error'); return; }
+    notify(`Project "${name}" deleted`, 'success');
+    pcSelectedProjectId = null;
+    pcSelectedClaimId = null;
+    pcCashflow = null;
+    await pcLoadProjects();
+    pcRenderProjectSelect();
+    document.getElementById('pc-config-panel').style.display = 'none';
+    document.getElementById('pc-claims-list').innerHTML = '';
+    pcShowView('empty');
+  } catch (e) { notify('Failed to delete project', 'error'); }
+}
+
 function pcNewProject() {
   ['pc-new-name', 'pc-new-job', 'pc-new-client', 'pc-new-base'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
