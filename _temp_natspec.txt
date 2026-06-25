@@ -1,0 +1,209 @@
+                                                  OFFICIAL
+
+             DHW Technical Guideline
+
+                      TG001 NATSPEC Specification
+
+1. Purpose
+
+This technical guideline supplements TG035 Specifying by Performance and Example
+and provides supporting guidance on meeting the Department of Housing and Works
+(DHW) requirements for using the National Building Specification (NATSPEC) system to
+produce specifications for government non-residential building projects.
+
+2. Requirements
+
+The NATSPEC building professional package shall be used to prepare technical
+specifications for all DHW non-residential projects with an estimated construction
+value of $3 million or greater. This requirement applies to all Consultants, including
+sub-consultants.
+The use of NATSPEC is optional for projects with a construction value less than $3
+million.
+
+3. Background
+
+NATSPEC Building Professional package is a comprehensive national specification
+system that provides standardised design and installation work sections for construction
+projects.
+
+3.1. Why DHW uses NATSPEC
+
+DHW uses NATSPEC to:
+   · Ensure standards specified are the latest versions,
+   · Assist consultants to produce generic specification clauses resulting in high
+       quality, durable products, and
+   · Support consistency and understanding of the building quality required for
+       government projects.
+
+4. How to Use NATSPEC
+
+Download NATSPEC Quickstart for an introduction to using NATSPEC worksections to
+create specifications: http://www.natspec.com.au/images/PDF/QUICKstart.pdf
+
+                                                              Page 1 of 4
+                                                  OFFICIAL
+
+DHW Technical Guideline: TG001 NATSPEC specification
+
+4.1. Duplication of information
+
+NATSPEC, particularly workgroup 01 General, may include information that duplicates
+or contradicts clauses in DHW's selected Contract. Consultants shall review these
+documents and ensure that only relevant NATSPEC worksections and content are
+included in the project specification to eliminate unnecessary duplication,
+contradiction and potential for error.
+Where duplication or contradiction occurs between NATSPEC and DHW's selected
+contract, the latter shall take precedence, and the duplicate information should be
+omitted from the NATSPEC worksection(s).
+For example, work section 0171 General requirements contain clauses governing
+authority approvals, which are also covered in DHW's contract Preliminaries for the
+AS2124 contract. NATSPEC work section 0171 Section 1 General Clause 1.7
+Submissions states:
+"Authority approvals: Notes of meetings with authorities whose requirements apply to
+the work and evidence that notices, fees and permits have been sought and paid, that
+authority connections are complete and that statutory approvals by the authorities
+whose requirements apply to the work have been received."
+This clause is not relevant for DHW projects, as the required approvals will be obtained
+directly by the DHW project manager.
+This may not be the only instance of duplication in worksection 0171. The consultant
+shall review thoroughly as necessary.
+
+4.2. Scheduling
+
+Every project specification should, at a minimum, include the following schedules:
+   · Schedule of all operation and maintenance manuals which must be delivered as
+       part of Practical Completion.
+   · Schedule of all warranties which must be provided as part of Practical Completion.
+   · Schedule of all required tests and inspections, including any hold points.
+   · Schedule of materials and finishes. The specification/schedule should clearly
+       define the level of quality required, particularly where it exceeds the minimum
+       standards set by the relevant Australian Standard. The installation shall be in
+       accordance with the manufacturer's requirements.
+
+4.3. Table of Contents
+
+The specification should include a single table of contents. NATSPEC suggests editing
+the specification templates in the individual worksection files rather than in the merged
+file. The master document shall then generate the table of contents and print the full
+specification. If possible, the table of contents should be hyperlinked to allow easy
+navigation within the specification.
+
+                                                              Page 2 of 4
+                                                 OFFICIAL
+
+DHW Technical Guideline: TG001 NATSPEC specification
+
+The level of detail of the table of contents need only include reference to work sections,
+and not to individual sections and clauses within work sections.
+
+4.4. Formatting
+
+DHW's contract Preliminaries, when used, should be amended as appropriate to suit the
+project, then combined in a PDF document with the relevant NATSPEC sections and
+other documentation. Consultants are not expected to format DHW's contract
+Preliminaries to match NATSPEC. The formatting for NATSPEC individual work sections
+will be consistent if the natspec.dot file is used.
+
+4.5. Specification by Performance and Example
+
+NATSPEC is a performance-based specification, although it allows for specification by
+example to be used if required.
+Please refer to TG035 Specifying by Performance and Example for guidance on meeting
+DHW's requirements when specifying either by performance or by example using
+NATSPEC on government non-residential building projects.
+
+5. References
+
+1. TG035 Specifying by Performance and Example, Department of Housing and Works
+   TG035 Specifying by Performance and Example (www.wa.gov.au)
+
+2. Specnotes NATSPEC's quarterly newsletter contains information on new and revised
+   NATSPEC worksections and technotes, and Australian Standards.
+
+3. NATSPEC                 Quickstart                                       NATSPEC
+
+http://www.natspec.com.au/images/PDF/QUICKstart.pdf
+
+4. NATSPEC TECHnotes http://www.natspec.com.au/index.php/resources/technotes
+
+5. Specification  Writing  NATSPEC                         Paper,  October  2021
+
+http://www.natspec.com.au/images/PDF/Specification_Writing_Paper.pdf
+
+6. Guide Notes to Assist in The Preparation of the Specification Preliminaries and the
+   Specification Generally for Works Contracts Tendered by the Department of Finance
+   in the Name of the Minister for Works, Department of Housing and Works
+
+7. Western Australian Procurement Rules, Western Australian Procurement Rules
+   (www.wa.gov.au)
+
+                           Page 3 of 4
+                                                 OFFICIAL
+
+DHW Technical Guideline: TG001 NATSPEC specification
+
+Document Control
+
+TRIM reference    2015/02812 DOC 01137885
+
+Revision date     November 2025
+
+Next revision     November 2026
+
+Content owner     Building and Technical Services
+
+Enquiries         Consult with content owner or principal.architect@dohw.wa.gov.au
+
+Revision date     Author         Reason                             Sections
+
+27/02/2016        BTS             Initial Release                   All
+
+21/02/2017        BTS            Include document reference         Title
+
+                                 number (TG001)
+
+13/07/2018        BTS            Update links                       References
+
+                                 Revise Version Control Protocol Document Control
+
+                                 Revise Principal Architect         Document Approval
+
+16/11/2018        BTS            Open and Effective Competition 1.3 Why BMW uses
+
+                                 Policy product specification       NATSPEC
+
+                                 hierarchy and requirements         2.5 Specification by
+                                 clarified.                         Example.
+
+6/07/2021         BTS            Revise references to BMW           All
+
+                                 Open and Effective Competition     2.5 Specification by
+                                 Policy product specification       Example
+                                 hierarchy and requirements
+                                 clarified.
+
+23/12/2021        BTS            Updated in relation to TG035 and All
+
+                                 WA Procurement Rules
+
+30/09/2025        BTS            Update to DHW                      All
+
+                                 Minor editing updates
+
+Document approval
+
+This guideline was endorsed and approved for use on 31/10/2025 by:
+Dean Wood, Principal Architect
+Department of Housing and Works
+
+Disclaimer.
+
+The information in this publication is general and does not take into account individual circumstances or
+situations. While care has been taken in preparing this document, the State of Western Australia, its
+agents, or employees, accept no responsibility or liability for decisions or actions taken, or not taken, as a
+result of any data, information, statement or advice, expressed or implied, contained within. To the best of
+our knowledge, the content was correct at the time of publishing. The content within should not be relied
+upon as a substitute for independent legal and other professional advice.
+
+                                 Page 4 of 4
+
